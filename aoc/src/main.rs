@@ -22,12 +22,13 @@ fn main() {
     let app = create_app();
     let matches = app.get_matches();
 
-    let (day, part) = parse_arguments(&matches).unwrap_or_else(|e| {
+    let (day, part, input_path) = parse_arguments(&matches).unwrap_or_else(|e| {
         eprintln!("Unable to parse arguments: {}", e);
         process::exit(1);
     });
     println!("day: {}", day);
     println!("part: {}", part);
+    println!("input file path: {}", input_path);
 }
 
 fn create_app() -> App<'static, 'static> {
@@ -44,13 +45,18 @@ fn create_app() -> App<'static, 'static> {
             .takes_value(true)
             .required(true)
             .possible_values(&["1", "2"]))
+        .arg(Arg::with_name("input_file")
+            .help("Path to file containing input to problem")
+            .takes_value(true)
+            .required(true))
 }
 
-fn parse_arguments(matches: &ArgMatches) -> Result<(u8, Part), String> {
+fn parse_arguments(matches: &ArgMatches) -> Result<(u8, Part, String), String> {
     let day = value_t!(matches.value_of("day"), u8).unwrap();
     if day < 1 || day > 25 {
         return Err("day must be 1-25 (inclusive)".to_string());
     }
     let part = value_t!(matches.value_of("part"), Part).unwrap();
-    Ok((day, part))
+    let input_path = matches.value_of("input_file").unwrap().to_string();
+    Ok((day, part, input_path))
 }
