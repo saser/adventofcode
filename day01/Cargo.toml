@@ -1,7 +1,7 @@
 [package]
-name = "adventofcode2017"
+name = "day01"
 version = "0.1.0"
 authors = ["Christian Persson <saser@live.se>"]
 
 [dependencies]
-clap = "~2.29.0"
+base = { path = "../base" }

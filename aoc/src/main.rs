@@ -1,10 +1,8 @@
-extern crate adventofcode2017;
+extern crate base;
 extern crate clap;
 
-use adventofcode2017::*;
+use base::Part;
 use clap::{App, Arg, ArgMatches};
-
-mod day01;
 
 fn main() {
     let app = App::new("adventofcode2017")
