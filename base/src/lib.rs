@@ -28,3 +28,7 @@ impl fmt::Display for Part {
         write!(f, "{}", s)
     }
 }
+
+pub trait Solver {
+    fn solve(&self, part: Part, input: &str) -> Result<String, String>;
+}

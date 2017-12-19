@@ -1,12 +1,14 @@
 extern crate base;
 #[macro_use]
 extern crate clap;
+extern crate day01;
 
-use base::Part;
+use base::{Part, Solver};
 use clap::{App, Arg, ArgMatches};
 use std::fs::File;
 use std::io::{self, Read};
 use std::process;
+use std::time::{Duration, Instant};
 
 static APP_NAME: &'static str = "aoc";
 static APP_VERSION: &'static str = "0.1.0";
@@ -32,9 +34,32 @@ fn main() {
         eprintln!("Unable to read input file: {}", e);
         process::exit(1);
     });
-    println!("day: {}", day);
-    println!("part: {}", part);
-    println!("input: {}", input);
+    let solver = get_solver(day).unwrap_or_else(|e| {
+        eprintln!("Unable to get solver: {}", e);
+        process::exit(1);
+    });
+
+    solve(solver, day, part, &input);
+}
+
+fn solve(solver: Box<Solver>, day: u8, part: Part, input: &str) {
+    let timer = Instant::now();
+    let solution = solver.solve(part, input).unwrap_or_else(|e| {
+        eprintln!("Unable to acquire solution for day {} part {}: {}",
+                  day,
+                  part,
+                  e);
+        process::exit(1);
+    });
+    let solution_time = timer.elapsed();
+    println!("Solution for day {} part {}: {}", day, part, solution);
+    println!("Time to solve: {}", format_duration(solution_time));
+}
+
+fn format_duration(duration: Duration) -> String {
+    let total_ns: u64 = duration.as_secs() * 1_000_000_000 + duration.subsec_nanos() as u64;
+    let total_ms: f64 = total_ns as f64 / 1e+6;
+    format!("{:.3} ms ({} ns)", total_ms, total_ns)
 }
 
 fn create_app() -> App<'static, 'static> {
@@ -72,4 +97,11 @@ fn read_input(path: &str) -> io::Result<String> {
     let mut file = File::open(path)?;
     file.read_to_string(&mut input)?;
     Ok(input)
+}
+
+fn get_solver(day: u8) -> Result<Box<Solver>, String> {
+    match day {
+        1 => Ok(day01::get_solver()),
+        _ => Err(format!("no solver for day {}", day)),
+    }
 }
