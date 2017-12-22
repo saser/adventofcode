@@ -130,7 +130,7 @@ mod tests {
 9 4 7 3
 3 8 6 5\
             ";
-            let expected = "4";
+            let expected = "9";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
