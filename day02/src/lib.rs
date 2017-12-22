@@ -4,11 +4,11 @@ use base::{Part, Solver};
 
 use std::str::FromStr;
 
-struct Day02;
-
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day02)
 }
+
+struct Day02;
 
 impl Solver for Day02 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
