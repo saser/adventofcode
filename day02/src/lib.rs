@@ -32,7 +32,19 @@ fn parse_line(line: &str) -> Vec<u32> {
 }
 
 fn min_max(nums: &[u32]) -> u32 {
-    unimplemented!()
+    // Can also be solved using the `Iterator::max` and `Iterator::min` methods,
+    // but that's no fun.
+
+    let mut min = nums[0];
+    let mut max = nums[0];
+    for &n in nums.iter() {
+        if n < min {
+            min = n;
+        } else if n > max {
+            max = n;
+        }
+    }
+    max - min
 }
 
 fn divisors(nums: &[u32]) -> u32 {
