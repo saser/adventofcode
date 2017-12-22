@@ -8,3 +8,4 @@ clap = "~2.29.0"
 base = { path = "../base" }
 day01 = { path = "../day01" }
 day02 = { path = "../day02" }
+day03 = { path = "../day03" }
