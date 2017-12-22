@@ -2,6 +2,7 @@ extern crate base;
 #[macro_use]
 extern crate clap;
 extern crate day01;
+extern crate day02;
 
 use base::{Part, Solver};
 use clap::{App, Arg, ArgMatches};
@@ -102,6 +103,7 @@ fn read_input(path: &str) -> io::Result<String> {
 fn get_solver(day: u8) -> Result<Box<Solver>, String> {
     match day {
         1 => Ok(day01::get_solver()),
+        2 => Ok(day02::get_solver()),
         _ => Err(format!("no solver for day {}", day)),
     }
 }

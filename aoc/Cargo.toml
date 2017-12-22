@@ -7,3 +7,4 @@ authors = ["Christian Persson <saser@live.se>"]
 clap = "~2.29.0"
 base = { path = "../base" }
 day01 = { path = "../day01" }
+day02 = { path = "../day02" }

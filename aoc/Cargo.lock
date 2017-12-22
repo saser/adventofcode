@@ -10,6 +10,7 @@ dependencies = [
  "base 0.1.0",
  "clap 2.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "day01 0.1.0",
+ "day02 0.1.0",
 ]
 
 [[package]]
@@ -48,6 +49,13 @@ dependencies = [
 
 [[package]]
 name = "day01"
+version = "0.1.0"
+dependencies = [
+ "base 0.1.0",
+]
+
+[[package]]
+name = "day02"
 version = "0.1.0"
 dependencies = [
  "base 0.1.0",
