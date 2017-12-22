@@ -2,6 +2,8 @@ extern crate base;
 
 use base::{Part, Solver};
 
+use std::str::FromStr;
+
 struct Day02;
 
 pub fn get_solver() -> Box<Solver> {
@@ -10,8 +12,31 @@ pub fn get_solver() -> Box<Solver> {
 
 impl Solver for Day02 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("not implemented yet".to_string())
+        let fun = match part {
+            Part::One => min_max,
+            Part::Two => divisors,
+        };
+        Ok(input.lines()
+            .map(parse_line)
+            .map(|v| fun(&v))
+            .sum::<u32>()
+            .to_string())
     }
+}
+
+fn parse_line(line: &str) -> Vec<u32> {
+    line.split_whitespace()
+        .map(u32::from_str)
+        .map(Result::unwrap)
+        .collect()
+}
+
+fn min_max(nums: &[u32]) -> u32 {
+    unimplemented!()
+}
+
+fn divisors(nums: &[u32]) -> u32 {
+    unimplemented!()
 }
 
 #[cfg(test)]
