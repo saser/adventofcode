@@ -78,6 +78,25 @@ impl Neg for Point {
     }
 }
 
+impl Point {
+    /// Returns a `Point` representing the origin of a grid, i.e., `(0, 0)`.
+    pub fn origin() -> Point {
+        Point { x: 0, y: 0 }
+    }
+
+    /// Calculates the Manhattan distance to the origin.
+    pub fn manhattan_distance(&self) -> usize {
+        self.manhattan_distance_to(Point::origin())
+    }
+
+    /// Calculates the Manhattan distance to another `Point`.
+    pub fn manhattan_distance_to(&self, other: Point) -> usize {
+        let d_x = self.x - other.x;
+        let d_y = self.y - other.y;
+        d_x.abs() as usize + d_y.abs() as usize
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Direction {
     North,
