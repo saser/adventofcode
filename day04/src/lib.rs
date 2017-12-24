@@ -10,8 +10,24 @@ struct Day04;
 
 impl Solver for Day04 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        unimplemented!()
+        let passphrases = parse_input(input);
+        match part {
+            Part::One => Ok(count_valid(&passphrases).to_string()),
+            Part::Two => Err("part 2 not done yet".to_string()),
+        }
     }
+}
+
+fn parse_input(input: &str) -> Vec<Vec<String>> {
+    input.lines()
+        .map(|line| line.split_whitespace())
+        .map(|iter| iter.map(String::from))
+        .map(|iter| iter.collect())
+        .collect()
+}
+
+fn count_valid(passphrases: &[Vec<String>]) -> u32 {
+    unimplemented!()
 }
 
 #[cfg(test)]
