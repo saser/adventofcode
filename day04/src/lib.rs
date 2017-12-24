@@ -1,9 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
-
 use std::collections::HashSet;
-use std::iter::FromIterator;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day04)
