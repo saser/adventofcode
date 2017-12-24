@@ -1,6 +1,8 @@
 use std::fmt;
 use std::str::FromStr;
 
+pub mod grid;
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Part {
     One,
