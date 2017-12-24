@@ -87,7 +87,7 @@ pub enum Direction {
 }
 
 impl Direction {
-    fn turn(&self, turn: Turn) -> Direction {
+    pub fn turn(&self, turn: Turn) -> Direction {
         match turn {
             Turn::Clockwise => {
                 match *self {
@@ -108,7 +108,7 @@ impl Direction {
         }
     }
 
-    fn as_point(&self) -> Point {
+    pub fn as_point(&self) -> Point {
         let x = match *self {
             Direction::East => 1,
             Direction::West => -1,
