@@ -1,6 +1,7 @@
+use std::default::Default;
 use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Point {
     pub x: isize,
     pub y: isize,
@@ -119,6 +120,12 @@ impl Direction {
             _ => 0,
         };
         Point { x: x, y: y }
+    }
+}
+
+impl Default for Direction {
+    fn default() -> Direction {
+        Direction::North
     }
 }
 
