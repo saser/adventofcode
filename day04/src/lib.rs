@@ -41,7 +41,16 @@ fn contains_unique_passwords(passphrase: Vec<String>) -> bool {
 }
 
 fn contains_no_anagrams(passphrase: Vec<String>) -> bool {
-    unimplemented!()
+    fn sort_string(s: &str) -> String {
+        let mut chars: Vec<char> = s.chars().collect();
+        chars.sort();
+        chars.into_iter().collect()
+    }
+    let words = passphrase.len();
+    let set: HashSet<String> = passphrase.into_iter()
+        .map(|s| sort_string(&s))
+        .collect();
+    set.len() == words
 }
 
 #[cfg(test)]
