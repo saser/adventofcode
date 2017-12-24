@@ -76,3 +76,54 @@ impl Neg for Point {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
+
+impl Direction {
+    fn turn(&self, turn: Turn) -> Direction {
+        match turn {
+            Turn::Clockwise => {
+                match *self {
+                    Direction::North => Direction::East,
+                    Direction::East => Direction::South,
+                    Direction::South => Direction::West,
+                    Direction::West => Direction::North,
+                }
+            }
+            Turn::CounterClockwise => {
+                match *self {
+                    Direction::North => Direction::West,
+                    Direction::East => Direction::North,
+                    Direction::South => Direction::East,
+                    Direction::West => Direction::South,
+                }
+            }
+        }
+    }
+
+    fn as_point(&self) -> Point {
+        let x = match *self {
+            Direction::East => 1,
+            Direction::West => -1,
+            _ => 0,
+        };
+        let y = match *self {
+            Direction::North => 1,
+            Direction::South => -1,
+            _ => 0,
+        };
+        Point { x: x, y: y }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Turn {
+    Clockwise,
+    CounterClockwise,
+}
