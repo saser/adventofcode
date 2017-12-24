@@ -134,3 +134,26 @@ pub enum Turn {
     Clockwise,
     CounterClockwise,
 }
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
+pub struct Traveler {
+    pos: Point,
+    direction: Direction,
+}
+
+impl Traveler {
+    /// Turns the traveler, updating its direction, but not its position.
+    pub fn turn(&mut self, turn: Turn) {
+        self.direction = self.direction.turn(turn);
+    }
+
+    /// Takes one step in the travelers direction, updating its position, but not its direction.
+    pub fn step(&mut self) {
+        self.pos = self.pos + self.direction.as_point();
+    }
+
+    /// Takes `n` steps in the travelers direction, updating its position, but not its direction.
+    pub fn step_n(&mut self, n: usize) {
+        (0..n).for_each(|_| self.step());
+    }
+}
