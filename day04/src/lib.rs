@@ -2,6 +2,9 @@ extern crate base;
 
 use base::{Part, Solver};
 
+use std::collections::HashSet;
+use std::iter::FromIterator;
+
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day04)
 }
@@ -12,7 +15,7 @@ impl Solver for Day04 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let passphrases = parse_input(input);
         match part {
-            Part::One => Ok(count_valid(&passphrases).to_string()),
+            Part::One => Ok(count_valid(passphrases.clone()).to_string()),
             Part::Two => Err("part 2 not done yet".to_string()),
         }
     }
@@ -26,8 +29,16 @@ fn parse_input(input: &str) -> Vec<Vec<String>> {
         .collect()
 }
 
-fn count_valid(passphrases: &[Vec<String>]) -> u32 {
-    unimplemented!()
+fn count_valid(passphrases: Vec<Vec<String>>) -> usize {
+    passphrases.iter()
+        .filter(|&phrase| contains_unique_passwords(phrase.clone()))
+        .count()
+}
+
+fn contains_unique_passwords(passphrase: Vec<String>) -> bool {
+    let words = passphrase.len();
+    let set: HashSet<String> = passphrase.into_iter().collect();
+    set.len() == words
 }
 
 #[cfg(test)]
