@@ -161,6 +161,16 @@ pub struct Traveler {
 }
 
 impl Traveler {
+    /// Returns the travelers current position as a `Point`.
+    pub fn pos(&self) -> Point {
+        self.pos
+    }
+
+    /// Returns the travelers current direction.
+    pub fn direction(&self) -> Direction {
+        self.direction
+    }
+
     /// Turns the traveler, updating its direction, but not its position.
     pub fn turn(&mut self, turn: Turn) {
         self.direction = self.direction.turn(turn);
