@@ -19,6 +19,10 @@ impl Solver for Day03 {
     }
 }
 
+fn parse_input(input: &str) -> u64 {
+    str::parse(input).unwrap()
+}
+
 fn distance_to_center(number: usize) -> usize {
     unimplemented!()
 }
