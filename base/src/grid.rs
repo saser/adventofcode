@@ -1,5 +1,80 @@
 use std::default::Default;
-use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign};
+
+#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+pub struct Grid<T> {
+    grid: Vec<Vec<T>>,
+}
+
+impl<T> Grid<T> {
+    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
+    ///
+    /// # Panics
+    ///
+    /// Panics if either `rows`, `cols`, or both are less than 1.
+    pub fn new(rows: usize, cols: usize) -> Grid<T> {
+        if rows < 1 || cols < 1 {
+            panic!("a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
+                   rows = rows,
+                   cols = cols)
+        }
+        let mut grid: Vec<Vec<T>> = Vec::with_capacity(rows);
+        (0..cols).for_each(|_| grid.push(Vec::with_capacity(cols)));
+        Grid { grid: grid }
+    }
+
+    /// Returns the number of rows in the grid.
+    pub fn rows(&self) -> usize {
+        self.grid.len()
+    }
+
+    /// Returns the number of columns in the grid.
+    pub fn cols(&self) -> usize {
+        self.grid[0].len()
+    }
+
+    /// Returns a reference to the element at `(row, col)`.
+    pub fn at<Pos: Into<(usize, usize)>>(&self, pos: Pos) -> &T {
+        let (row, col) = pos.into();
+        &self.grid[row][col]
+    }
+
+    /// Returns a mutable reference to the element at `(row, col)`.
+    pub fn at_mut<Pos: Into<(usize, usize)>>(&mut self, pos: Pos) -> &mut T {
+        let (row, col) = pos.into();
+        &mut self.grid[row][col]
+    }
+}
+
+impl<T: Clone> Grid<T> {
+    /// Returns a vector with the elements on row `row` in the grid.
+    pub fn row(&self, row: usize) -> Vec<T> {
+        self.grid[row].clone()
+    }
+
+    /// Returns a vector with the elements on col `col` in the grid.
+    pub fn col(&self, col: usize) -> Vec<T> {
+        self.grid
+            .clone()
+            .into_iter()
+            .map(|row| row[col].clone())
+            .collect()
+    }
+}
+
+impl<T, Idx: Into<(usize, usize)>> Index<Idx> for Grid<T> {
+    type Output = T;
+
+    fn index(&self, index: Idx) -> &T {
+        self.at(index)
+    }
+}
+
+impl<T, Idx: Into<(usize, usize)>> IndexMut<Idx> for Grid<T> {
+    fn index_mut(&mut self, index: Idx) -> &mut T {
+        self.at_mut(index)
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Point {
