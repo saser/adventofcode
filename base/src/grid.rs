@@ -3,8 +3,8 @@ use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Point {
-    pub x: isize,
-    pub y: isize,
+    pub x: i64,
+    pub y: i64,
 }
 
 impl Add for Point {
@@ -47,10 +47,10 @@ impl SubAssign for Point {
     }
 }
 
-impl Mul<isize> for Point {
+impl Mul<i64> for Point {
     type Output = Point;
 
-    fn mul(self, rhs: isize) -> Point {
+    fn mul(self, rhs: i64) -> Point {
         Point {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -58,8 +58,8 @@ impl Mul<isize> for Point {
     }
 }
 
-impl MulAssign<isize> for Point {
-    fn mul_assign(&mut self, rhs: isize) {
+impl MulAssign<i64> for Point {
+    fn mul_assign(&mut self, rhs: i64) {
         *self = Point {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -85,15 +85,15 @@ impl Point {
     }
 
     /// Calculates the Manhattan distance to the origin.
-    pub fn manhattan_distance(&self) -> usize {
+    pub fn manhattan_distance(&self) -> u64 {
         self.manhattan_distance_to(Point::origin())
     }
 
     /// Calculates the Manhattan distance to another `Point`.
-    pub fn manhattan_distance_to(&self, other: Point) -> usize {
+    pub fn manhattan_distance_to(&self, other: Point) -> u64 {
         let d_x = self.x - other.x;
         let d_y = self.y - other.y;
-        d_x.abs() as usize + d_y.abs() as usize
+        d_x.abs() as u64 + d_y.abs() as u64
     }
 }
 
@@ -182,7 +182,7 @@ impl Traveler {
     }
 
     /// Takes `n` steps in the travelers direction, updating its position, but not its direction.
-    pub fn step_n(&mut self, n: usize) {
+    pub fn step_n(&mut self, n: u64) {
         (0..n).for_each(|_| self.step());
     }
 }
