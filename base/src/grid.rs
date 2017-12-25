@@ -231,8 +231,8 @@ pub enum Turn {
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Traveler {
-    pos: Point,
-    direction: Direction,
+    pub pos: Point,
+    pub direction: Direction,
 }
 
 impl Traveler {
