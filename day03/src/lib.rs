@@ -10,8 +10,16 @@ struct Day03;
 
 impl Solver for Day03 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        unimplemented!()
+        let number = parse_input(input);
+        match part {
+            Part::One => Ok(distance_to_center(number).to_string()),
+            Part::Two => Err("part 2 not done yet".to_string()),
+        }
     }
+}
+
+fn distance_to_center(number: usize) -> usize {
+    unimplemented!()
 }
 
 #[cfg(test)]
