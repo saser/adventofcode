@@ -10,7 +10,8 @@ struct Day03;
 
 impl Solver for Day03 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let number = parse_input(input);
+        // We need to trim the input, in case it contains a '\n' at the end.
+        let number = parse_input(input.trim());
         match part {
             Part::One => Ok(distance_to_center(number).to_string()),
             Part::Two => Err("part 2 not done yet".to_string()),
