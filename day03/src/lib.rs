@@ -1,6 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
+use base::grid::*;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day03)
@@ -23,8 +24,39 @@ fn parse_input(input: &str) -> u64 {
     str::parse(input).unwrap()
 }
 
-fn distance_to_center(number: usize) -> usize {
-    unimplemented!()
+fn distance_to_center(target_number: u64) -> u64 {
+    let mut traveler = Traveler::default();
+    // The traveler starts out facing north. Turn clockwise once, to make it face east.
+    traveler.turn(Turn::Clockwise);
+    // The spiral starts at 1, not 0.
+    let mut number = 1;
+    // The innermost layer, containing only 1, is layer 1.
+    let mut current_layer = 1;
+    let mut steps_to_corners = Vec::with_capacity(4);
+    let mut to_corner = 1;
+    let mut to_next_layer = 1;
+
+    while number < target_number {
+        traveler.step();
+        number += 1;
+
+        to_next_layer -= 1;
+        if to_next_layer == 0 {
+            current_layer += 1;
+            let layer_side = 2 * current_layer - 1;
+            let steps = layer_side - 1;
+            steps_to_corners.append(&mut vec![steps + 1, steps, steps, steps - 1]);
+            to_next_layer = 4 * steps;
+        }
+
+        to_corner -= 1;
+        if to_corner == 0 {
+            traveler.turn(Turn::CounterClockwise);
+            to_corner = steps_to_corners.pop().unwrap();
+        }
+    }
+
+    traveler.pos().manhattan_distance()
 }
 
 #[cfg(test)]
