@@ -5,6 +5,7 @@ extern crate regex;
 
 use base::{Part, Solver};
 use regex::Regex;
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -19,6 +20,7 @@ impl Solver for Day07 {
     }
 }
 
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct Program {
     name: String,
     weight: u64,
@@ -52,6 +54,32 @@ impl FromStr for Program {
             held_up_by: None,
         })
     }
+}
+
+fn parse_input(input: &str) -> HashMap<String, Program> {
+    input.lines()
+        .map(Program::from_str)
+        .map(Result::unwrap)
+        .map(|prog| (prog.name.clone(), prog))
+        .collect()
+}
+
+fn construct_tower(programs: &HashMap<String, Program>) -> HashMap<String, Program> {
+    let mut tower = programs.clone();
+    let progs_holding_up: Vec<Program> = tower.values()
+        .cloned()
+        .filter(|prog| prog.holding_up.is_some())
+        .collect();
+    for holding_prog in progs_holding_up {
+        for prog in holding_prog.holding_up.unwrap() {
+            tower.get_mut(&prog).unwrap().held_up_by = Some(holding_prog.name.clone());
+        }
+    }
+    tower
+}
+
+fn find_bottom_program(tower: &HashMap<String, Program>) -> Program {
+    tower.values().find(|prog| prog.held_up_by.is_none()).unwrap().clone()
 }
 
 #[cfg(test)]
