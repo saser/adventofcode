@@ -1,7 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day06)
@@ -12,10 +12,12 @@ struct Day06;
 impl Solver for Day06 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let banks = parse_input(input);
-        match part {
-            Part::One => Ok(count_redistributions(&banks).to_string()),
-            _ => Err("part 2 not yet implemented".to_string()),
-        }
+        let (redistributions, loop_size) = count_redistributions(&banks);
+        let answer = match part {
+            Part::One => redistributions,
+            Part::Two => loop_size,
+        };
+        Ok(answer.to_string())
     }
 }
 
@@ -27,18 +29,21 @@ fn parse_input(input: &str) -> Vec<u64> {
         .collect()
 }
 
-fn count_redistributions(banks: &[u64]) -> u64 {
-    let mut distributions: HashSet<Vec<u64>> = HashSet::new();
-    let mut distribution = Vec::from(banks);
-    distributions.insert(distribution.clone());
+fn count_redistributions(banks: &[u64]) -> (u64, u64) {
+    let mut distributions: HashMap<Vec<u64>, u64> = HashMap::new();
 
     let mut counter = 0;
+    let mut distribution = Vec::from(banks);
+    distributions.insert(distribution.clone(), counter as u64);
+
     while counter < distributions.len() {
         distribution = redistribute(&distribution);
-        distributions.insert(distribution.clone());
         counter += 1;
+        distributions.entry(distribution.clone()).or_insert(counter as u64);
     }
-    counter as u64
+    let first_distribution_in_loop = distributions.get(&distribution).unwrap();
+
+    (counter as u64, counter as u64 - first_distribution_in_loop)
 }
 
 fn redistribute(banks: &[u64]) -> Vec<u64> {
