@@ -15,7 +15,7 @@ struct Day07;
 
 impl Solver for Day07 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day XX not yet implemented".to_string())
+        Err("day 07 not yet implemented".to_string())
     }
 }
 
