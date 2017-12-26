@@ -22,7 +22,8 @@ impl Solver for Day07 {
         if part == Part::One {
             Ok(bottom_program.name.clone())
         } else {
-            Err("part 2 not yet implemented".to_string())
+            let tower_weights = calculate_tower_weights(&tower, &bottom_program);
+            Ok(find_correct_weight(&tower, &tower_weights, &bottom_program).unwrap().to_string())
         }
     }
 }
@@ -87,6 +88,62 @@ fn construct_tower(programs: &HashMap<String, Program>) -> HashMap<String, Progr
 
 fn find_bottom_program(tower: &HashMap<String, Program>) -> Program {
     tower.values().find(|prog| prog.held_up_by.is_none()).unwrap().clone()
+}
+
+fn calculate_tower_weights(tower: &HashMap<String, Program>,
+                           root: &Program)
+                           -> HashMap<String, u64> {
+    if root.holding_up.is_none() {
+        let mut map = HashMap::new();
+        map.insert(root.name.clone(), root.weight);
+        return map;
+    }
+
+    let held_up_progs = root.holding_up.clone().unwrap();
+    let mut map = HashMap::new();
+    let mut weight = 0;
+    for prog in &held_up_progs {
+        map.extend(calculate_tower_weights(tower, tower.get(prog).unwrap()));
+        weight += *map.get(prog).unwrap();
+    }
+    weight += root.weight;
+    map.insert(root.name.clone(), weight);
+    map
+}
+
+fn find_correct_weight(tower: &HashMap<String, Program>,
+                       tower_weights: &HashMap<String, u64>,
+                       root: &Program)
+                       -> Option<u64> {
+    if root.holding_up.is_none() {
+        return None;
+    }
+
+    let mut map: HashMap<u64, Vec<String>> = HashMap::new();
+    for held_up_prog in &root.holding_up.clone().unwrap() {
+        let correct_weight =
+            find_correct_weight(tower, tower_weights, tower.get(held_up_prog).unwrap());
+        if correct_weight.is_some() {
+            return correct_weight;
+        }
+        map.entry(*tower_weights.get(held_up_prog).unwrap())
+            .or_insert(Vec::new())
+            .push(held_up_prog.clone());
+    }
+
+    if map.len() == 1 {
+        None
+    } else {
+        let offending_prog_name = &map.iter().find(|&(_, progs)| progs.len() == 1).unwrap().1[0];
+        let offending_prog_weight = tower.get(offending_prog_name).unwrap().weight;
+        let offending_subtower_weight = tower_weights.get(offending_prog_name).unwrap();
+        let desired_subtower_weight = map.iter().find(|&(_, progs)| progs.len() > 1).unwrap().0;
+        if offending_subtower_weight > desired_subtower_weight {
+            Some(offending_prog_weight - (offending_subtower_weight - desired_subtower_weight))
+        } else {
+            Some(offending_prog_weight + (desired_subtower_weight - offending_subtower_weight))
+        }
+    }
 }
 
 #[cfg(test)]
