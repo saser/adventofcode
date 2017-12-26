@@ -16,8 +16,17 @@ impl Solver for Day06 {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    use super::*;
+
+    mod part1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let solver = get_solver();
+            let input = "0 2 7 0";
+            let expected = "5";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
     }
 }
