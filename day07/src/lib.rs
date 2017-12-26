@@ -22,7 +22,7 @@ impl Solver for Day07 {
 struct Program {
     name: String,
     weight: u64,
-    holding_up: Vec<String>,
+    holding_up: Option<Vec<String>>,
     held_up_by: Option<String>,
 }
 
@@ -42,10 +42,8 @@ impl FromStr for Program {
         let name_and_weight_caps = NAME_AND_WEIGHT.captures(name_and_weight).unwrap();
         let name = name_and_weight_caps["name"].to_string();
         let weight: u64 = name_and_weight_caps["weight"].parse().unwrap();
-        let holding_up: Vec<String> = match programs {
-            None => Vec::new(),
-            Some(program_str) => program_str.split(", ").map(String::from).collect(),
-        };
+        let holding_up =
+            programs.map(|program_str| program_str.split(", ").map(String::from).collect());
 
         Ok(Program {
             name: name,
@@ -77,7 +75,7 @@ mod tests {
             let program = Program::from_str(input).unwrap();
             assert_eq!("fwft", &program.name);
             assert_eq!(72, program.weight);
-            assert_eq!(&["ktlj", "cntj", "xhth"], &program.holding_up[..]);
+            assert_eq!(&["ktlj", "cntj", "xhth"], &program.holding_up.unwrap()[..]);
         }
     }
 
