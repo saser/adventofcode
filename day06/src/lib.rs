@@ -10,8 +10,17 @@ struct Day06;
 
 impl Solver for Day06 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let banks = parse_input(input);
         Err("day 6 not yet implemented".to_string())
     }
+}
+
+fn parse_input(input: &str) -> Vec<u64> {
+    input.trim()
+        .split_whitespace()
+        .map(str::parse)
+        .map(Result::unwrap)
+        .collect()
 }
 
 #[cfg(test)]
