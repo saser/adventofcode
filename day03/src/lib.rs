@@ -131,44 +131,9 @@ fn distance_to_center(target_number: u64) -> u64 {
     pos.manhattan_distance()
 }
 
-fn required_layers(target_number: u64) -> u64 {
-    if target_number == 1 {
-        return 1;
-    }
-
-    let root = (target_number as f64).sqrt();
-    let largest_integer = root.floor();
-    if largest_integer % 2.0 == 0.0 {
-        (largest_integer / 2.0 + 1.0) as u64
-    } else if root > largest_integer {
-        (((largest_integer + 1.0) / 2.0) + 1.0) as u64
-    } else {
-        ((largest_integer + 1.0) / 2.0) as u64
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_required_layers() {
-        for n in 1..1 + 1 {
-            assert_eq!(1, required_layers(n));
-        }
-
-        for n in 2..9 + 1 {
-            assert_eq!(2, required_layers(n));
-        }
-
-        for n in 10..25 + 1 {
-            assert_eq!(3, required_layers(n));
-        }
-
-        for n in 26..49 + 1 {
-            assert_eq!(4, required_layers(n));
-        }
-    }
 
     mod part1 {
         use super::*;
