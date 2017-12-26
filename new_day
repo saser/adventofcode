@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+day_full=${1}
+case ${day_full} in
+    0*)
+        day_no=${day_full:1}
+        ;;
+    *)
+        day_no=${day_full}
+        ;;
+esac
+
+crate="day${day_full}"
+echo "${crate}: creating crate."
+cp -r dayXX ${crate}
+
+
+echo "${crate}: setting project name to \`${crate}\`."
+toml_file="${crate}/Cargo.toml"
+sed -i "s/dayXX/day${day_full}/g" ${toml_file}
+
+crate_root="${crate}/src/lib.rs"
+echo "${crate}: replacing all occurrences of \`dayXX\` with \`${crate}\` in \`${crate_root}\`."
+sed -E -i "s/(Day|day)XX/\\1${day_full}/g" ${crate_root}
+
+echo "aoc: adding \`${crate}\` to dependencies."
+echo "${crate} = { path = \"../${crate}\" }" >> aoc/Cargo.toml
+
+previous_day_no=$(( ${day_no} - 1 ))
+if [ ${previous_day_no} -lt 10 ]; then
+    previous_day_full="0${previous_day_no}"
+else
+    previous_day_full="${previous_day_no}"
+fi
+echo "aoc: duplicating all lines containing '{Day|day}${previous_day_full}', and replacing with '${day_full}'."
+sed -E -i "s/^.*(Day|day)${previous_day_full}.*$/&\\nMARKER&/" aoc/src/main.rs
+sed -E -i "/^MARKER/s/${previous_day_no}/${day_no}/g" aoc/src/main.rs
+sed -E -i "s/^MARKER//g" aoc/src/main.rs
