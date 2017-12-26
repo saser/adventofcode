@@ -62,4 +62,22 @@ mod tests {
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
+
+    mod part2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let solver = get_solver();
+            let input = "\
+0
+3
+0
+1
+-3\
+            ";
+            let expected = "10";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+    }
 }
