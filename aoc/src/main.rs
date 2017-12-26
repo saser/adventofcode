@@ -5,6 +5,7 @@ extern crate day01;
 extern crate day02;
 extern crate day03;
 extern crate day04;
+extern crate day05;
 
 use base::{Part, Solver};
 use clap::{App, Arg, ArgMatches};
@@ -108,6 +109,7 @@ fn get_solver(day: u8) -> Result<Box<Solver>, String> {
         2 => Ok(day02::get_solver()),
         3 => Ok(day03::get_solver()),
         4 => Ok(day04::get_solver()),
+        5 => Ok(day05::get_solver()),
         _ => Err(format!("no solver for day {}", day)),
     }
 }
