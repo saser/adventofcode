@@ -14,6 +14,13 @@ impl Solver for Day05 {
     }
 }
 
+fn parse_input(input: &str) -> Vec<i64> {
+    input.lines()
+        .map(str::parse)
+        .map(Result::unwrap)
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
