@@ -11,10 +11,11 @@ struct Day05;
 impl Solver for Day05 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let instructions = parse_input(input);
-        match part {
-            Part::One => Ok(steps_until_escape(&mut instructions.clone()).to_string()),
-            _ => Err("part 2 not yet implemented".to_string()),
-        }
+        let next_value = match part {
+            Part::One => increase_by_one,
+            Part::Two => decrement_if_three_or_more,
+        };
+        Ok(steps_until_escape(&mut instructions.clone(), next_value).to_string())
     }
 }
 
@@ -25,12 +26,20 @@ fn parse_input(input: &str) -> Vec<i64> {
         .collect()
 }
 
-fn steps_until_escape(instructions: &mut [i64]) -> u64 {
+fn increase_by_one(i: i64) -> i64 {
+    i + 1
+}
+
+fn decrement_if_three_or_more(i: i64) -> i64 {
+    if i >= 3 { i - 1 } else { i + 1 }
+}
+
+fn steps_until_escape(instructions: &mut [i64], next_value: fn(i64) -> i64) -> u64 {
     let mut idx = 0;
     let mut counter = 0;
     while idx >= 0 && idx < instructions.len() {
         let offset = instructions[idx];
-        instructions[idx] += 1;
+        instructions[idx] = next_value(offset);
         if offset < 0 {
             idx -= offset.abs() as usize;
         } else {
