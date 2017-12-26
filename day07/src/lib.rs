@@ -16,7 +16,14 @@ struct Day07;
 
 impl Solver for Day07 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 07 not yet implemented".to_string())
+        let programs = parse_input(input);
+        let tower = construct_tower(&programs);
+        let bottom_program = find_bottom_program(&tower);
+        if part == Part::One {
+            Ok(bottom_program.name.clone())
+        } else {
+            Err("part 2 not yet implemented".to_string())
+        }
     }
 }
 
@@ -138,7 +145,24 @@ cntj (57)\
 
         #[test]
         fn example() {
-            // Add example here.
+            let solver = get_solver();
+            let input = "\
+pbga (66)
+xhth (57)
+ebii (61)
+havc (66)
+ktlj (57)
+fwft (72) -> ktlj, cntj, xhth
+qoyq (66)
+padx (45) -> pbga, havc, qoyq
+tknk (41) -> ugml, padx, fwft
+jptl (61)
+ugml (68) -> gyxo, ebii, jptl
+gyxo (61)
+cntj (57)\
+            ";
+            let expected = "60";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
 }
