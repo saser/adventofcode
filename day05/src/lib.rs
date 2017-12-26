@@ -37,7 +37,7 @@ fn decrement_if_three_or_more(i: i64) -> i64 {
 fn steps_until_escape(instructions: &mut [i64], next_value: fn(i64) -> i64) -> u64 {
     let mut idx = 0;
     let mut counter = 0;
-    while idx >= 0 && idx < instructions.len() {
+    while idx < instructions.len() {
         let offset = instructions[idx];
         instructions[idx] = next_value(offset);
         if offset < 0 {
