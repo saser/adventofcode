@@ -1,6 +1,8 @@
 extern crate base;
 
 use base::{Part, Solver};
+use std::collections::HashMap;
+use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day12)
@@ -12,6 +14,23 @@ impl Solver for Day12 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         Err("day 12 not yet implemented".to_string())
     }
+}
+
+fn parse_input(input: &str) -> HashMap<u64, Vec<u64>> {
+    input.lines()
+        .map(parse_line)
+        .collect()
+}
+
+fn parse_line(line: &str) -> (u64, Vec<u64>) {
+    let parts: Vec<&str> = line.split(" <-> ").collect();
+    let program = u64::from_str(parts[0]).unwrap();
+    let connected: Vec<u64> = parts[1]
+        .split(", ")
+        .map(u64::from_str)
+        .map(Result::unwrap)
+        .collect();
+    (program, connected)
 }
 
 #[cfg(test)]
