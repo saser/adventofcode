@@ -22,10 +22,34 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "ne,ne,ne";
+            let expected = "3";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "ne,ne,sw,sw";
+            let expected = "0";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "ne,ne,s,s";
+            let expected = "2";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "se,sw,se,sw,sw";
+            let expected = "3";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
