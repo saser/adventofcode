@@ -12,10 +12,15 @@ struct Day10;
 impl Solver for Day10 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let mut vector = initialize_vector();
-        let lengths = parse_input_as_lengths(input);
         match part {
-            Part::One => Ok(hash_and_multiply(&mut vector, &lengths).to_string()),
-            Part::Two => Err("not yet implemented".to_string()),
+            Part::One => {
+                let lengths = parse_input_as_lengths(input);
+                Ok(hash_and_multiply(&mut vector, &lengths).to_string())
+            }
+            Part::Two => {
+                let lengths = parse_input_as_bytes(input);
+                Ok(full_hash(&mut vector, &lengths))
+            }
         }
     }
 }
@@ -27,14 +32,19 @@ fn parse_input_as_lengths(input: &str) -> Vec<u8> {
         .collect()
 }
 
+fn parse_input_as_bytes(input: &str) -> Vec<u8> {
+    Vec::from(input.as_bytes())
+}
+
 fn initialize_vector() -> Vec<u8> {
     let mut i = 0;
     let highest_value = std::u8::MAX;
-    let mut v = Vec::with_capacity(highest_value as usize);
-    while i <= highest_value {
+    let mut v = Vec::with_capacity((highest_value + 1) as usize);
+    while i < highest_value {
         v.push(i);
         i += 1;
     }
+    v.push(highest_value);
     v
 }
 
@@ -84,6 +94,10 @@ fn hash_and_multiply(slice: &mut [u8], lengths: &[u8]) -> u64 {
     slice[0] as u64 * slice[1] as u64
 }
 
+fn full_hash(slice: &mut [u8], lengths: &[u8]) -> String {
+    unimplemented!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -108,10 +122,34 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "";
+            let expected = "a2582a3a0e66e6e86e3812dcb672a272";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "AoC 2017";
+            let expected = "33efeb34ea91902bb2f59c9920caa6cd";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "1,2,3";
+            let expected = "3efbe78a8d82f29979031a4aa0b16a9d";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "1,2,4";
+            let expected = "63960835bcdc130f0b66d7ff4f6a5a8e";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
