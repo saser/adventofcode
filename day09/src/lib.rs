@@ -14,6 +14,54 @@ impl Solver for Day09 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+enum Token {
+    StartGroup,
+    EndGroup,
+    StartGarbage,
+    EndGarbage,
+    Garbage(char),
+    Ignore(char),
+    Separator,
+}
+
+fn parse_tokens(s: &str) -> Result<Vec<Token>, String> {
+    let mut chars = s.chars();
+    let mut tokens = Vec::with_capacity(s.len());
+    let mut is_garbage = false;
+
+    while let Some(c) = chars.next() {
+        let token = if is_garbage {
+            match c {
+                '>' => Token::EndGarbage,
+                '!' => Token::Ignore(chars.next().unwrap()),
+                garbage => Token::Garbage(garbage),
+            }
+        } else {
+            match c {
+                '{' => Token::StartGroup,
+                '}' => Token::EndGroup,
+                '<' => Token::StartGarbage,
+                ',' => Token::Separator,
+                invalid => {
+                    return Err(format!("could not parse to token: invalid character '{}'",
+                                       invalid));
+                }
+            }
+        };
+
+        if token == Token::StartGarbage {
+            is_garbage = true;
+        } else if token == Token::EndGarbage {
+            is_garbage = false;
+        }
+
+        tokens.push(token);
+    }
+
+    Ok(tokens)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
