@@ -1,7 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
-use std::ops::Add;
+use std::ops::{Add, Neg};
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -12,7 +12,13 @@ struct Day11;
 
 impl Solver for Day11 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 11 not yet implemented".to_string())
+        let directions = parse_input(input);
+        let distance = directions.as_slice()
+            .iter()
+            .map(HexDirection::as_point)
+            .fold(Point3D::origin(), |point, dir| point + dir)
+            .manhattan_distance() / 2;
+        Ok(distance.to_string())
     }
 }
 
@@ -23,6 +29,7 @@ fn parse_input(input: &str) -> Vec<HexDirection> {
         .collect()
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 struct Point3D {
     x: i64,
     y: i64,
@@ -55,6 +62,7 @@ impl Add for Point3D {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum HexDirection {
     North,
     NorthEast,
@@ -66,17 +74,14 @@ enum HexDirection {
 
 impl HexDirection {
     fn as_point(&self) -> Point3D {
-        // A hex grid can be represented as a 3D grid (the intuition is that there are 6 unit
-        // directions in a 3D grid, or that a 1x1x1 box has 6 sides). I have chosen to represent
-        // the x axis as the directions NE<->SW, the y axis as the directions N<->S, and the z axis
-        // as the directions NW<->SE.
+        // A hexgrid can be represented as a "stack of boxes" in a kind of staircase pattern.
         match *self {
-            HexDirection::NorthEast => Point3D::from(1, 0, 0),
-            HexDirection::SouthWest => Point3D::from(-1, 0, 0),
-            HexDirection::North => Point3D::from(0, 1, 0),
-            HexDirection::South => Point3D::from(0, -1, 0),
-            HexDirection::NorthWest => Point3D::from(0, 0, 1),
-            HexDirection::SouthEast => Point3D::from(0, 0, -1),
+            HexDirection::NorthEast => Point3D::from(1, 0, 1),
+            HexDirection::SouthWest => Point3D::from(-1, 0, -1),
+            HexDirection::North => Point3D::from(0, 1, 1),
+            HexDirection::South => Point3D::from(0, -1, -1),
+            HexDirection::NorthWest => Point3D::from(-1, 1, 0),
+            HexDirection::SouthEast => Point3D::from(1, -1, 0),
         }
     }
 }
