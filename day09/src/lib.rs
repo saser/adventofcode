@@ -159,10 +159,58 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "<>";
+            let expected = "0";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "<random characters>";
+            let expected = "17";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "<<<<>";
+            let expected = "3";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "<{!>}>";
+            let expected = "2";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_5() {
+            let solver = get_solver();
+            let input = "<!!>";
+            let expected = "0";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_6() {
+            let solver = get_solver();
+            let input = "<!!!>>";
+            let expected = "0";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_7() {
+            let solver = get_solver();
+            let input = "<{o\"i!a,<{i<a>";
+            let expected = "10";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
