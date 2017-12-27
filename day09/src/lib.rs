@@ -11,10 +11,10 @@ struct Day09;
 impl Solver for Day09 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let tokens = parse_tokens(input)?;
-        let score = process_tokens(&tokens);
+        let (score, removed_garbage) = process_tokens(&tokens);
         match part {
             Part::One => Ok(score.to_string()),
-            Part::Two => Err("part 2 not implemented yet".to_string()),
+            Part::Two => Ok(removed_garbage.to_string()),
         }
     }
 }
@@ -70,6 +70,7 @@ fn parse_tokens(s: &str) -> Result<Vec<Token>, String> {
 fn process_tokens(tokens: &[Token]) -> (u64, u64) {
     let mut score = 0;
     let mut current_group = 0;
+    let mut removed_garbage = 0;
     for &token in tokens {
         match token {
             Token::StartGroup => {
@@ -77,10 +78,11 @@ fn process_tokens(tokens: &[Token]) -> (u64, u64) {
                 score += current_group;
             }
             Token::EndGroup => current_group -= 1,
+            Token::Garbage(_) => removed_garbage += 1,
             _ => {}
         };
     }
-    score
+    (score, removed_garbage)
 }
 
 #[cfg(test)]
