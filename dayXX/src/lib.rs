@@ -23,7 +23,10 @@ mod tests {
 
         #[test]
         fn example() {
-            // Add example here.
+            let solver = get_solver();
+            let input = "put some input here";
+            let expected = "expected output";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
 
@@ -32,7 +35,10 @@ mod tests {
 
         #[test]
         fn example() {
-            // Add example here.
+            let solver = get_solver();
+            let input = "put some input here";
+            let expected = "expected output";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
 }
