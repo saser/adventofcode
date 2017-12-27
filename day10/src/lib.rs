@@ -39,7 +39,7 @@ fn parse_input_as_bytes(input: &str) -> Vec<u8> {
 fn initialize_vector() -> Vec<u8> {
     let mut i = 0;
     let highest_value = std::u8::MAX;
-    let mut v = Vec::with_capacity((highest_value + 1) as usize);
+    let mut v = Vec::with_capacity(highest_value as usize + 1);
     while i < highest_value {
         v.push(i);
         i += 1;
@@ -89,13 +89,41 @@ fn knot_hash<T: Copy>(slice: &mut [T],
     (current, skip_size)
 }
 
+fn knot_hash_n<T: Copy>(slice: &mut [T], lengths: &[u8], n: u64) {
+    let mut current = 0;
+    let mut skip_size = 0;
+    for _ in 0..n {
+        let (new_current, new_skip_size) = knot_hash(slice, lengths, current, skip_size);
+        current = new_current;
+        skip_size = new_skip_size;
+    }
+}
+
 fn hash_and_multiply(slice: &mut [u8], lengths: &[u8]) -> u64 {
     knot_hash(slice, lengths, 0, 0);
     slice[0] as u64 * slice[1] as u64
 }
 
+fn add_suffix(lengths: &[u8]) -> Vec<u8> {
+    let mut vec = Vec::from(lengths);
+    vec.append(&mut vec![17, 31, 73, 47, 23]);
+    vec
+}
+
+fn byte_as_hexadecimal(byte: u8) -> String {
+    format!("{:02x}", byte)
+}
+
 fn full_hash(slice: &mut [u8], lengths: &[u8]) -> String {
-    unimplemented!()
+    let lengths_suffixed = add_suffix(lengths);
+    knot_hash_n(slice, &lengths_suffixed, 64);
+    slice.chunks(16)
+        .map(|chunk| chunk.iter())
+        .map(|iter| iter.fold(0, |acc, x| acc ^ x))
+        .map(byte_as_hexadecimal)
+        .collect::<Vec<String>>()
+        .join("")
+    //hash
 }
 
 #[cfg(test)]
