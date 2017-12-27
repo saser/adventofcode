@@ -13,12 +13,21 @@ struct Day11;
 impl Solver for Day11 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let directions = parse_input(input);
-        let distance = directions.as_slice()
+        let (final_position, furthest) = directions.as_slice()
             .iter()
             .map(HexDirection::as_point)
-            .fold(Point3D::origin(), |point, dir| point + dir)
-            .manhattan_distance() / 2;
-        Ok(distance.to_string())
+            .fold((Point3D::origin(), 0), |(point, furthest), dir| {
+                let new_point = point + dir;
+                let new_furthest = std::cmp::max(furthest, new_point.manhattan_distance() / 2);
+                (new_point, new_furthest)
+            });
+        match part {
+            Part::One => {
+                let distance = final_position.manhattan_distance() / 2;
+                Ok(distance.to_string())
+            }
+            Part::Two => Ok(furthest.to_string()),
+        }
     }
 }
 
