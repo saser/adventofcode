@@ -24,8 +24,16 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+0 <-> 2
+1 <-> 1
+2 <-> 0, 3, 4
+3 <-> 2, 4
+4 <-> 2, 3, 6
+5 <-> 6
+6 <-> 4, 5\
+            ";
+            let expected = "6";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
