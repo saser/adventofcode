@@ -16,6 +16,13 @@ impl Solver for Day11 {
     }
 }
 
+fn parse_input(input: &str) -> Vec<HexDirection> {
+    input.split(',')
+        .map(HexDirection::from_str)
+        .map(Result::unwrap)
+        .collect()
+}
+
 struct Point3D {
     x: i64,
     y: i64,
