@@ -5,6 +5,7 @@ extern crate regex;
 
 use base::{Part, Solver};
 use regex::Regex;
+use std::cmp;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -17,10 +18,13 @@ struct Day08;
 impl Solver for Day08 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let instructions = parse_input(input);
-        let mut registers = initialize_registers(&instructions);
-        registers = perform_instructions(&registers, &instructions);
-        let max_value = registers.values().max().unwrap();
-        Ok(max_value.to_string())
+        let registers = initialize_registers(&instructions);
+        let (final_registers, highest_value) = perform_instructions(&registers, &instructions);
+        let max_register = final_registers.values().max().unwrap();
+        match part {
+            Part::One => Ok(max_register.to_string()),
+            Part::Two => Ok(highest_value.to_string()),
+        }
     }
 }
 
@@ -62,23 +66,27 @@ fn perform_operation(operation: Operation, previous_value: i64) -> i64 {
     }
 }
 
-fn perform_instruction(registers: &HashMap<String, i64>,
+fn perform_instruction((registers, highest_value): (&HashMap<String, i64>, i64),
                        instruction: &Instruction)
-                       -> HashMap<String, i64> {
+                       -> (HashMap<String, i64>, i64) {
     let mut map = registers.clone();
+    let mut new_highest_value = highest_value;
     if check_condition(registers, &instruction.cond) {
         let register_value = *map.get(&instruction.register).unwrap();
+        let new_value = perform_operation(instruction.op, register_value);
+        new_highest_value = cmp::max(highest_value, new_value);
         map.insert(instruction.register.clone(),
                    perform_operation(instruction.op, register_value));
     }
-    map
+    (map, new_highest_value)
 }
 
 fn perform_instructions(registers: &HashMap<String, i64>,
                         instructions: &[Instruction])
-                        -> HashMap<String, i64> {
-    instructions.iter().fold(registers.clone(),
-                             |regs, instruction| perform_instruction(&regs, instruction))
+                        -> (HashMap<String, i64>, i64) {
+    instructions.iter().fold((registers.clone(), 0), |(regs, highest), instruction| {
+        perform_instruction((&regs, highest), instruction)
+    })
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -206,7 +214,15 @@ c inc -20 if c == 10\
 
         #[test]
         fn example() {
-            // Add example here.
+            let solver = get_solver();
+            let input = "\
+b inc 5 if a > 1
+a inc 1 if b < 5
+c dec -10 if a >= 1
+c inc -20 if c == 10\
+            ";
+            let expected = "10";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
 }
