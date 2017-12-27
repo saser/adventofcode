@@ -37,5 +37,6 @@ else
 fi
 echo "aoc: duplicating all lines containing '{Day|day}${previous_day_full}', and replacing with '${day_full}'."
 sed -E -i "s/^.*(Day|day)${previous_day_full}.*$/&\\nMARKER&/" aoc/src/main.rs
-sed -E -i "/^MARKER/s/${previous_day_no}/${day_no}/g" aoc/src/main.rs
+sed -E -i "/^MARKER/s/${previous_day_full}/${day_full}/g" aoc/src/main.rs
+sed -E -i "/^MARKER/s/([^0])${previous_day_no}/\1${day_no}/g" aoc/src/main.rs
 sed -E -i "s/^MARKER//g" aoc/src/main.rs
