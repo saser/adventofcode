@@ -5,6 +5,7 @@ extern crate regex;
 
 use base::{Part, Solver};
 use regex::Regex;
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -15,8 +16,69 @@ struct Day08;
 
 impl Solver for Day08 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 08 not yet implemented".to_string())
+        let instructions = parse_input(input);
+        let mut registers = initialize_registers(&instructions);
+        registers = perform_instructions(&registers, &instructions);
+        let max_value = registers.values().max().unwrap();
+        Ok(max_value.to_string())
     }
+}
+
+fn parse_input(input: &str) -> Vec<Instruction> {
+    input.lines()
+        .map(Instruction::from_str)
+        .map(Result::unwrap)
+        .collect()
+}
+
+fn initialize_registers(instructions: &[Instruction]) -> HashMap<String, i64> {
+    let mut map = HashMap::new();
+    for instruction in instructions {
+        map.entry(instruction.register.clone()).or_insert(0);
+    }
+    map
+}
+
+fn do_comparison(comparison: Comparison, a: i64, b: i64) -> bool {
+    match comparison {
+        Comparison::Lt => a < b,
+        Comparison::Gt => a > b,
+        Comparison::EqLt => a <= b,
+        Comparison::EqGt => a >= b,
+        Comparison::Eq => a == b,
+        Comparison::Neq => a != b,
+    }
+}
+
+fn check_condition(registers: &HashMap<String, i64>, condition: &Condition) -> bool {
+    let register_value = *registers.get(&condition.register).unwrap();
+    do_comparison(condition.cmp, register_value, condition.value)
+}
+
+fn perform_operation(operation: Operation, previous_value: i64) -> i64 {
+    match operation {
+        Operation::Inc(delta) => previous_value + delta,
+        Operation::Dec(delta) => previous_value - delta,
+    }
+}
+
+fn perform_instruction(registers: &HashMap<String, i64>,
+                       instruction: &Instruction)
+                       -> HashMap<String, i64> {
+    let mut map = registers.clone();
+    if check_condition(registers, &instruction.cond) {
+        let register_value = *map.get(&instruction.register).unwrap();
+        map.insert(instruction.register.clone(),
+                   perform_operation(instruction.op, register_value));
+    }
+    map
+}
+
+fn perform_instructions(registers: &HashMap<String, i64>,
+                        instructions: &[Instruction])
+                        -> HashMap<String, i64> {
+    instructions.iter().fold(registers.clone(),
+                             |regs, instruction| perform_instruction(&regs, instruction))
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -80,7 +142,7 @@ impl FromStr for Condition {
 
     fn from_str(s: &str) -> Result<Condition, String> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(?P<register>) (?P<cmp><|>|<=|>=|==|!=) (?P<value>-?\d+)").unwrap();
+            static ref RE: Regex = Regex::new(r"(?P<register>\w+) (?P<cmp><|>|<=|>=|==|!=) (?P<value>-?\d+)").unwrap();
         }
         let captures = RE.captures(s).unwrap();
         let register = captures["register"].to_string();

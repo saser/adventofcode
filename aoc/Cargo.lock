@@ -24,6 +24,7 @@ dependencies = [
  "day05 0.1.0",
  "day06 0.1.0",
  "day07 0.1.0",
+ "day08 0.1.0",
 ]
 
 [[package]]
@@ -104,6 +105,15 @@ dependencies = [
 
 [[package]]
 name = "day07"
+version = "0.1.0"
+dependencies = [
+ "base 0.1.0",
+ "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "day08"
 version = "0.1.0"
 dependencies = [
  "base 0.1.0",

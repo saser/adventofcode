@@ -5,3 +5,5 @@ authors = ["Christian Persson <saser@live.se>"]
 
 [dependencies]
 base = { path = "../base" }
+regex = "0.2"
+lazy_static = "1.0"
