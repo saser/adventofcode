@@ -12,14 +12,14 @@ struct Day10;
 impl Solver for Day10 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let mut vector = initialize_vector(256);
-        let lengths = parse_input(input);
+        let lengths = parse_input_as_lengths(input);
         knot_hash(&mut vector, &lengths);
         let product = vector[0] * vector[1];
         Ok(product.to_string())
     }
 }
 
-fn parse_input(input: &str) -> Vec<u8> {
+fn parse_input_as_lengths(input: &str) -> Vec<u8> {
     input.split(',')
         .map(u8::from_str)
         .map(Result::unwrap)
@@ -79,7 +79,7 @@ mod tests {
         fn example() {
             let input = "3,4,1,5";
 
-            let lengths = parse_input(input);
+            let lengths = parse_input_as_lengths(input);
             let mut vector = initialize_vector(5);
             knot_hash(&mut vector, &lengths);
             let product = vector[0] * vector[1];
