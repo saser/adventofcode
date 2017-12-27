@@ -23,10 +23,14 @@ mod tests {
 
         #[test]
         fn example() {
-            let solver = get_solver();
             let input = "3,4,1,5";
-            let expected = "12";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+
+            let lengths = parse_input(input);
+            let mut vector = initialize_vector(5);
+            knot_hash(&mut vector, &lengths);
+            let product = vector[0] * vector[1];
+
+            assert_eq!(12, product);
         }
     }
 
