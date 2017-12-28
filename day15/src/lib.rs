@@ -69,8 +69,11 @@ Generator B starts with 8921\
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+Generator A starts with 65
+Generator B starts with 8921\
+            ";
+            let expected = "309";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
