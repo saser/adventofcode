@@ -5,3 +5,4 @@ authors = ["Christian Persson <saser@live.se>"]
 
 [dependencies]
 base = { path = "../base" }
+day10 = { path = "../day10" }
