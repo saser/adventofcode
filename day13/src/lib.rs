@@ -72,8 +72,13 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+0: 3
+1: 2
+4: 4
+6: 4\
+            ";
+            let expected = "19";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
