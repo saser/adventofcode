@@ -9,12 +9,20 @@ pub fn get_solver() -> Box<Solver> {
 
 struct Day15;
 
+const MUL_A: u64 = 16807;
+const MUL_B: u64 = 48271;
+const MOD: u64 = 2147483647;
+
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (start_a, start_b) = parse_input(input);
-        let matching_pairs = (0..40_000_000)
+        let (repetitions, constraints) = match part {
+            Part::One => (40_000_000, (1, 1)),
+            Part::Two => (5_000_000, (4, 8)),
+        };
+        let matching_pairs = (0..repetitions)
             .scan((start_a, start_b), |pair, _| {
-                *pair = next_values(*pair);
+                *pair = next_values(*pair, constraints);
                 Some(*pair)
             })
             //.inspect(|pair| println!("pair: {:?}", pair))
@@ -34,9 +42,17 @@ fn parse_line(line: &str) -> u64 {
     u64::from_str(parts[parts.len() - 1]).unwrap()
 }
 
-fn next_values((value_a, value_b): (u64, u64)) -> (u64, u64) {
-    let next_value_a = (value_a * 16807) % 2147483647;
-    let next_value_b = (value_b * 48271) % 2147483647;
+fn next_values((value_a, value_b): (u64, u64),
+               (constraint_a, constraint_b): (u64, u64))
+               -> (u64, u64) {
+    let mut next_value_a = (value_a * MUL_A) % MOD;
+    while next_value_a % constraint_a != 0 {
+        next_value_a = (next_value_a * MUL_A) % MOD;
+    }
+    let mut next_value_b = (value_b * MUL_B) % MOD;
+    while next_value_b % constraint_b != 0 {
+        next_value_b = (next_value_b * MUL_B) % MOD;
+    }
     (next_value_a, next_value_b)
 }
 
