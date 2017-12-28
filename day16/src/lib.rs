@@ -16,7 +16,10 @@ struct Day16;
 
 impl Solver for Day16 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 16 not yet implemented".to_string())
+        let mut programs = generate_programs(16);
+        let moves = parse_input(input);
+        perform_moves(&mut programs, &moves);
+        Ok(programs_to_string(&programs))
     }
 }
 
@@ -78,8 +81,27 @@ fn programs_to_string(programs: &VecDeque<char>) -> String {
         .join("")
 }
 
+fn perform_move(programs: &mut VecDeque<char>, m: Move) {
+    match m {
+        Move::Spin(spin) => {
+            for _ in 0..spin {
+                let program = programs.pop_back().unwrap();
+                programs.push_front(program);
+            }
+        }
+        Move::Exchange(i, j) => programs.swap(i, j),
+        Move::Partner(p1, p2) => {
+            let (i, _) = programs.iter().enumerate().find(|&(_, &c)| c == p1).unwrap();
+            let (j, _) = programs.iter().enumerate().find(|&(_, &c)| c == p2).unwrap();
+            programs.swap(i, j);
+        }
+    }
+}
+
 fn perform_moves(programs: &mut VecDeque<char>, moves: &[Move]) {
-    unimplemented!()
+    for &m in moves {
+        perform_move(programs, m);
+    }
 }
 
 #[cfg(test)]
