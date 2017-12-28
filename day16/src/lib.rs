@@ -5,6 +5,7 @@ extern crate regex;
 
 use base::{Part, Solver};
 use regex::Regex;
+use std::collections::VecDeque;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -58,6 +59,24 @@ fn parse_input(input: &str) -> Vec<Move> {
         .collect()
 }
 
+fn generate_programs(count: usize) -> VecDeque<char> {
+    "abcefghijklmnop"
+        .chars()
+        .take(count)
+        .collect()
+}
+
+fn programs_to_string(programs: &VecDeque<char>) -> String {
+    programs.iter()
+        .map(char::to_string)
+        .collect::<Vec<String>>()
+        .join("")
+}
+
+fn perform_moves(programs: &mut VecDeque<char>, moves: &[Move]) {
+    unimplemented!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -67,10 +86,12 @@ mod tests {
 
         #[test]
         fn example() {
-            let solver = get_solver();
             let input = "s1,x3/4,pe/b";
+            let mut programs = generate_programs(5);
+            let moves = parse_input(input);
+            perform_moves(&mut programs, &moves);
             let expected = "baedc";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+            assert_eq!(expected, programs_to_string(&programs));
         }
     }
 
