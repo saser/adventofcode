@@ -2,7 +2,7 @@ extern crate base;
 extern crate day10;
 
 use base::{Part, Solver};
-use base::grid::Grid;
+use std::collections::{HashSet, VecDeque};
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day14)
@@ -15,7 +15,10 @@ impl Solver for Day14 {
         let strings = strings_to_hash(input);
         match part {
             Part::One => Ok(total_bits(&hash_all(&strings)).to_string()),
-            Part::Two => Err("part 2 not implemented yet".to_string()),
+            Part::Two => {
+                //let hashes = hash_all(&strings);
+                Ok(count_groups(&hashes_to_binary(&hash_all(&strings))).to_string())
+            }
         }
     }
 }
@@ -66,8 +69,8 @@ fn total_bits(hashes: &[String]) -> usize {
         .sum()
 }
 
-fn hashes_to_binary_grid(hashes: &[String]) -> Grid<bool> {
-    let mut grid: Grid<bool> = Grid::new(hashes.len(), hashes.len());
+fn hashes_to_binary(hashes: &[String]) -> HashSet<(usize, usize)> {
+    let mut set = HashSet::new();
     let binary_vectors: Vec<Vec<bool>> = hashes.iter()
         .map(|hash| hash_to_binary(&hash))
         .map(|binstring| binary_to_vec(&binstring))
@@ -78,10 +81,54 @@ fn hashes_to_binary_grid(hashes: &[String]) -> Grid<bool> {
         for (j, &binval) in binvec.as_slice()
             .iter()
             .enumerate() {
-            grid[(i, j)] = binval;
+            if binval {
+                set.insert((i, j));
+            }
         }
     }
-    grid
+    set
+}
+
+fn mark_group(visited: &mut HashSet<(usize, usize)>,
+              set: &HashSet<(usize, usize)>,
+              (start_x, start_y): (usize, usize)) {
+    let mut queue = VecDeque::new();
+    queue.push_back((start_x, start_y));
+
+    while let Some((x, y)) = queue.pop_front() {
+        if visited.contains(&(x, y)) {
+            continue;
+        }
+        visited.insert((x, y));
+
+        let mut adjacent = vec![(x + 1, y), (x, y + 1)];
+        if x > 0 {
+            adjacent.push((x - 1, y));
+        }
+
+        if y > 0 {
+            adjacent.push((x, y - 1));
+        }
+
+        for &pos in &adjacent {
+            if set.contains(&pos) {
+                queue.push_back(pos);
+            }
+        }
+    }
+}
+
+fn count_groups(set: &HashSet<(usize, usize)>) -> u64 {
+    let mut visited = HashSet::with_capacity(set.len());
+    let mut counter = 0;
+    for &pos in set.iter() {
+        if visited.contains(&pos) {
+            continue;
+        }
+        mark_group(&mut visited, set, pos);
+        counter += 1;
+    }
+    counter
 }
 
 #[cfg(test)]
