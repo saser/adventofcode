@@ -2,6 +2,7 @@ extern crate base;
 extern crate day10;
 
 use base::{Part, Solver};
+use base::grid::Grid;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day14)
@@ -36,6 +37,16 @@ fn hash_to_binary(hash: &str) -> String {
         .join("")
 }
 
+fn binary_to_vec(binary: &str) -> Vec<bool> {
+    binary.chars()
+        .map(|c| match c {
+            '1' => true,
+            '0' => false,
+            _ => panic!("invalid digit in binary string: {}", c),
+        })
+        .collect()
+}
+
 fn bits_in_hash(hash: &str) -> usize {
     hash_to_binary(hash)
         .chars()
@@ -53,6 +64,24 @@ fn total_bits(hashes: &[String]) -> usize {
     hashes.iter()
         .map(|hash| bits_in_hash(&hash))
         .sum()
+}
+
+fn hashes_to_binary_grid(hashes: &[String]) -> Grid<bool> {
+    let mut grid: Grid<bool> = Grid::new(hashes.len(), hashes.len());
+    let binary_vectors: Vec<Vec<bool>> = hashes.iter()
+        .map(|hash| hash_to_binary(&hash))
+        .map(|binstring| binary_to_vec(&binstring))
+        .collect();
+    for (i, binvec) in binary_vectors.as_slice()
+        .iter()
+        .enumerate() {
+        for (j, &binval) in binvec.as_slice()
+            .iter()
+            .enumerate() {
+            grid[(i, j)] = binval;
+        }
+    }
+    grid
 }
 
 #[cfg(test)]
