@@ -11,7 +11,16 @@ struct Day15;
 
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 15 not yet implemented".to_string())
+        let (start_a, start_b) = parse_input(input);
+        let matching_pairs = (0..40_000_000)
+            .scan((start_a, start_b), |pair, _| {
+                *pair = next_values(*pair);
+                Some(*pair)
+            })
+            //.inspect(|pair| println!("pair: {:?}", pair))
+            .filter(|&pair| lowest_16_bits_matching(pair))
+            .count();
+        Ok(matching_pairs.to_string())
     }
 }
 
@@ -23,6 +32,16 @@ fn parse_input(input: &str) -> (u64, u64) {
 fn parse_line(line: &str) -> u64 {
     let parts: Vec<&str> = line.split(' ').collect();
     u64::from_str(parts[parts.len() - 1]).unwrap()
+}
+
+fn next_values((value_a, value_b): (u64, u64)) -> (u64, u64) {
+    let next_value_a = (value_a * 16807) % 2147483647;
+    let next_value_b = (value_b * 48271) % 2147483647;
+    (next_value_a, next_value_b)
+}
+
+fn lowest_16_bits_matching((value_a, value_b): (u64, u64)) -> bool {
+    value_a & 0xFFFF == value_b & 0xFFFF
 }
 
 #[cfg(test)]
