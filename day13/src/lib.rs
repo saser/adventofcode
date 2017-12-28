@@ -87,7 +87,7 @@ mod tests {
 4: 4
 6: 4\
             ";
-            let expected = "19";
+            let expected = "10";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
