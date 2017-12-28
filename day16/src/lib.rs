@@ -20,9 +20,10 @@ impl Solver for Day16 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum Move {
-    Spin(u64),
-    Exchange(u64, u64),
+    Spin(usize),
+    Exchange(usize, usize),
     Partner(char, char),
 }
 
@@ -36,11 +37,11 @@ impl FromStr for Move {
                 static ref PARTNER_RE: Regex = Regex::new(r"p(?P<name1>\w)/(?P<name2>\w)").unwrap();
         }
         if let Some(captures) = SPIN_RE.captures(s) {
-            let spin = u64::from_str(&captures["size"]).unwrap();
+            let spin = usize::from_str(&captures["size"]).unwrap();
             Ok(Move::Spin(spin))
         } else if let Some(captures) = EXCHANGE_RE.captures(s) {
-            let pos1 = u64::from_str(&captures["pos1"]).unwrap();
-            let pos2 = u64::from_str(&captures["pos2"]).unwrap();
+            let pos1 = usize::from_str(&captures["pos1"]).unwrap();
+            let pos2 = usize::from_str(&captures["pos2"]).unwrap();
             Ok(Move::Exchange(pos1, pos2))
         } else if let Some(captures) = PARTNER_RE.captures(s) {
             let name1 = char::from_str(&captures["name1"]).unwrap();
