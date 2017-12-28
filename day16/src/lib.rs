@@ -61,7 +61,11 @@ fn parse_input(input: &str) -> Vec<Move> {
 }
 
 fn generate_programs(count: usize) -> VecDeque<char> {
-    "abcefghijklmnop"
+    if count > 16 {
+        panic!("too high count: {}", count);
+    }
+
+    "abcdefghijklmnop"
         .chars()
         .take(count)
         .collect()
