@@ -50,8 +50,15 @@ fn severity(layer: u64, depth: u64, delay: u64) -> u64 {
     }
 }
 
+fn any_detection_with_delay(layers: &HashMap<u64, u64>, delay: u64) -> bool {
+    layers.iter()
+        .any(|(&layer, &depth)| detected_when_entering(layer, depth, delay))
+}
+
 fn find_min_delay(layers: &HashMap<u64, u64>) -> u64 {
-    unimplemented!()
+    (0..)
+        .find(|&delay| !any_detection_with_delay(layers, delay))
+        .unwrap()
 }
 
 #[cfg(test)]
