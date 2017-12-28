@@ -24,8 +24,8 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "s1,x3/4,pe/b";
+            let expected = "baedc";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
