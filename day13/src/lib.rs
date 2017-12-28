@@ -13,10 +13,15 @@ struct Day13;
 impl Solver for Day13 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let layers = parse_input(input);
-        let total_severity: u64 = layers.iter()
-            .map(|(&layer, &depth)| severity(layer, depth))
-            .sum();
-        Ok(total_severity.to_string())
+        match part {
+            Part::One => {
+                let total_severity: u64 = layers.iter()
+                    .map(|(&layer, &depth)| severity(layer, depth, 0))
+                    .sum();
+                Ok(total_severity.to_string())
+            }
+            Part::Two => Ok(find_min_delay(&layers).to_string()),
+        }
     }
 }
 
@@ -33,16 +38,20 @@ fn parse_line(line: &str) -> (u64, u64) {
     (layer, depth)
 }
 
-fn detected_when_entering(picosecond: u64, depth: u64) -> bool {
-    picosecond % ((depth - 1) * 2) == 0
+fn detected_when_entering(picosecond: u64, depth: u64, delay: u64) -> bool {
+    (picosecond + delay) % ((depth - 1) * 2) == 0
 }
 
-fn severity(layer: u64, depth: u64) -> u64 {
-    if detected_when_entering(layer, depth) {
+fn severity(layer: u64, depth: u64, delay: u64) -> u64 {
+    if detected_when_entering(layer, depth, delay) {
         layer * depth
     } else {
         0
     }
+}
+
+fn find_min_delay(layers: &HashMap<u64, u64>) -> u64 {
+    unimplemented!()
 }
 
 #[cfg(test)]
