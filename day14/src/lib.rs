@@ -13,7 +13,7 @@ impl Solver for Day14 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let strings = strings_to_hash(input);
         match part {
-            Part::One => Ok(total_bits(&strings).to_string()),
+            Part::One => Ok(total_bits(&hash_all(&strings)).to_string()),
             Part::Two => Err("part 2 not implemented yet".to_string()),
         }
     }
@@ -43,9 +43,14 @@ fn bits_in_hash(hash: &str) -> usize {
         .count()
 }
 
-fn total_bits(strings: &[String]) -> usize {
+fn hash_all(strings: &[String]) -> Vec<String> {
     strings.iter()
         .map(|string| day10::full_hash_str(&string))
+        .collect()
+}
+
+fn total_bits(hashes: &[String]) -> usize {
+    hashes.iter()
         .map(|hash| bits_in_hash(&hash))
         .sum()
 }
