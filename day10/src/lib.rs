@@ -123,7 +123,12 @@ fn full_hash(slice: &mut [u8], lengths: &[u8]) -> String {
         .map(byte_as_hexadecimal)
         .collect::<Vec<String>>()
         .join("")
-    //hash
+}
+
+pub fn full_hash_str(input: &str) -> String {
+    let mut vector = initialize_vector();
+    let lengths = parse_input_as_bytes(input);
+    full_hash(&mut vector, &lengths)
 }
 
 #[cfg(test)]
