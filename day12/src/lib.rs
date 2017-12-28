@@ -13,8 +13,10 @@ struct Day12;
 impl Solver for Day12 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let connections = parse_input(input);
-        let group = find_group(&connections, 0);
-        Ok(group.len().to_string())
+        match part {
+            Part::One => Ok(find_group(&connections, 0).len().to_string()),
+            Part::Two => Ok(find_all_groups(&connections).len().to_string()),
+        }
     }
 }
 
@@ -33,6 +35,27 @@ fn parse_line(line: &str) -> (u64, Vec<u64>) {
         .map(Result::unwrap)
         .collect();
     (program, connected)
+}
+
+fn find_all_groups(connections: &HashMap<u64, Vec<u64>>) -> Vec<Vec<u64>> {
+    let number_of_programs = connections.len();
+    let mut groups: Vec<Vec<u64>> = Vec::new();
+    let mut visited = vec![false; number_of_programs];
+    let mut queue: VecDeque<u64> = (0..number_of_programs)
+        .map(|n| n as u64)
+        .collect();
+    while let Some(unvisited_program) = queue.pop_front() {
+        if visited[unvisited_program as usize] {
+            continue;
+        }
+
+        let group = find_group(connections, unvisited_program as u64);
+        for &program in &group {
+            visited[program as usize] = true;
+        }
+        groups.push(group);
+    }
+    groups
 }
 
 fn find_group(connections: &HashMap<u64, Vec<u64>>, included_program: u64) -> Vec<u64> {
