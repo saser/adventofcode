@@ -12,7 +12,11 @@ struct Day13;
 
 impl Solver for Day13 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 13 not yet implemented".to_string())
+        let layers = parse_input(input);
+        let total_severity: u64 = layers.iter()
+            .map(|(&layer, &depth)| severity(layer, depth))
+            .sum();
+        Ok(total_severity.to_string())
     }
 }
 
@@ -29,6 +33,17 @@ fn parse_line(line: &str) -> (u64, u64) {
     (layer, depth)
 }
 
+fn detected_when_entering(picosecond: u64, depth: u64) -> bool {
+    picosecond % ((depth - 1) * 2) == 0
+}
+
+fn severity(layer: u64, depth: u64) -> u64 {
+    if detected_when_entering(layer, depth) {
+        layer * depth
+    } else {
+        0
+    }
+}
 
 #[cfg(test)]
 mod tests {
