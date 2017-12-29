@@ -12,18 +12,11 @@ struct Day17;
 impl Solver for Day17 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let length = parse_input(input);
-        let values_to_insert = 2017;
-        let mut vec: Vec<u32> = Vec::with_capacity(values_to_insert + 1);
-        vec.push(0);
-
-        let mut current_position = 0;
-        for i in 1..values_to_insert + 1 {
-            let index_to_insert = ((current_position + length) % i) + 1;
-            vec.insert(index_to_insert, i as u32);
-            current_position = index_to_insert;
-        }
         match part {
-            Part::One => Ok(vec[current_position + 1].to_string()),
+            Part::One => {
+                let (vec, final_position) = build_ring_buffer(2017, length);
+                Ok(vec[final_position + 1].to_string())
+            }
             Part::Two => Err("part 2 not implemented yet".to_string()),
         }
     }
@@ -31,6 +24,18 @@ impl Solver for Day17 {
 
 fn parse_input(input: &str) -> usize {
     usize::from_str(input).unwrap()
+}
+
+fn build_ring_buffer(final_value: usize, length: usize) -> (Vec<usize>, usize) {
+    let mut vec = Vec::with_capacity(final_value + 1);
+    vec.push(0);
+    let mut current_position = 0;
+    for i in 1..final_value + 1 {
+        let index_to_insert = ((current_position + length) % i) + 1;
+        vec.insert(index_to_insert, i);
+        current_position = index_to_insert;
+    }
+    (vec, current_position)
 }
 
 #[cfg(test)]
