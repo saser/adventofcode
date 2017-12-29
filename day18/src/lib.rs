@@ -122,7 +122,7 @@ impl FromStr for Instruction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Instruction, String> {
-        let parts: Vec<&str> = s.split(',').collect();
+        let parts: Vec<&str> = s.split(' ').collect();
         if parts.len() == 2 {
             let operand = Operand::from_str(parts[1])?;
             match parts[0] {
