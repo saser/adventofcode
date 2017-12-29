@@ -24,8 +24,19 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+set a 1
+add a 2
+mul a a
+mod a 5
+snd a
+set a 0
+rcv a
+jgz a -1
+set a 1
+jgz a -2\
+            ";
+            let expected = "4";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
