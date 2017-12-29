@@ -12,7 +12,13 @@ struct Day18;
 
 impl Solver for Day18 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 18 not yet implemented".to_string())
+        let instructions = parse_input(input);
+        let mut processor = Processor::from_instructions(&instructions);
+        while processor.recovered_frequency.is_none() {
+            processor.perform_instruction();
+        }
+        let recovered_frequency = processor.recovered_frequency.unwrap();
+        Ok(recovered_frequency.to_string())
     }
 }
 
@@ -54,36 +60,41 @@ impl Processor {
 
     fn perform_instruction(&mut self) {
         let instruction = self.instructions[self.instruction_pointer];
-        match instruction {
-            Instruction::Sound(op) => self.last_frequency = Some(self.op_to_value(op)),
-            Instruction::Set(reg, op) => {
-                *self.registers.get_mut(&reg).unwrap() = self.op_to_value(op)
-            }
-            Instruction::Add(reg, op) => {
-                *self.registers.get_mut(&reg).unwrap() += self.op_to_value(op)
-            }
-            Instruction::Mul(reg, op) => {
-                *self.registers.get_mut(&reg).unwrap() *= self.op_to_value(op)
-            }
-            Instruction::Mod(reg, op) => {
-                *self.registers.get_mut(&reg).unwrap() %= self.op_to_value(op)
-            }
-            Instruction::Recover(op) => {
-                if self.op_to_value(op) == 0 {
-                    self.recovered_frequency = Some(self.last_frequency.unwrap());
+        if let Instruction::Jgz(op1, op2) = instruction {
+            let val1 = self.op_to_value(op1);
+            let val2 = self.op_to_value(op2);
+            if val1 > 0 {
+                if val2 > 0 {
+                    self.instruction_pointer += val2 as usize;
+                } else {
+                    self.instruction_pointer -= val2.abs() as usize;
                 }
+            } else {
+                self.instruction_pointer += 1;
             }
-            Instruction::Jgz(op1, op2) => {
-                let val1 = self.op_to_value(op1);
-                let val2 = self.op_to_value(op2);
-                if val1 > 0 {
-                    if val2 > 0 {
-                        self.instruction_pointer += val2 as usize;
-                    } else {
-                        self.instruction_pointer -= val2 as usize;
+        } else {
+            match instruction {
+                Instruction::Sound(op) => self.last_frequency = Some(self.op_to_value(op)),
+                Instruction::Set(reg, op) => {
+                    *self.registers.get_mut(&reg).unwrap() = self.op_to_value(op)
+                }
+                Instruction::Add(reg, op) => {
+                    *self.registers.get_mut(&reg).unwrap() += self.op_to_value(op)
+                }
+                Instruction::Mul(reg, op) => {
+                    *self.registers.get_mut(&reg).unwrap() *= self.op_to_value(op)
+                }
+                Instruction::Mod(reg, op) => {
+                    *self.registers.get_mut(&reg).unwrap() %= self.op_to_value(op)
+                }
+                Instruction::Recover(op) => {
+                    if self.op_to_value(op) > 0 {
+                        self.recovered_frequency = Some(self.last_frequency.unwrap());
                     }
                 }
+                _ => {}
             }
+            self.instruction_pointer += 1;
         }
     }
 }
