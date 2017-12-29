@@ -12,17 +12,20 @@ struct Day17;
 impl Solver for Day17 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let length = parse_input(input);
-        let mut vec: Vec<u16> = Vec::with_capacity(2018);
+        let values_to_insert = 2017;
+        let mut vec: Vec<u32> = Vec::with_capacity(values_to_insert + 1);
         vec.push(0);
 
         let mut current_position = 0;
-        for i in 1..2018 {
-            let n = vec.len();
-            let index_to_insert = ((current_position + length) % n) + 1;
-            vec.insert(index_to_insert, i);
+        for i in 1..values_to_insert + 1 {
+            let index_to_insert = ((current_position + length) % i) + 1;
+            vec.insert(index_to_insert, i as u32);
             current_position = index_to_insert;
         }
-        Ok(vec[current_position + 1].to_string())
+        match part {
+            Part::One => Ok(vec[current_position + 1].to_string()),
+            Part::Two => Err("part 2 not implemented yet".to_string()),
+        }
     }
 }
 
