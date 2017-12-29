@@ -23,6 +23,71 @@ fn parse_input(input: &str) -> Vec<Instruction> {
         .collect()
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct Processor {
+    registers: HashMap<char, i64>,
+    instruction_pointer: usize,
+    instructions: Vec<Instruction>,
+    last_frequency: Option<i64>,
+    recovered_frequency: Option<i64>,
+}
+
+impl Processor {
+    fn from_instructions(instructions: &[Instruction]) -> Processor {
+        let registers = initialize_registers(instructions);
+        let instruction_pointer = 0;
+        Processor {
+            registers: registers,
+            instruction_pointer: instruction_pointer,
+            instructions: instructions.to_vec(),
+            last_frequency: None,
+            recovered_frequency: None,
+        }
+    }
+
+    fn op_to_value(&self, op: Operand) -> i64 {
+        match op {
+            Operand::Register(reg) => *self.registers.get(&reg).unwrap(),
+            Operand::Literal(val) => val,
+        }
+    }
+
+    fn perform_instruction(&mut self) {
+        let instruction = self.instructions[self.instruction_pointer];
+        match instruction {
+            Instruction::Sound(op) => self.last_frequency = Some(self.op_to_value(op)),
+            Instruction::Set(reg, op) => {
+                *self.registers.get_mut(&reg).unwrap() = self.op_to_value(op)
+            }
+            Instruction::Add(reg, op) => {
+                *self.registers.get_mut(&reg).unwrap() += self.op_to_value(op)
+            }
+            Instruction::Mul(reg, op) => {
+                *self.registers.get_mut(&reg).unwrap() *= self.op_to_value(op)
+            }
+            Instruction::Mod(reg, op) => {
+                *self.registers.get_mut(&reg).unwrap() %= self.op_to_value(op)
+            }
+            Instruction::Recover(op) => {
+                if self.op_to_value(op) == 0 {
+                    self.recovered_frequency = Some(self.last_frequency.unwrap());
+                }
+            }
+            Instruction::Jgz(op1, op2) => {
+                let val1 = self.op_to_value(op1);
+                let val2 = self.op_to_value(op2);
+                if val1 > 0 {
+                    if val2 > 0 {
+                        self.instruction_pointer += val2 as usize;
+                    } else {
+                        self.instruction_pointer -= val2 as usize;
+                    }
+                }
+            }
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum Operand {
     Register(char),
