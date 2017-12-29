@@ -16,6 +16,13 @@ impl Solver for Day18 {
     }
 }
 
+fn parse_input(input: &str) -> Vec<Instruction> {
+    input.lines()
+        .map(Instruction::from_str)
+        .map(Result::unwrap)
+        .collect()
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum Operand {
     Register(char),
