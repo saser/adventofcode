@@ -17,9 +17,13 @@ struct Day16;
 impl Solver for Day16 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let mut programs = generate_programs(16);
+        let iterations = match part {
+            Part::One => 1,
+            Part::Two => 1_000_000_000,
+        };
         let moves = parse_input(input);
-        perform_moves(&mut programs, &moves);
-        Ok(programs_to_string(&programs))
+        let final_configuration = perform_moves_n(&mut programs, &moves, iterations);
+        Ok(final_configuration)
     }
 }
 
@@ -98,10 +102,25 @@ fn perform_move(programs: &mut VecDeque<char>, m: Move) {
     }
 }
 
-fn perform_moves(programs: &mut VecDeque<char>, moves: &[Move]) {
-    for &m in moves {
-        perform_move(programs, m);
+fn perform_moves_n(programs: &mut VecDeque<char>, moves: &[Move], iterations: usize) -> String {
+    let mut seen: Vec<String> = Vec::with_capacity(1_000_000);
+    let mut final_configuration = programs_to_string(programs);
+    seen.push(final_configuration.clone());
+    for i in 1..iterations + 1 {
+        for &m in moves {
+            perform_move(programs, m);
+        }
+
+        let configuration = programs_to_string(programs);
+        final_configuration = configuration.to_string();
+        // Credits for the idea below goes to Magnus Hagmar.
+        if &seen[0] == &final_configuration {
+            final_configuration = seen[iterations % i].clone();
+            break;
+        }
+        seen.push(configuration);
     }
+    final_configuration
 }
 
 #[cfg(test)]
@@ -116,21 +135,9 @@ mod tests {
             let input = "s1,x3/4,pe/b";
             let mut programs = generate_programs(5);
             let moves = parse_input(input);
-            perform_moves(&mut programs, &moves);
+            perform_moves_n(&mut programs, &moves, 1);
             let expected = "baedc";
             assert_eq!(expected, programs_to_string(&programs));
-        }
-    }
-
-    mod part2 {
-        use super::*;
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
 }
