@@ -1,6 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -76,6 +77,33 @@ impl FromStr for Instruction {
             Err(format!("invalid instruction: {}", s))
         }
     }
+}
+
+fn initialize_registers(instructions: &[Instruction]) -> HashMap<char, i64> {
+    let mut map = HashMap::new();
+    for &instruction in instructions {
+        let operands = match instruction {
+            Instruction::Sound(op) => vec![op],
+            Instruction::Set(reg, op) |
+            Instruction::Add(reg, op) |
+            Instruction::Mul(reg, op) |
+            Instruction::Mod(reg, op) => {
+                map.insert(reg, 0);
+                vec![op]
+            }
+            Instruction::Recover(op) => vec![op],
+            Instruction::Jgz(op1, op2) => vec![op1, op2],
+        };
+        for op in operands.into_iter() {
+            match op {
+                Operand::Register(reg) => {
+                    map.insert(reg, 0);
+                }
+                _ => {}
+            };
+        }
+    }
+    map
 }
 
 #[cfg(test)]
