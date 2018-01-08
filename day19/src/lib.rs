@@ -14,6 +14,35 @@ impl Solver for Day19 {
     }
 }
 
+fn parse_input(input: &str) -> Vec<Vec<Tile>> {
+    input.lines().map(parse_line).collect()
+}
+
+fn parse_line(line: &str) -> Vec<Tile> {
+    line.chars().map(|c| Tile::from(c)).collect()
+}
+
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
+enum Tile {
+    Empty,
+    Horizontal,
+    Vertical,
+    Corner,
+    Letter(char),
+}
+
+impl From<char> for Tile {
+    fn from(c: char) -> Tile {
+        match c {
+            '-' => Tile::Horizontal,
+            '|' => Tile::Vertical,
+            '+' => Tile::Corner,
+            'A'...'Z' => Tile::Letter(c),
+            _ => Tile::Empty,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
