@@ -24,8 +24,15 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+     |          
+     |  +--+    
+     A  |  C    
+ F---|----E|--+ 
+     |  |  |  D 
+     +B-+  +--+ \
+            ";
+            let expected = "ABCDEF";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
