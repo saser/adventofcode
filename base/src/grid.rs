@@ -14,9 +14,11 @@ impl<T> Grid<T> {
     /// Panics if either `rows`, `cols`, or both are less than 1.
     pub fn new(rows: usize, cols: usize) -> Grid<T> {
         if rows < 1 || cols < 1 {
-            panic!("a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
-                   rows = rows,
-                   cols = cols)
+            panic!(
+                "a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
+                rows = rows,
+                cols = cols
+            )
         }
         let mut grid: Vec<Vec<T>> = Vec::with_capacity(rows);
         (0..cols).for_each(|_| grid.push(Vec::with_capacity(cols)));
@@ -183,22 +185,18 @@ pub enum Direction {
 impl Direction {
     pub fn turn(&self, turn: Turn) -> Direction {
         match turn {
-            Turn::Clockwise => {
-                match *self {
-                    Direction::North => Direction::East,
-                    Direction::East => Direction::South,
-                    Direction::South => Direction::West,
-                    Direction::West => Direction::North,
-                }
-            }
-            Turn::CounterClockwise => {
-                match *self {
-                    Direction::North => Direction::West,
-                    Direction::East => Direction::North,
-                    Direction::South => Direction::East,
-                    Direction::West => Direction::South,
-                }
-            }
+            Turn::Clockwise => match *self {
+                Direction::North => Direction::East,
+                Direction::East => Direction::South,
+                Direction::South => Direction::West,
+                Direction::West => Direction::North,
+            },
+            Turn::CounterClockwise => match *self {
+                Direction::North => Direction::West,
+                Direction::East => Direction::North,
+                Direction::South => Direction::East,
+                Direction::West => Direction::South,
+            },
         }
     }
 
@@ -248,12 +246,23 @@ impl Traveler {
 
     /// Turns the traveler, updating its direction, but not its position.
     pub fn turn(&mut self, turn: Turn) {
-        self.direction = self.direction.turn(turn);
+        self.direction = self.peek_turn(turn);
+    }
+
+    /// Returns the direction the traveler would be facing after turning in the given direction.
+    pub fn peek_turn(&self, turn: Turn) -> Direction {
+        self.direction.turn(turn)
     }
 
     /// Takes one step in the travelers direction, updating its position, but not its direction.
     pub fn step(&mut self) {
-        self.pos = self.pos + self.direction.as_point();
+        self.pos = self.peek_step();
+    }
+
+    /// Returns the position the traveler would be at after taking one step in its current
+    /// direction.
+    pub fn peek_step(&self) -> Point {
+        self.pos + self.direction.as_point()
     }
 
     /// Takes `n` steps in the travelers direction, updating its position, but not its direction.
