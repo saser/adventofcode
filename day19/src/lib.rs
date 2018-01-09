@@ -13,9 +13,10 @@ impl Solver for Day19 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let grid = parse_input(input);
         let traveler = TileTraveler::from(&grid);
+        let (count, letters) = travel(&traveler);
         match part {
-            Part::One => Ok(collect_letters(&traveler)),
-            Part::Two => Err("part 2 not yet implemented".to_string()),
+            Part::One => Ok(letters),
+            Part::Two => Ok(count.to_string()),
         }
     }
 }
@@ -40,19 +41,16 @@ fn find_starting_point(grid: &Vec<Vec<Tile>>) -> Point {
     }
 }
 
-fn collect_letters(traveler: &TileTraveler) -> String {
-    traveler
-        .tiles()
-        .filter_map(|tile| {
-            if let Tile::Letter(c) = tile {
-                Some(c)
-            } else {
-                None
-            }
-        })
-        .map(|c| c.to_string())
-        .collect::<Vec<String>>()
-        .join("")
+fn travel(traveler: &TileTraveler) -> (u64, String) {
+    let mut count = 1;
+    let mut letters = String::new();
+    for tile in traveler.tiles() {
+        count += 1;
+        if let Tile::Letter(c) = tile {
+            letters.push(c);
+        }
+    }
+    (count, letters)
 }
 
 #[derive(Clone, Eq, PartialEq)]
@@ -149,6 +147,9 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
+            // Yes, the input string should look like this. That is because the leading and
+            // trailing whitespaces are significant, and would be stripped if usual multiline
+            // string literas were used.
             let input = "     |          \n     |  +--+    \n     A  |  C    \n F---|----E|--+ \n     |  |  |  D \n     +B-+  +--+ ";
             let expected = "ABCDEF";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
@@ -161,8 +162,11 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            // Yes, the input string should look like this. That is because the leading and
+            // trailing whitespaces are significant, and would be stripped if usual multiline
+            // string literas were used.
+            let input = "     |          \n     |  +--+    \n     A  |  C    \n F---|----E|--+ \n     |  |  |  D \n     +B-+  +--+ ";
+            let expected = "38";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
