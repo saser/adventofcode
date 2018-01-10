@@ -1,7 +1,7 @@
 extern crate base;
 
 use base::{Part, Solver};
-use std::ops::{Add, Neg};
+use std::ops::Add;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -13,7 +13,8 @@ struct Day11;
 impl Solver for Day11 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let directions = parse_input(input);
-        let (final_position, furthest) = directions.as_slice()
+        let (final_position, furthest) = directions
+            .as_slice()
             .iter()
             .map(HexDirection::as_point)
             .fold((Point3D::origin(), 0), |(point, furthest), dir| {
@@ -32,7 +33,8 @@ impl Solver for Day11 {
 }
 
 fn parse_input(input: &str) -> Vec<HexDirection> {
-    input.split(',')
+    input
+        .split(',')
         .map(HexDirection::from_str)
         .map(Result::unwrap)
         .collect()
