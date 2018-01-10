@@ -24,9 +24,7 @@ impl Solver for Day14 {
 }
 
 fn strings_to_hash(input: &str) -> Vec<String> {
-    (0..128)
-        .map(|i| format!("{}-{}", input, i))
-        .collect()
+    (0..128).map(|i| format!("{}-{}", input, i)).collect()
 }
 
 fn hex_digit_to_binary(digit: char) -> String {
@@ -41,7 +39,8 @@ fn hash_to_binary(hash: &str) -> String {
 }
 
 fn binary_to_vec(binary: &str) -> Vec<bool> {
-    binary.chars()
+    binary
+        .chars()
         .map(|c| match c {
             '1' => true,
             '0' => false,
@@ -51,36 +50,29 @@ fn binary_to_vec(binary: &str) -> Vec<bool> {
 }
 
 fn bits_in_hash(hash: &str) -> usize {
-    hash_to_binary(hash)
-        .chars()
-        .filter(|&c| c == '1')
-        .count()
+    hash_to_binary(hash).chars().filter(|&c| c == '1').count()
 }
 
 fn hash_all(strings: &[String]) -> Vec<String> {
-    strings.iter()
+    strings
+        .iter()
         .map(|string| day10::full_hash_str(&string))
         .collect()
 }
 
 fn total_bits(hashes: &[String]) -> usize {
-    hashes.iter()
-        .map(|hash| bits_in_hash(&hash))
-        .sum()
+    hashes.iter().map(|hash| bits_in_hash(&hash)).sum()
 }
 
 fn hashes_to_binary(hashes: &[String]) -> HashSet<(usize, usize)> {
     let mut set = HashSet::new();
-    let binary_vectors: Vec<Vec<bool>> = hashes.iter()
+    let binary_vectors: Vec<Vec<bool>> = hashes
+        .iter()
         .map(|hash| hash_to_binary(&hash))
         .map(|binstring| binary_to_vec(&binstring))
         .collect();
-    for (i, binvec) in binary_vectors.as_slice()
-        .iter()
-        .enumerate() {
-        for (j, &binval) in binvec.as_slice()
-            .iter()
-            .enumerate() {
+    for (i, binvec) in binary_vectors.as_slice().iter().enumerate() {
+        for (j, &binval) in binvec.as_slice().iter().enumerate() {
             if binval {
                 set.insert((i, j));
             }
@@ -89,9 +81,11 @@ fn hashes_to_binary(hashes: &[String]) -> HashSet<(usize, usize)> {
     set
 }
 
-fn mark_group(visited: &mut HashSet<(usize, usize)>,
-              set: &HashSet<(usize, usize)>,
-              (start_x, start_y): (usize, usize)) {
+fn mark_group(
+    visited: &mut HashSet<(usize, usize)>,
+    set: &HashSet<(usize, usize)>,
+    (start_x, start_y): (usize, usize),
+) {
     let mut queue = VecDeque::new();
     queue.push_back((start_x, start_y));
 

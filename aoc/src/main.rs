@@ -64,10 +64,10 @@ fn main() {
 fn solve(solver: Box<Solver>, day: u8, part: Part, input: &str) {
     let timer = Instant::now();
     let solution = solver.solve(part, input).unwrap_or_else(|e| {
-        eprintln!("Unable to acquire solution for day {} part {}: {}",
-                  day,
-                  part,
-                  e);
+        eprintln!(
+            "Unable to acquire solution for day {} part {}: {}",
+            day, part, e
+        );
         process::exit(1);
     });
     let solution_time = timer.elapsed();
@@ -86,19 +86,25 @@ fn create_app() -> App<'static, 'static> {
         .version(APP_VERSION)
         .author(APP_AUTHOR)
         .about(APP_ABOUT)
-        .arg(Arg::with_name("day")
-            .help("Specifies which day (1-25) to run")
-            .takes_value(true)
-            .required(true))
-        .arg(Arg::with_name("part")
-            .help("Specifies which part of the problem to run")
-            .takes_value(true)
-            .required(true)
-            .possible_values(&["1", "2"]))
-        .arg(Arg::with_name("input_file")
-            .help("Path to file containing input to problem")
-            .takes_value(true)
-            .required(true))
+        .arg(
+            Arg::with_name("day")
+                .help("Specifies which day (1-25) to run")
+                .takes_value(true)
+                .required(true),
+        )
+        .arg(
+            Arg::with_name("part")
+                .help("Specifies which part of the problem to run")
+                .takes_value(true)
+                .required(true)
+                .possible_values(&["1", "2"]),
+        )
+        .arg(
+            Arg::with_name("input_file")
+                .help("Path to file containing input to problem")
+                .takes_value(true)
+                .required(true),
+        )
 }
 
 fn parse_arguments(matches: &ArgMatches) -> Result<(u8, Part, String), String> {

@@ -29,7 +29,8 @@ impl Solver for Day08 {
 }
 
 fn parse_input(input: &str) -> Vec<Instruction> {
-    input.lines()
+    input
+        .lines()
         .map(Instruction::from_str)
         .map(Result::unwrap)
         .collect()
@@ -66,27 +67,33 @@ fn perform_operation(operation: Operation, previous_value: i64) -> i64 {
     }
 }
 
-fn perform_instruction((registers, highest_value): (&HashMap<String, i64>, i64),
-                       instruction: &Instruction)
-                       -> (HashMap<String, i64>, i64) {
+fn perform_instruction(
+    (registers, highest_value): (&HashMap<String, i64>, i64),
+    instruction: &Instruction,
+) -> (HashMap<String, i64>, i64) {
     let mut map = registers.clone();
     let mut new_highest_value = highest_value;
     if check_condition(registers, &instruction.cond) {
         let register_value = *map.get(&instruction.register).unwrap();
         let new_value = perform_operation(instruction.op, register_value);
         new_highest_value = cmp::max(highest_value, new_value);
-        map.insert(instruction.register.clone(),
-                   perform_operation(instruction.op, register_value));
+        map.insert(
+            instruction.register.clone(),
+            perform_operation(instruction.op, register_value),
+        );
     }
     (map, new_highest_value)
 }
 
-fn perform_instructions(registers: &HashMap<String, i64>,
-                        instructions: &[Instruction])
-                        -> (HashMap<String, i64>, i64) {
-    instructions.iter().fold((registers.clone(), 0), |(regs, highest), instruction| {
-        perform_instruction((&regs, highest), instruction)
-    })
+fn perform_instructions(
+    registers: &HashMap<String, i64>,
+    instructions: &[Instruction],
+) -> (HashMap<String, i64>, i64) {
+    instructions
+        .iter()
+        .fold((registers.clone(), 0), |(regs, highest), instruction| {
+            perform_instruction((&regs, highest), instruction)
+        })
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]

@@ -15,7 +15,8 @@ impl Solver for Day13 {
         let layers = parse_input(input);
         match part {
             Part::One => {
-                let total_severity: u64 = layers.iter()
+                let total_severity: u64 = layers
+                    .iter()
                     .map(|(&layer, &depth)| severity(layer, depth, 0))
                     .sum();
                 Ok(total_severity.to_string())
@@ -26,9 +27,7 @@ impl Solver for Day13 {
 }
 
 fn parse_input(input: &str) -> HashMap<u64, u64> {
-    input.lines()
-        .map(parse_line)
-        .collect()
+    input.lines().map(parse_line).collect()
 }
 
 fn parse_line(line: &str) -> (u64, u64) {
@@ -51,7 +50,8 @@ fn severity(layer: u64, depth: u64, delay: u64) -> u64 {
 }
 
 fn any_detection_with_delay(layers: &HashMap<u64, u64>, delay: u64) -> bool {
-    layers.iter()
+    layers
+        .iter()
         .any(|(&layer, &depth)| detected_when_entering(layer, depth, delay))
 }
 

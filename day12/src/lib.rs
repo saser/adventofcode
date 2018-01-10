@@ -21,9 +21,7 @@ impl Solver for Day12 {
 }
 
 fn parse_input(input: &str) -> HashMap<u64, Vec<u64>> {
-    input.lines()
-        .map(parse_line)
-        .collect()
+    input.lines().map(parse_line).collect()
 }
 
 fn parse_line(line: &str) -> (u64, Vec<u64>) {
@@ -41,9 +39,7 @@ fn find_all_groups(connections: &HashMap<u64, Vec<u64>>) -> Vec<Vec<u64>> {
     let number_of_programs = connections.len();
     let mut groups: Vec<Vec<u64>> = Vec::new();
     let mut visited = vec![false; number_of_programs];
-    let mut queue: VecDeque<u64> = (0..number_of_programs)
-        .map(|n| n as u64)
-        .collect();
+    let mut queue: VecDeque<u64> = (0..number_of_programs).map(|n| n as u64).collect();
     while let Some(unvisited_program) = queue.pop_front() {
         if visited[unvisited_program as usize] {
             continue;

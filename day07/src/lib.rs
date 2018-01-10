@@ -23,7 +23,9 @@ impl Solver for Day07 {
             Ok(bottom_program.name.clone())
         } else {
             let tower_weights = calculate_tower_weights(&tower, &bottom_program);
-            Ok(find_correct_weight(&tower, &tower_weights, &bottom_program).unwrap().to_string())
+            Ok(find_correct_weight(&tower, &tower_weights, &bottom_program)
+                .unwrap()
+                .to_string())
         }
     }
 }
@@ -43,12 +45,14 @@ impl FromStr for Program {
             static ref NAME_AND_WEIGHT: Regex = Regex::new(r"(?P<name>\w+) \((?P<weight>\d+)\)").unwrap();
         }
         let parts: Vec<&str> = s.split(" -> ").collect();
-        let (name_and_weight, programs) = (parts[0],
-                                           if parts.len() == 2 {
-                                               Some(parts[1])
-                                           } else {
-                                               None
-                                           });
+        let (name_and_weight, programs) = (
+            parts[0],
+            if parts.len() == 2 {
+                Some(parts[1])
+            } else {
+                None
+            },
+        );
         let name_and_weight_caps = NAME_AND_WEIGHT.captures(name_and_weight).unwrap();
         let name = name_and_weight_caps["name"].to_string();
         let weight: u64 = name_and_weight_caps["weight"].parse().unwrap();
@@ -65,7 +69,8 @@ impl FromStr for Program {
 }
 
 fn parse_input(input: &str) -> HashMap<String, Program> {
-    input.lines()
+    input
+        .lines()
         .map(Program::from_str)
         .map(Result::unwrap)
         .map(|prog| (prog.name.clone(), prog))
@@ -74,7 +79,8 @@ fn parse_input(input: &str) -> HashMap<String, Program> {
 
 fn construct_tower(programs: &HashMap<String, Program>) -> HashMap<String, Program> {
     let mut tower = programs.clone();
-    let progs_holding_up: Vec<Program> = tower.values()
+    let progs_holding_up: Vec<Program> = tower
+        .values()
         .cloned()
         .filter(|prog| prog.holding_up.is_some())
         .collect();
@@ -87,12 +93,17 @@ fn construct_tower(programs: &HashMap<String, Program>) -> HashMap<String, Progr
 }
 
 fn find_bottom_program(tower: &HashMap<String, Program>) -> Program {
-    tower.values().find(|prog| prog.held_up_by.is_none()).unwrap().clone()
+    tower
+        .values()
+        .find(|prog| prog.held_up_by.is_none())
+        .unwrap()
+        .clone()
 }
 
-fn calculate_tower_weights(tower: &HashMap<String, Program>,
-                           root: &Program)
-                           -> HashMap<String, u64> {
+fn calculate_tower_weights(
+    tower: &HashMap<String, Program>,
+    root: &Program,
+) -> HashMap<String, u64> {
     if root.holding_up.is_none() {
         let mut map = HashMap::new();
         map.insert(root.name.clone(), root.weight);
@@ -111,10 +122,11 @@ fn calculate_tower_weights(tower: &HashMap<String, Program>,
     map
 }
 
-fn find_correct_weight(tower: &HashMap<String, Program>,
-                       tower_weights: &HashMap<String, u64>,
-                       root: &Program)
-                       -> Option<u64> {
+fn find_correct_weight(
+    tower: &HashMap<String, Program>,
+    tower_weights: &HashMap<String, u64>,
+    root: &Program,
+) -> Option<u64> {
     if root.holding_up.is_none() {
         return None;
     }

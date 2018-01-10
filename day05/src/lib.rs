@@ -20,10 +20,7 @@ impl Solver for Day05 {
 }
 
 fn parse_input(input: &str) -> Vec<i64> {
-    input.lines()
-        .map(str::parse)
-        .map(Result::unwrap)
-        .collect()
+    input.lines().map(str::parse).map(Result::unwrap).collect()
 }
 
 fn increase_by_one(i: i64) -> i64 {
@@ -31,7 +28,11 @@ fn increase_by_one(i: i64) -> i64 {
 }
 
 fn decrement_if_three_or_more(i: i64) -> i64 {
-    if i >= 3 { i - 1 } else { i + 1 }
+    if i >= 3 {
+        i - 1
+    } else {
+        i + 1
+    }
 }
 
 fn steps_until_escape(instructions: &mut [i64], next_value: fn(i64) -> i64) -> u64 {

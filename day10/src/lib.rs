@@ -26,7 +26,8 @@ impl Solver for Day10 {
 }
 
 fn parse_input_as_lengths(input: &str) -> Vec<u8> {
-    input.split(',')
+    input
+        .split(',')
         .map(u8::from_str)
         .map(Result::unwrap)
         .collect()
@@ -75,11 +76,12 @@ fn perform_knot<T: Copy>(slice: &mut [T], start: usize, length: usize) {
     reverse_by_indices(slice, &indices);
 }
 
-fn knot_hash<T: Copy>(slice: &mut [T],
-                      lengths: &[u8],
-                      mut current: usize,
-                      mut skip_size: usize)
-                      -> (usize, usize) {
+fn knot_hash<T: Copy>(
+    slice: &mut [T],
+    lengths: &[u8],
+    mut current: usize,
+    mut skip_size: usize,
+) -> (usize, usize) {
     let len = slice.len();
     for &length in lengths {
         perform_knot(slice, current, length as usize);
@@ -117,7 +119,8 @@ fn byte_as_hexadecimal(byte: u8) -> String {
 fn full_hash(slice: &mut [u8], lengths: &[u8]) -> String {
     let lengths_suffixed = add_suffix(lengths);
     knot_hash_n(slice, &lengths_suffixed, 64);
-    slice.chunks(16)
+    slice
+        .chunks(16)
         .map(|chunk| chunk.iter())
         .map(|iter| iter.fold(0, |acc, x| acc ^ x))
         .map(byte_as_hexadecimal)

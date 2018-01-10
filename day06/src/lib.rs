@@ -22,7 +22,8 @@ impl Solver for Day06 {
 }
 
 fn parse_input(input: &str) -> Vec<u64> {
-    input.trim()
+    input
+        .trim()
         .split_whitespace()
         .map(str::parse)
         .map(Result::unwrap)
@@ -39,7 +40,9 @@ fn count_redistributions(banks: &[u64]) -> (u64, u64) {
     while counter < distributions.len() {
         distribution = redistribute(&distribution);
         counter += 1;
-        distributions.entry(distribution.clone()).or_insert(counter as u64);
+        distributions
+            .entry(distribution.clone())
+            .or_insert(counter as u64);
     }
     let first_distribution_in_loop = distributions.get(&distribution).unwrap();
 
@@ -64,12 +67,15 @@ fn redistribute(banks: &[u64]) -> Vec<u64> {
 }
 
 fn find_max_index<T: Ord>(banks: &[T]) -> usize {
-    banks.iter()
+    banks
+        .iter()
         .enumerate()
-        .fold(0, |max_index, (index, bank)| if bank > &banks[max_index] {
-            index
-        } else {
-            max_index
+        .fold(0, |max_index, (index, bank)| {
+            if bank > &banks[max_index] {
+                index
+            } else {
+                max_index
+            }
         })
 }
 

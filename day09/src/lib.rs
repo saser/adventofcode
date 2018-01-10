@@ -49,8 +49,10 @@ fn parse_tokens(s: &str) -> Result<Vec<Token>, String> {
                 '<' => Token::StartGarbage,
                 ',' => Token::Separator,
                 invalid => {
-                    return Err(format!("could not parse to token: invalid character '{}'",
-                                       invalid));
+                    return Err(format!(
+                        "could not parse to token: invalid character '{}'",
+                        invalid
+                    ));
                 }
             }
         };

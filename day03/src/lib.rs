@@ -58,7 +58,8 @@ impl Iterator for SpiralTraveler {
             self.current_layer += 1;
             let layer_side = 2 * self.current_layer - 1;
             let steps = layer_side - 1;
-            self.steps_to_corners.append(&mut vec![steps + 1, steps, steps, steps - 1]);
+            self.steps_to_corners
+                .append(&mut vec![steps + 1, steps, steps, steps - 1]);
             self.to_next_layer = 4 * steps;
         }
 
@@ -108,15 +109,18 @@ impl Iterator for Spiral {
 fn first_after_number_by_summing(target_number: u64) -> u64 {
     let mut spiral = Spiral::new(Box::new(|spiral| {
         let current_pos = spiral.pos;
-        let deltas = [Point { x: 1, y: 0 },
-                      Point { x: 1, y: 1 },
-                      Point { x: 0, y: 1 },
-                      Point { x: -1, y: 1 },
-                      Point { x: -1, y: 0 },
-                      Point { x: -1, y: -1 },
-                      Point { x: 0, y: -1 },
-                      Point { x: 1, y: -1 }];
-        deltas.iter()
+        let deltas = [
+            Point { x: 1, y: 0 },
+            Point { x: 1, y: 1 },
+            Point { x: 0, y: 1 },
+            Point { x: -1, y: 1 },
+            Point { x: -1, y: 0 },
+            Point { x: -1, y: -1 },
+            Point { x: 0, y: -1 },
+            Point { x: 1, y: -1 },
+        ];
+        deltas
+            .iter()
             .map(|&delta| current_pos + delta)
             .map(|pos| spiral.grid.get(&pos))
             .map(|op_val| op_val.unwrap_or(&0))

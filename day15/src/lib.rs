@@ -42,9 +42,10 @@ fn parse_line(line: &str) -> u64 {
     u64::from_str(parts[parts.len() - 1]).unwrap()
 }
 
-fn next_values((value_a, value_b): (u64, u64),
-               (constraint_a, constraint_b): (u64, u64))
-               -> (u64, u64) {
+fn next_values(
+    (value_a, value_b): (u64, u64),
+    (constraint_a, constraint_b): (u64, u64),
+) -> (u64, u64) {
     let mut next_value_a = (value_a * MUL_A) % MOD;
     while next_value_a % constraint_a != 0 {
         next_value_a = (next_value_a * MUL_A) % MOD;

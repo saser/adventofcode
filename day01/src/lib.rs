@@ -20,9 +20,7 @@ impl Solver for Day01 {
 }
 
 fn parse_input(input: &str) -> Vec<u32> {
-    input.chars()
-        .map(|c| c.to_digit(10).unwrap())
-        .collect()
+    input.chars().map(|c| c.to_digit(10).unwrap()).collect()
 }
 
 fn sum_matching(digits: &[u32], offset: usize) -> u32 {

@@ -21,7 +21,8 @@ impl Solver for Day04 {
 }
 
 fn parse_input(input: &str) -> Vec<Vec<String>> {
-    input.lines()
+    input
+        .lines()
         .map(|line| line.split_whitespace())
         .map(|iter| iter.map(String::from))
         .map(|iter| iter.collect())
@@ -29,7 +30,8 @@ fn parse_input(input: &str) -> Vec<Vec<String>> {
 }
 
 fn count_valid(validator: fn(Vec<String>) -> bool, passphrases: Vec<Vec<String>>) -> usize {
-    passphrases.iter()
+    passphrases
+        .iter()
         .filter(|&phrase| validator(phrase.clone()))
         .count()
 }
@@ -47,9 +49,7 @@ fn contains_no_anagrams(passphrase: Vec<String>) -> bool {
         chars.into_iter().collect()
     }
     let words = passphrase.len();
-    let set: HashSet<String> = passphrase.into_iter()
-        .map(|s| sort_string(&s))
-        .collect();
+    let set: HashSet<String> = passphrase.into_iter().map(|s| sort_string(&s)).collect();
     set.len() == words
 }
 

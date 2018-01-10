@@ -1,7 +1,6 @@
 extern crate base;
 
 use base::{Part, Solver};
-
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -16,7 +15,8 @@ impl Solver for Day02 {
             Part::One => min_max,
             Part::Two => divisors,
         };
-        Ok(input.lines()
+        Ok(input
+            .lines()
             .map(parse_line)
             .map(|v| fun(&v))
             .sum::<u32>()

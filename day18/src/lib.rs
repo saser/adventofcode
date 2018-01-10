@@ -23,7 +23,8 @@ impl Solver for Day18 {
 }
 
 fn parse_input(input: &str) -> Vec<Instruction> {
-    input.lines()
+    input
+        .lines()
         .map(Instruction::from_str)
         .map(Result::unwrap)
         .collect()
@@ -167,10 +168,10 @@ fn initialize_registers(instructions: &[Instruction]) -> HashMap<char, i64> {
     for &instruction in instructions {
         let operands = match instruction {
             Instruction::Sound(op) => vec![op],
-            Instruction::Set(reg, op) |
-            Instruction::Add(reg, op) |
-            Instruction::Mul(reg, op) |
-            Instruction::Mod(reg, op) => {
+            Instruction::Set(reg, op)
+            | Instruction::Add(reg, op)
+            | Instruction::Mul(reg, op)
+            | Instruction::Mod(reg, op) => {
                 map.insert(reg, 0);
                 vec![op]
             }
