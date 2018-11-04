@@ -6,7 +6,8 @@ authors = ["Christian Persson <saser@live.se>"]
 [dependencies]
 clap = "~2.29.0"
 base = { path = "../base" }
-day01 = { path = "../day01" }
+year2017 = { path = "../year2017" }
+# day01 = { path = "../day01" }
 day02 = { path = "../day02" }
 day03 = { path = "../day03" }
 day04 = { path = "../day04" }

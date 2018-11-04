@@ -34,3 +34,7 @@ impl fmt::Display for Part {
 pub trait Solver {
     fn solve(&self, part: Part, input: &str) -> Result<String, String>;
 }
+
+pub trait YearDispatcher {
+    fn get_solver(&self, day: u8) -> Result<Box<dyn Solver>, String>;
+}

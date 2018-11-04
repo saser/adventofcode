@@ -1,7 +1,6 @@
 extern crate base;
 #[macro_use]
 extern crate clap;
-extern crate day01;
 extern crate day02;
 extern crate day03;
 extern crate day04;
@@ -21,8 +20,9 @@ extern crate day17;
 extern crate day18;
 extern crate day19;
 extern crate day20;
+extern crate year2017;
 
-use base::{Part, Solver};
+use base::{Part, Solver, YearDispatcher};
 use clap::{App, Arg, ArgMatches};
 use std::fs::File;
 use std::io::{self, Read};
@@ -45,7 +45,7 @@ fn main() {
     let app = create_app();
     let matches = app.get_matches();
 
-    let (day, part, input_path) = parse_arguments(&matches).unwrap_or_else(|e| {
+    let (year, day, part, input_path) = parse_arguments(&matches).unwrap_or_else(|e| {
         eprintln!("Unable to parse arguments: {}", e);
         process::exit(1);
     });
@@ -53,7 +53,7 @@ fn main() {
         eprintln!("Unable to read input file: {}", e);
         process::exit(1);
     });
-    let solver = get_solver(day).unwrap_or_else(|e| {
+    let solver = get_solver(year, day).unwrap_or_else(|e| {
         eprintln!("Unable to get solver: {}", e);
         process::exit(1);
     });
@@ -87,19 +87,23 @@ fn create_app() -> App<'static, 'static> {
         .author(APP_AUTHOR)
         .about(APP_ABOUT)
         .arg(
+            Arg::with_name("year")
+                .help("Specifies which year to run")
+                .takes_value(true)
+                .possible_values(&["2017"])
+                .required(true),
+        ).arg(
             Arg::with_name("day")
                 .help("Specifies which day (1-25) to run")
                 .takes_value(true)
                 .required(true),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("part")
                 .help("Specifies which part of the problem to run")
                 .takes_value(true)
-                .required(true)
-                .possible_values(&["1", "2"]),
-        )
-        .arg(
+                .possible_values(&["1", "2"])
+                .required(true),
+        ).arg(
             Arg::with_name("input_file")
                 .help("Path to file containing input to problem")
                 .takes_value(true)
@@ -107,14 +111,15 @@ fn create_app() -> App<'static, 'static> {
         )
 }
 
-fn parse_arguments(matches: &ArgMatches) -> Result<(u8, Part, String), String> {
+fn parse_arguments(matches: &ArgMatches) -> Result<(u16, u8, Part, String), String> {
+    let year = value_t!(matches.value_of("year"), u16).unwrap();
     let day = value_t!(matches.value_of("day"), u8).unwrap();
     if day < 1 || day > 25 {
         return Err("day must be 1-25 (inclusive)".to_string());
     }
     let part = value_t!(matches.value_of("part"), Part).unwrap();
     let input_path = matches.value_of("input_file").unwrap().to_string();
-    Ok((day, part, input_path))
+    Ok((year, day, part, input_path))
 }
 
 fn read_input(path: &str) -> io::Result<String> {
@@ -124,28 +129,13 @@ fn read_input(path: &str) -> io::Result<String> {
     Ok(input)
 }
 
-fn get_solver(day: u8) -> Result<Box<Solver>, String> {
-    match day {
-        1 => Ok(day01::get_solver()),
-        2 => Ok(day02::get_solver()),
-        3 => Ok(day03::get_solver()),
-        4 => Ok(day04::get_solver()),
-        5 => Ok(day05::get_solver()),
-        6 => Ok(day06::get_solver()),
-        7 => Ok(day07::get_solver()),
-        8 => Ok(day08::get_solver()),
-        9 => Ok(day09::get_solver()),
-        10 => Ok(day10::get_solver()),
-        11 => Ok(day11::get_solver()),
-        12 => Ok(day12::get_solver()),
-        13 => Ok(day13::get_solver()),
-        14 => Ok(day14::get_solver()),
-        15 => Ok(day15::get_solver()),
-        16 => Ok(day16::get_solver()),
-        17 => Ok(day17::get_solver()),
-        18 => Ok(day18::get_solver()),
-        19 => Ok(day19::get_solver()),
-        20 => Ok(day20::get_solver()),
-        _ => Err(format!("no solver for day {}", day)),
+fn get_year_dispatcher(year: u16) -> Result<Box<dyn YearDispatcher>, String> {
+    match year {
+        2017 => Ok(year2017::get_dispatcher()),
+        _ => Err(format!("no dispatcher for year {}", year)),
     }
+}
+
+fn get_solver(year: u16, day: u8) -> Result<Box<dyn Solver>, String> {
+    get_year_dispatcher(year)?.get_solver(day)
 }
