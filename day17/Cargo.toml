@@ -1,7 +1,0 @@
-[package]
-name = "day17"
-version = "0.1.0"
-authors = ["Christian Persson <saser@live.se>"]
-
-[dependencies]
-base = { path = "../base" }

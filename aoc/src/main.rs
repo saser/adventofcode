@@ -1,25 +1,6 @@
 extern crate base;
 #[macro_use]
 extern crate clap;
-extern crate day02;
-extern crate day03;
-extern crate day04;
-extern crate day05;
-extern crate day06;
-extern crate day07;
-extern crate day08;
-extern crate day09;
-extern crate day10;
-extern crate day11;
-extern crate day12;
-extern crate day13;
-extern crate day14;
-extern crate day15;
-extern crate day16;
-extern crate day17;
-extern crate day18;
-extern crate day19;
-extern crate day20;
 extern crate year2017;
 
 use base::{Part, Solver, YearDispatcher};
