@@ -1,5 +1,5 @@
-use base::{Part, Solver};
 use base::grid::*;
+use base::{Part, Solver};
 use std::collections::HashMap;
 
 pub fn get_solver() -> Box<Solver> {
@@ -97,10 +97,11 @@ impl Iterator for Spiral {
     type Item = (Point, u64);
 
     fn next(&mut self) -> Option<(Point, u64)> {
+        let ret = (self.pos, self.value);
         self.pos = self.spiral_traveler.next().unwrap();
         self.value = (self.next_value_fun)(self);
         self.grid.insert(self.pos, self.value);
-        Some((self.pos, self.value))
+        Some(ret)
     }
 }
 
