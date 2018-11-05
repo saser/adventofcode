@@ -1,6 +1,7 @@
 extern crate base;
 #[macro_use]
 extern crate clap;
+extern crate year2016;
 extern crate year2017;
 
 use base::{Part, Solver, YearDispatcher};
@@ -13,7 +14,7 @@ use std::time::{Duration, Instant};
 static APP_NAME: &'static str = "aoc";
 static APP_VERSION: &'static str = "0.1.0";
 static APP_AUTHOR: &'static str = "Christian Persson <saser@live.se>";
-static APP_ABOUT: &'static str = "Runs solutions for the Advent of Code 2017 programming problems";
+static APP_ABOUT: &'static str = "Runs solutions for the Advent of Code programming problems";
 
 fn main() {
     let app = create_app();
@@ -64,7 +65,7 @@ fn create_app() -> App<'static, 'static> {
             Arg::with_name("year")
                 .help("Specifies which year to run")
                 .takes_value(true)
-                .possible_values(&["2017"])
+                .possible_values(&["2016", "2017"])
                 .required(true),
         ).arg(
             Arg::with_name("day")
@@ -105,6 +106,7 @@ fn read_input(path: &str) -> io::Result<String> {
 
 fn get_year_dispatcher(year: u16) -> Result<Box<dyn YearDispatcher>, String> {
     match year {
+        2016 => Ok(year2016::get_dispatcher()),
         2017 => Ok(year2017::get_dispatcher()),
         _ => Err(format!("no dispatcher for year {}", year)),
     }
