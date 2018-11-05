@@ -9,4 +9,4 @@ This repo contains my solutions for the [Advent of Code](http://adventofcode.com
 Make sure you have Rust installed. I have used stable Rust, but my solutions should probably work fine with both stable, beta, and nightly Rust. You should preferrably use [rustup](https://rustup.rs/) to install Rust.
 
 1.  Run `$ cargo build` (if you want the optimized version, run `$ cargo build --release`)
-2.  Run `$ target/release/aoc <year> <day> <part> <input file>`, e.g. `$ target/release/aoc 2017 4 2 ../inputs/2017/04` to run year 2017, day 4, part 2, on the file `../inputs/2017/04`.
+2.  Run `$ cargo run -p aoc -- <year> <day> <part> <input file>`, e.g. `$ cargo run -p aoc -- 2017 4 2 ../inputs/2017/04` to run year 2017, day 4, part 2, on the file `../inputs/2017/04`. (Again, if you want the optimized version, use `cargo run --release -p aoc`).
