@@ -3,7 +3,8 @@ set -e
 set -u
 set -o pipefail
 
-day_full=${1}
+year=${1}
+day_full=${2}
 case ${day_full} in
     0*)
         day_no=${day_full:1}
@@ -13,30 +14,30 @@ case ${day_full} in
         ;;
 esac
 
-crate="day${day_full}"
-echo "${crate}: creating crate."
-cp -r dayXX ${crate}
+mod="day${day_full}"
+crate="year$year"
+prefix="$crate/$mod"
 
+mod_file="$crate/src/$mod.rs"
+echo "$prefix: Creating \`$mod\` module for \`$crate\` crate."
+cp template/dayXX.rs "$mod_file"
 
-echo "${crate}: setting project name to \`${crate}\`."
-toml_file="${crate}/Cargo.toml"
-sed -i "s/dayXX/day${day_full}/g" ${toml_file}
+echo "$prefix: Replacing all occurrences of \`XX\` with \`$day_full\` in \`$mod_file\`."
+sed -E -i "s/XX/$day_full/g" "$mod_file"
 
-crate_root="${crate}/src/lib.rs"
-echo "${crate}: replacing all occurrences of \`dayXX\` with \`${crate}\` in \`${crate_root}\`."
-sed -E -i "s/XX/${day_full}/g" ${crate_root}
+crate_file="$crate/src/lib.rs"
+last_day_full=$(sed -E -n "s/.*day(0[1-9]|[12][0-9]).*/\1/p" "$crate_file" | sort | tail -n 1)
+case "$last_day_full" in
+    0*)
+        last_day_no="${last_day_full:1}"
+        ;;
+    *)
+        last_day_no="$last_day_full"
+        ;;
+esac
 
-echo "aoc: adding \`${crate}\` to dependencies."
-echo "${crate} = { path = \"../${crate}\" }" >> aoc/Cargo.toml
-
-previous_day_no=$(( ${day_no} - 1 ))
-if [ ${previous_day_no} -lt 10 ]; then
-    previous_day_full="0${previous_day_no}"
-else
-    previous_day_full="${previous_day_no}"
-fi
-echo "aoc: duplicating all lines containing '{Day|day}${previous_day_full}', and replacing with '${day_full}'."
-sed -E -i "s/^.*(Day|day)${previous_day_full}.*$/&\\nMARKER&/" aoc/src/main.rs
-sed -E -i "/^MARKER/s/${previous_day_full}/${day_full}/g" aoc/src/main.rs
-sed -E -i "/^MARKER/s/([^0])${previous_day_no}/\1${day_no}/g" aoc/src/main.rs
-sed -E -i "s/^MARKER//g" aoc/src/main.rs
+echo "$crate: duplicating all lines containing '{Day|day}${last_day_full}', and replacing with '${day_full}'."
+sed -E -i "s/^.*(Day|day)${last_day_full}.*$/&\\nMARKER&/" "$crate_file"
+sed -E -i "/^MARKER/s/${last_day_full}/${day_full}/g" "$crate_file"
+sed -E -i "/^MARKER/s/([^0])${last_day_no}/\1${day_no}/g" "$crate_file"
+sed -E -i "s/^MARKER//g" "$crate_file"

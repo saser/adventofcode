@@ -1,5 +1,3 @@
-extern crate base;
-
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<Solver> {
