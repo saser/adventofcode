@@ -20,10 +20,26 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "R2, L3";
+            let expected = "5";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "R2, R2, R2";
+            let expected = "2";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "R5, L5, R5, R3";
+            let expected = "12";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
