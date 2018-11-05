@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "aoc",
+    "base",
+    "year2017",
+]
