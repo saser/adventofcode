@@ -1,5 +1,6 @@
 use std::default::Default;
 use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::str::FromStr;
 
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Grid<T> {
@@ -225,6 +226,18 @@ impl Default for Direction {
 pub enum Turn {
     Clockwise,
     CounterClockwise,
+}
+
+impl FromStr for Turn {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "L" => Ok(Turn::CounterClockwise),
+            "R" => Ok(Turn::Clockwise),
+            _ => Err(format!("invalid turn: `{}`", s)),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
