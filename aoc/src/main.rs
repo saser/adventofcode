@@ -15,13 +15,6 @@ static APP_VERSION: &'static str = "0.1.0";
 static APP_AUTHOR: &'static str = "Christian Persson <saser@live.se>";
 static APP_ABOUT: &'static str = "Runs solutions for the Advent of Code 2017 programming problems";
 
-macro_rules! eprintln {
-    ($($arg:tt)*) => (
-        use std::io::Write;
-        let _ = writeln!(&mut ::std::io::stderr(), $($arg)* );
-    )
-}
-
 fn main() {
     let app = create_app();
     let matches = app.get_matches();
