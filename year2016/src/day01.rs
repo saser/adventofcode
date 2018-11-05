@@ -13,11 +13,29 @@ struct Day01;
 
 impl Solver for Day01 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 01 not yet implemented".to_string())
+        let instrs = parse_input(input);
+        match part {
+            Part::One => Ok(final_position(&instrs).manhattan_distance().to_string()),
+            Part::Two => Err("part two not implemented yet".to_string()),
+        }
     }
 }
 
-fn parse_input(input: &str) -> Vec<(Turn, i64)> {
+fn perform_instructions(instrs: &[(Turn, u64)]) -> Vec<Traveler> {
+    instrs
+        .iter()
+        .scan(Traveler::default(), |state, &(turn, steps)| {
+            state.turn(turn);
+            state.step_n(steps);
+            Some(*state)
+        }).collect()
+}
+
+fn final_position(instrs: &[(Turn, u64)]) -> Point {
+    perform_instructions(instrs).last().unwrap().pos()
+}
+
+fn parse_input(input: &str) -> Vec<(Turn, u64)> {
     lazy_static! {
         static ref INSTR_RE: Regex = Regex::new(r"(?P<dir>[RL])(?P<steps>\d+)").unwrap();
     }
@@ -26,7 +44,7 @@ fn parse_input(input: &str) -> Vec<(Turn, i64)> {
         .map(|instr| {
             let captures = INSTR_RE.captures(instr).unwrap();
             let turn = Turn::from_str(&captures["dir"]).unwrap();
-            let steps = i64::from_str(&captures["steps"]).unwrap();
+            let steps = u64::from_str(&captures["steps"]).unwrap();
             (turn, steps)
         }).collect()
 }
