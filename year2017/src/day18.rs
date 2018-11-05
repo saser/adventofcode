@@ -9,7 +9,7 @@ pub fn get_solver() -> Box<Solver> {
 struct Day18;
 
 impl Solver for Day18 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+    fn solve(&self, _part: Part, input: &str) -> Result<String, String> {
         let instructions = parse_input(input);
         let mut processor = Processor::from_instructions(&instructions);
         while processor.recovered_frequency.is_none() {
