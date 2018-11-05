@@ -1,4 +1,5 @@
 use std::default::Default;
+use std::fmt;
 use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign};
 use std::str::FromStr;
 
@@ -83,6 +84,12 @@ impl<T, Idx: Into<(usize, usize)>> IndexMut<Idx> for Grid<T> {
 pub struct Point {
     pub x: i64,
     pub y: i64,
+}
+
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
+    }
 }
 
 impl Add for Point {
