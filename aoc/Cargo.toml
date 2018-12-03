@@ -8,3 +8,4 @@ clap = "~2.29.0"
 base = { path = "../base" }
 year2016 = { path = "../year2016" }
 year2017 = { path = "../year2017" }
+year2018 = { path = "../year2018" }

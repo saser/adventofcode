@@ -3,6 +3,7 @@ extern crate base;
 extern crate clap;
 extern crate year2016;
 extern crate year2017;
+extern crate year2018;
 
 use base::{Part, Solver, YearDispatcher};
 use clap::{App, Arg, ArgMatches};
@@ -65,7 +66,7 @@ fn create_app() -> App<'static, 'static> {
             Arg::with_name("year")
                 .help("Specifies which year to run")
                 .takes_value(true)
-                .possible_values(&["2016", "2017"])
+                .possible_values(&["2016", "2017", "2018"])
                 .required(true),
         ).arg(
             Arg::with_name("day")
@@ -108,6 +109,7 @@ fn get_year_dispatcher(year: u16) -> Result<Box<dyn YearDispatcher>, String> {
     match year {
         2016 => Ok(year2016::get_dispatcher()),
         2017 => Ok(year2017::get_dispatcher()),
+        2018 => Ok(year2018::get_dispatcher()),
         _ => Err(format!("no dispatcher for year {}", year)),
     }
 }
