@@ -1,5 +1,5 @@
-use base::{Part, Solver};
 use base::grid::*;
+use base::{Part, Solver};
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day19)
