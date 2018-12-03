@@ -12,7 +12,26 @@ struct Day03;
 
 impl Solver for Day03 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 03 not yet implemented".to_string())
+        let claims = input
+            .lines()
+            .map(Claim::from_str)
+            .map(Result::unwrap)
+            .collect::<Vec<Claim>>();
+        let size = 1000;
+        match part {
+            Part::One => {
+                let mut multiple_claims_count = 0;
+                for i in 0..size {
+                    for j in 0..size {
+                        if claims_for_point((i, j), &claims).len() > 1 {
+                            multiple_claims_count += 1;
+                        }
+                    }
+                }
+                Ok(multiple_claims_count.to_string())
+            }
+            Part::Two => Err("part 2 not yet implemented".to_string()),
+        }
     }
 }
 
@@ -21,6 +40,14 @@ struct Claim {
     id: usize,
     start_coords: (usize, usize),
     size: (usize, usize),
+}
+
+impl Claim {
+    fn contains_point(&self, (px, py): (usize, usize)) -> bool {
+        let (x, y) = self.start_coords;
+        let (dx, dy) = self.size;
+        (px >= x && px < x + dx) && (py >= y && py < y + dy)
+    }
 }
 
 impl FromStr for Claim {
@@ -44,6 +71,13 @@ impl FromStr for Claim {
             size: (dx, dy),
         })
     }
+}
+
+fn claims_for_point(point: (usize, usize), claims: &[Claim]) -> Vec<&Claim> {
+    claims
+        .iter()
+        .filter(|claim| claim.contains_point(point))
+        .collect()
 }
 
 #[cfg(test)]
