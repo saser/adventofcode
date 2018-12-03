@@ -2,6 +2,7 @@ use regex::Regex;
 
 use base::{Part, Solver};
 
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -17,18 +18,14 @@ impl Solver for Day03 {
             .map(Claim::from_str)
             .map(Result::unwrap)
             .collect::<Vec<Claim>>();
-        let size = 1000;
+        let map = build_map(&claims);
         match part {
             Part::One => {
-                let mut multiple_claims_count = 0;
-                for i in 0..size {
-                    for j in 0..size {
-                        if claims_for_point((i, j), &claims).len() > 1 {
-                            multiple_claims_count += 1;
-                        }
-                    }
-                }
-                Ok(multiple_claims_count.to_string())
+                let count = map
+                    .values()
+                    .filter(|point_claims| point_claims.len() > 1)
+                    .count();
+                Ok(count.to_string())
             }
             Part::Two => Err("part 2 not yet implemented".to_string()),
         }
@@ -42,12 +39,6 @@ struct Claim {
     y: usize,
     dx: usize,
     dy: usize,
-}
-
-impl Claim {
-    fn contains_point(&self, (px, py): (usize, usize)) -> bool {
-        (px >= self.x && px < self.x + self.dx) && (py >= self.y && py < self.y + self.dy)
-    }
 }
 
 impl FromStr for Claim {
@@ -69,11 +60,17 @@ impl FromStr for Claim {
     }
 }
 
-fn claims_for_point(point: (usize, usize), claims: &[Claim]) -> Vec<&Claim> {
-    claims
-        .iter()
-        .filter(|claim| claim.contains_point(point))
-        .collect()
+fn build_map(claims: &[Claim]) -> HashMap<(usize, usize), Vec<&Claim>> {
+    let mut map = HashMap::new();
+    for claim in claims {
+        for i in claim.x..claim.x + claim.dx {
+            for j in claim.y..claim.y + claim.dy {
+                let point_claims = map.entry((i, j)).or_insert(Vec::new());
+                point_claims.push(claim);
+            }
+        }
+    }
+    map
 }
 
 #[cfg(test)]
