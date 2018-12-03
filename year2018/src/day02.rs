@@ -85,8 +85,16 @@ ababab\
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+abcde
+fghij
+klmno
+pqrst
+fguij
+axcye
+wvxyz\
+            ";
+            let expected = "fgij";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
