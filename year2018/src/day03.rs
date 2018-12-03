@@ -12,9 +12,42 @@ impl Solver for Day03 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct Claim {
+    id: isize,
+    start_coords: (isize, isize),
+    size: (isize, isize),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    mod parsing {
+        use super::*;
+
+        #[test]
+        fn single_digits() {
+            let input = "#1 @ 1,3: 4x4";
+            let expected = Claim {
+                id: 1,
+                start_coords: (1, 3),
+                size: (4, 4),
+            };
+            assert_eq!(expected, Claim::from_str(input).unwrap());
+        }
+
+        #[test]
+        fn multiple_digits() {
+            let input = "#123 @ 19,443: 40x32";
+            let expected = Claim {
+                id: 123,
+                start_coords: (19, 443),
+                size: (40, 32),
+            };
+            assert_eq!(expected, Claim::from_str(input).unwrap());
+        }
+    }
 
     mod part1 {
         use super::*;
