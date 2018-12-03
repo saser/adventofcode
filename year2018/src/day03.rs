@@ -18,9 +18,9 @@ impl Solver for Day03 {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct Claim {
-    id: isize,
-    start_coords: (isize, isize),
-    size: (isize, isize),
+    id: usize,
+    start_coords: (usize, usize),
+    size: (usize, usize),
 }
 
 impl FromStr for Claim {
@@ -33,11 +33,11 @@ impl FromStr for Claim {
                     .unwrap();
         }
         let captures = CLAIM_RE.captures(s).unwrap();
-        let id = isize::from_str(&captures["id"]).unwrap();
-        let x = isize::from_str(&captures["x"]).unwrap();
-        let y = isize::from_str(&captures["y"]).unwrap();
-        let dx = isize::from_str(&captures["dx"]).unwrap();
-        let dy = isize::from_str(&captures["dy"]).unwrap();
+        let id = usize::from_str(&captures["id"]).unwrap();
+        let x = usize::from_str(&captures["x"]).unwrap();
+        let y = usize::from_str(&captures["y"]).unwrap();
+        let dx = usize::from_str(&captures["dx"]).unwrap();
+        let dy = usize::from_str(&captures["dy"]).unwrap();
         Ok(Self {
             id: id,
             start_coords: (x, y),
