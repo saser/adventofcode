@@ -10,15 +10,30 @@ struct Day02;
 
 impl Solver for Day02 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let box_id_character_counts = input.lines().map(character_counts);
-        let contains_tuples = box_id_character_counts.map(|counts| contains_any_two_three(&counts));
-        let (total_twos, total_threes) = contains_tuples
-            .fold((0, 0), |(acc_x, acc_y), (t_x, t_y)| {
-                (acc_x + t_x, acc_y + t_y)
-            });
+        let ids = input.lines();
         match part {
-            Part::One => Ok((total_twos * total_threes).to_string()),
-            Part::Two => Err("herp derp 2".to_string()),
+            Part::One => {
+                let box_id_character_counts = ids.map(character_counts);
+                let contains_tuples =
+                    box_id_character_counts.map(|counts| contains_any_two_three(&counts));
+                let (total_twos, total_threes) = contains_tuples
+                    .fold((0, 0), |(acc_x, acc_y), (t_x, t_y)| {
+                        (acc_x + t_x, acc_y + t_y)
+                    });
+                Ok((total_twos * total_threes).to_string())
+            }
+            Part::Two => {
+                let ids = ids.collect::<Vec<&str>>();
+                for (i, id1) in ids.iter().enumerate() {
+                    for id2 in &ids[i..] {
+                        let (same_chars, count) = remove_differing_characters(id1, id2);
+                        if count == 1 {
+                            return Ok(same_chars);
+                        }
+                    }
+                }
+                unreachable!()
+            }
         }
     }
 }
@@ -45,6 +60,21 @@ fn contains_any_two_three(counts: &HashMap<char, u64>) -> (i64, i64) {
         }
     }
     contains
+}
+
+fn remove_differing_characters(id1: &str, id2: &str) -> (String, u64) {
+    id1.chars()
+        .zip(id2.chars())
+        .fold((String::new(), 0), |(s, count), (c1, c2)| {
+            let mut new_s = s.clone();
+            let mut new_count = count;
+            if c1 == c2 {
+                new_s.push(c1);
+            } else {
+                new_count += 1;
+            }
+            (new_s, new_count)
+        })
 }
 
 #[cfg(test)]
