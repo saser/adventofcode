@@ -98,10 +98,68 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
++1
+-2
++3
++1\
+            ";
+            let expected = "2";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "\
++1
+-1\
+            ";
+            let expected = "0";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "\
++3
++3
++4
+-2
+-4\
+            ";
+            let expected = "10";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "\
++6
++3
++8
++5
+-6\
+            ";
+            let expected = "5";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_5() {
+            let solver = get_solver();
+            let input = "\
++7
++7
+-2
+-7
+-4\
+            ";
+            let expected = "14";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
