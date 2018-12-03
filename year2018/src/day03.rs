@@ -27,7 +27,20 @@ impl Solver for Day03 {
                     .count();
                 Ok(count.to_string())
             }
-            Part::Two => Err("part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let mut candidate_claims = map
+                    .values()
+                    .filter(|point_claims| point_claims.len() == 1)
+                    .map(|point_claims| point_claims[0]);
+                let lonely_claim = candidate_claims
+                    .find(|&claim| {
+                        claim.covered_points().iter().all(|point| {
+                            let point_claims = map.get(point).unwrap();
+                            point_claims.len() == 1 && point_claims[0] == claim
+                        })
+                    }).unwrap();
+                Ok(lonely_claim.id.to_string())
+            }
         }
     }
 }
@@ -39,6 +52,18 @@ struct Claim {
     y: usize,
     dx: usize,
     dy: usize,
+}
+
+impl Claim {
+    fn covered_points(&self) -> Vec<(usize, usize)> {
+        let mut points = Vec::with_capacity(self.dx * self.dy);
+        for i in self.x..self.x + self.dx {
+            for j in self.y..self.y + self.dy {
+                points.push((i, j));
+            }
+        }
+        points
+    }
 }
 
 impl FromStr for Claim {
