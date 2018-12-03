@@ -139,7 +139,7 @@ mod tests {
         fn example_4() {
             let solver = get_solver();
             let input = "\
-+6
+-6
 +3
 +8
 +5
