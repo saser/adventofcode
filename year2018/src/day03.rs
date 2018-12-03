@@ -38,15 +38,15 @@ impl Solver for Day03 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct Claim {
     id: usize,
-    start_coords: (usize, usize),
-    size: (usize, usize),
+    x: usize,
+    y: usize,
+    dx: usize,
+    dy: usize,
 }
 
 impl Claim {
     fn contains_point(&self, (px, py): (usize, usize)) -> bool {
-        let (x, y) = self.start_coords;
-        let (dx, dy) = self.size;
-        (px >= x && px < x + dx) && (py >= y && py < y + dy)
+        (px >= self.x && px < self.x + self.dx) && (py >= self.y && py < self.y + self.dy)
     }
 }
 
@@ -65,11 +65,7 @@ impl FromStr for Claim {
         let y = usize::from_str(&captures["y"]).unwrap();
         let dx = usize::from_str(&captures["dx"]).unwrap();
         let dy = usize::from_str(&captures["dy"]).unwrap();
-        Ok(Self {
-            id: id,
-            start_coords: (x, y),
-            size: (dx, dy),
-        })
+        Ok(Self { id, x, y, dx, dy })
     }
 }
 
@@ -92,8 +88,10 @@ mod tests {
             let input = "#1 @ 1,3: 4x4";
             let expected = Claim {
                 id: 1,
-                start_coords: (1, 3),
-                size: (4, 4),
+                x: 1,
+                y: 3,
+                dx: 4,
+                dy: 4,
             };
             assert_eq!(expected, Claim::from_str(input).unwrap());
         }
@@ -103,8 +101,10 @@ mod tests {
             let input = "#123 @ 19,443: 40x32";
             let expected = Claim {
                 id: 123,
-                start_coords: (19, 443),
-                size: (40, 32),
+                x: 19,
+                y: 443,
+                dx: 40,
+                dy: 32,
             };
             assert_eq!(expected, Claim::from_str(input).unwrap());
         }
