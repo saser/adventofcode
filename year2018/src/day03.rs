@@ -129,8 +129,12 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+#1 @ 1,3: 4x4
+#2 @ 3,1: 4x4
+#3 @ 5,5: 2x2\
+            ";
+            let expected = "3";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
