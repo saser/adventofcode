@@ -1,4 +1,7 @@
 extern crate base;
+#[macro_use]
+extern crate lazy_static;
+extern crate regex;
 
 use base::{Solver, YearDispatcher};
 

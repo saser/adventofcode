@@ -1,4 +1,8 @@
+use regex::Regex;
+
 use base::{Part, Solver};
+
+use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day03)
@@ -17,6 +21,29 @@ struct Claim {
     id: isize,
     start_coords: (isize, isize),
     size: (isize, isize),
+}
+
+impl FromStr for Claim {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        lazy_static! {
+            static ref CLAIM_RE: Regex =
+                Regex::new(r"#(?P<id>\d+) @ (?P<x>\d+),(?P<y>\d+): (?P<dx>\d+)x(?P<dy>\d+)")
+                    .unwrap();
+        }
+        let captures = CLAIM_RE.captures(s).unwrap();
+        let id = isize::from_str(&captures["id"]).unwrap();
+        let x = isize::from_str(&captures["x"]).unwrap();
+        let y = isize::from_str(&captures["y"]).unwrap();
+        let dx = isize::from_str(&captures["dx"]).unwrap();
+        let dy = isize::from_str(&captures["dy"]).unwrap();
+        Ok(Self {
+            id: id,
+            start_coords: (x, y),
+            size: (dx, dy),
+        })
+    }
 }
 
 #[cfg(test)]
