@@ -28,7 +28,7 @@ mod tests {
 +3
 +1\
             ";
-            let expected = "4";
+            let expected = "3";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
