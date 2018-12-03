@@ -1,5 +1,7 @@
 use base::{Part, Solver};
 
+use std::str::FromStr;
+
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day01)
 }
@@ -8,8 +10,23 @@ struct Day01;
 
 impl Solver for Day01 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 01 not yet implemented".to_string())
+        let changes = parse_input(input);
+        match part {
+            Part::One => Ok(final_frequency(&changes).to_string()),
+            Part::Two => Err("part 2 not yet implemented".to_string()),
+        }
     }
+}
+
+fn parse_input(input: &str) -> Vec<i64> {
+    input
+        .lines()
+        .map(|line| i64::from_str(line).unwrap())
+        .collect()
+}
+
+fn final_frequency(changes: &[i64]) -> i64 {
+    changes.iter().fold(0, |acc, &x| acc + x)
 }
 
 #[cfg(test)]
