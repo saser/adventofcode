@@ -1,5 +1,7 @@
 use base::{Part, Solver};
 
+use std::collections::HashMap;
+
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day02)
 }
@@ -8,8 +10,41 @@ struct Day02;
 
 impl Solver for Day02 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day 02 not yet implemented".to_string())
+        let box_id_character_counts = input.lines().map(character_counts);
+        let contains_tuples = box_id_character_counts.map(|counts| contains_any_two_three(&counts));
+        let (total_twos, total_threes) = contains_tuples
+            .fold((0, 0), |(acc_x, acc_y), (t_x, t_y)| {
+                (acc_x + t_x, acc_y + t_y)
+            });
+        match part {
+            Part::One => Ok((total_twos * total_threes).to_string()),
+            Part::Two => Err("herp derp 2".to_string()),
+        }
     }
+}
+
+fn character_counts(box_id: &str) -> HashMap<char, u64> {
+    let mut counts = HashMap::new();
+    for c in box_id.chars() {
+        let counter = counts.entry(c).or_insert(0);
+        *counter += 1;
+    }
+    counts
+}
+
+fn contains_any_two_three(counts: &HashMap<char, u64>) -> (i64, i64) {
+    let mut contains = (0, 0);
+    for (_c, &count) in counts {
+        if count == 2 {
+            contains.0 = 1;
+        } else if count == 3 {
+            contains.1 = 1;
+        }
+        if contains == (1, 1) {
+            break;
+        }
+    }
+    contains
 }
 
 #[cfg(test)]
