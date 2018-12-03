@@ -1,5 +1,6 @@
 use base::{Part, Solver};
 
+use std::collections::HashSet;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -13,7 +14,7 @@ impl Solver for Day01 {
         let changes = parse_input(input);
         match part {
             Part::One => Ok(final_frequency(&changes).to_string()),
-            Part::Two => Err("part 2 not yet implemented".to_string()),
+            Part::Two => Ok(first_duplicate_frequency(&changes).to_string()),
         }
     }
 }
@@ -27,6 +28,22 @@ fn parse_input(input: &str) -> Vec<i64> {
 
 fn final_frequency(changes: &[i64]) -> i64 {
     changes.iter().fold(0, |acc, &x| acc + x)
+}
+
+fn first_duplicate_frequency(changes: &[i64]) -> i64 {
+    let looped_frequencies = changes.iter().cycle().scan(0, |acc, &x| {
+        *acc = *acc + x;
+        Some(*acc)
+    });
+    let mut seen = HashSet::new();
+    seen.insert(0);
+    for freq in looped_frequencies {
+        if seen.contains(&freq) {
+            return freq;
+        }
+        seen.insert(freq);
+    }
+    unreachable!()
 }
 
 #[cfg(test)]
