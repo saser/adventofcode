@@ -1,4 +1,5 @@
 extern crate base;
+extern crate chrono;
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;

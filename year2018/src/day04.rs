@@ -1,4 +1,5 @@
 use base::{Part, Solver};
+use chrono::{NaiveDate, NaiveDateTime};
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day04)
@@ -13,6 +14,19 @@ impl Solver for Day04 {
             Part::Two => Err("day 04 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+struct Event {
+    datetime: NaiveDateTime,
+    event_type: EventType,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+enum EventType {
+    BeginsShift(u64),
+    FallsAsleep,
+    WakesUp,
 }
 
 #[cfg(test)]
