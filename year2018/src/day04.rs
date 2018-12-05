@@ -32,10 +32,10 @@ fn parse_input(input: &str) -> Vec<Event> {
 
 fn strategy_1(sorted_events: &[Event]) -> u64 {
     let guard_events = gather_guard_events(sorted_events);
-    let (id, (_total_sleep, most_sleeping_minute)) = guard_events
+    let (id, (_total_sleep, most_sleeping_minute, _most_times_asleep)) = guard_events
         .iter()
         .map(|(id, events)| (id, calculate_sleeping(events)))
-        .max_by_key(|&(_id, (total_sleep, _most_sleeping_minute))| total_sleep)
+        .max_by_key(|&(_id, (total_sleep, _most_sleeping_minute, _most_times_asleep))| total_sleep)
         .unwrap();
     id * most_sleeping_minute as u64
 }
@@ -70,7 +70,7 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
     map
 }
 
-fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32) {
+fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32, u32) {
     let mut combined = events
         .into_iter()
         .cloned()
@@ -86,7 +86,8 @@ fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32) {
     let mut last_event_minute = 0;
     let mut total_sleep = 0;
     let mut times_asleep = 0;
-    let (mut most_sleeping_minute, mut most_times_asleep) = (0, 0);
+    let mut most_sleeping_minute = 0;
+    let mut most_times_asleep = 0;
     for &(event_minute, event_type) in &combined {
         total_sleep += (event_minute - last_event_minute) * times_asleep;
         match event_type {
@@ -100,7 +101,7 @@ fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32) {
         }
         last_event_minute = event_minute;
     }
-    (total_sleep, most_sleeping_minute)
+    (total_sleep, most_sleeping_minute, most_times_asleep)
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
