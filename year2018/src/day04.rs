@@ -52,10 +52,7 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
     let mut current_events = vec![(first_event_minute, first_event_type)];
     let mut map = HashMap::new();
     for &event in &events[1..] {
-        let event_hour = event.datetime.hour();
-        // Let `event_minute` be the offset from the event from midnight: if the event happens
-        // before midnight, then a negative value is used.
-        let event_minute = event.datetime.minute() - if event_hour > 0 { 60 } else { 0 };
+        let event_minute = event.datetime.minute();
         let event_type = event.event_type;
         if let EventType::BeginsShift(id) = event_type {
             map.entry(current_guard)
@@ -63,8 +60,9 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
                 .push(current_events);
             current_guard = id;
             current_events = Vec::new();
+        } else {
+            current_events.push((event_minute, event_type));
         }
-        current_events.push((event_minute, event_type));
     }
     map.entry(current_guard)
         .or_insert(Vec::new())
