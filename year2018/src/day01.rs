@@ -27,7 +27,7 @@ fn parse_input(input: &str) -> Vec<i64> {
 }
 
 fn final_frequency(changes: &[i64]) -> i64 {
-    changes.iter().fold(0, |acc, &x| acc + x)
+    changes.iter().sum()
 }
 
 fn first_duplicate_frequency(changes: &[i64]) -> i64 {
