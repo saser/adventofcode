@@ -29,7 +29,19 @@ impl FromStr for Event {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        unimplemented!()
+        lazy_static! {
+            static ref EVENT_RE: Regex =
+                Regex::new(r"\[(?P<datetime>\d{4}\-\d{2}\-\d{2} \d{2}:\d{2})\] (?P<event_type>.+)")
+                    .unwrap();
+        }
+        let captures = EVENT_RE.captures(s).unwrap();
+        let datetime =
+            NaiveDateTime::parse_from_str(&captures["datetime"], "%Y-%m-%d %H:%M").unwrap();
+        let event_type = EventType::from_str(&captures["event_type"]).unwrap();
+        Ok(Event {
+            datetime,
+            event_type,
+        })
     }
 }
 
