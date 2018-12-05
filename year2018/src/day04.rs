@@ -2,6 +2,7 @@ use base::{Part, Solver};
 use chrono::{NaiveDateTime, Timelike};
 use regex::Regex;
 
+use std::collections::HashMap;
 use std::str::FromStr;
 
 pub fn get_solver() -> Box<Solver> {
@@ -12,10 +13,10 @@ struct Day04;
 
 impl Solver for Day04 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let mut sorted_entries = parse_input(input);
-        sorted_entries.sort();
+        let mut sorted_events = parse_input(input);
+        sorted_events.sort();
         match part {
-            Part::One => Err("day 04 part 1 not yet implemented".to_string()),
+            Part::One => Ok(strategy_1(&sorted_events).to_string()),
             Part::Two => Err("day 04 part 2 not yet implemented".to_string()),
         }
     }
@@ -27,6 +28,77 @@ fn parse_input(input: &str) -> Vec<Event> {
         .map(Event::from_str)
         .map(Result::unwrap)
         .collect()
+}
+
+fn strategy_1(sorted_events: &[Event]) -> u64 {
+    let guard_events = gather_guard_events(sorted_events);
+    let (id, (_total_sleep, most_sleeping_minute)) = guard_events
+        .iter()
+        .map(|(id, events)| (id, calculate_sleeping(events)))
+        .max_by_key(|&(_id, (total_sleep, _most_sleeping_minute))| total_sleep)
+        .unwrap();
+    id * most_sleeping_minute as u64
+}
+
+fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType)>>> {
+    let first_event = events[0];
+    let first_event_minute = first_event.datetime.minute();
+    let first_event_type = first_event.event_type;
+    let mut current_guard = if let EventType::BeginsShift(id) = first_event_type {
+        id
+    } else {
+        panic!("First event is not a begins shift event");
+    };
+    let mut current_events = vec![(first_event_minute, first_event_type)];
+    let mut map = HashMap::new();
+    for &event in &events[1..] {
+        let event_hour = event.datetime.hour();
+        // Let `event_minute` be the offset from the event from midnight: if the event happens
+        // before midnight, then a negative value is used.
+        let event_minute = event.datetime.minute() - if event_hour > 0 { 60 } else { 0 };
+        let event_type = event.event_type;
+        if let EventType::BeginsShift(id) = event_type {
+            let all_guard_events = map.entry(current_guard).or_insert(Vec::new());
+            all_guard_events.push(current_events);
+            current_guard = id;
+            current_events = Vec::new();
+        }
+        current_events.push((event_minute, event_type));
+    }
+    map
+}
+
+fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32) {
+    let mut combined = events
+        .into_iter()
+        .cloned()
+        .flatten()
+        .filter(|(_event_minute, event_type)| {
+            if let EventType::BeginsShift(_) = event_type {
+                false
+            } else {
+                true
+            }
+        }).collect::<Vec<(u32, EventType)>>();
+    combined.sort();
+    let mut last_event_minute = 0;
+    let mut total_sleep = 0;
+    let mut times_asleep = 0;
+    let (mut most_sleeping_minute, mut most_times_asleep) = (0, 0);
+    for &(event_minute, event_type) in &combined {
+        total_sleep += (event_minute - last_event_minute) * times_asleep;
+        match event_type {
+            EventType::BeginsShift(_) => unreachable!(),
+            EventType::FallsAsleep => times_asleep += 1,
+            EventType::WakesUp => times_asleep -= 1,
+        };
+        if times_asleep > most_times_asleep {
+            most_sleeping_minute = event_minute;
+            most_times_asleep = times_asleep;
+        }
+        last_event_minute = event_minute;
+    }
+    (total_sleep, most_sleeping_minute)
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
