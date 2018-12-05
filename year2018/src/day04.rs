@@ -19,7 +19,7 @@ impl Solver for Day04 {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct Event {
     datetime: NaiveDateTime,
     event_type: EventType,
@@ -45,7 +45,7 @@ impl FromStr for Event {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 enum EventType {
     BeginsShift(u64),
     FallsAsleep,
