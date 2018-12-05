@@ -245,6 +245,14 @@ mod tests {
         use super::*;
 
         #[test]
+        fn with_input() {
+            let solver = get_solver();
+            let input = include_str!("../../inputs/2018/04");
+            let expected = "125444";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
         fn example() {
             let solver = get_solver();
             let input = "\
