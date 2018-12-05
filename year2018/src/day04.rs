@@ -1,5 +1,5 @@
 use base::{Part, Solver};
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{NaiveDateTime, Timelike};
 use regex::Regex;
 
 use std::str::FromStr;
@@ -85,6 +85,7 @@ impl FromStr for EventType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::NaiveDate;
 
     mod parsing {
         use super::*;
