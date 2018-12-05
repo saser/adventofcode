@@ -58,13 +58,17 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
         let event_minute = event.datetime.minute() - if event_hour > 0 { 60 } else { 0 };
         let event_type = event.event_type;
         if let EventType::BeginsShift(id) = event_type {
-            let all_guard_events = map.entry(current_guard).or_insert(Vec::new());
-            all_guard_events.push(current_events);
+            map.entry(current_guard)
+                .or_insert(Vec::new())
+                .push(current_events);
             current_guard = id;
             current_events = Vec::new();
         }
         current_events.push((event_minute, event_type));
     }
+    map.entry(current_guard)
+        .or_insert(Vec::new())
+        .push(current_events);
     map
 }
 
