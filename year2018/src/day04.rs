@@ -25,6 +25,14 @@ struct Event {
     event_type: EventType,
 }
 
+impl FromStr for Event {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        unimplemented!()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum EventType {
     BeginsShift(u64),
@@ -58,6 +66,46 @@ mod tests {
 
     mod parsing {
         use super::*;
+
+        mod event {
+            use super::*;
+
+            #[test]
+            fn begins_shift() {
+                let input = "[1518-11-01 00:00] Guard #10 begins shift";
+                let expected_datetime = NaiveDate::from_ymd(1518, 11, 1).and_hms(0, 0, 0);
+                let expected_event_type = EventType::BeginsShift(10);
+                let expected = Event {
+                    datetime: expected_datetime,
+                    event_type: expected_event_type,
+                };
+                assert_eq!(expected, Event::from_str(input).unwrap());
+            }
+
+            #[test]
+            fn falls_asleep() {
+                let input = "[1518-11-01 00:42] falls asleep";
+                let expected_datetime = NaiveDate::from_ymd(1518, 11, 1).and_hms(0, 42, 0);
+                let expected_event_type = EventType::FallsAsleep;
+                let expected = Event {
+                    datetime: expected_datetime,
+                    event_type: expected_event_type,
+                };
+                assert_eq!(expected, Event::from_str(input).unwrap());
+            }
+
+            #[test]
+            fn wakes_up() {
+                let input = "[1518-11-01 00:58] wakes up";
+                let expected_datetime = NaiveDate::from_ymd(1518, 11, 1).and_hms(0, 58, 0);
+                let expected_event_type = EventType::WakesUp;
+                let expected = Event {
+                    datetime: expected_datetime,
+                    event_type: expected_event_type,
+                };
+                assert_eq!(expected, Event::from_str(input).unwrap());
+            }
+        }
 
         mod event_type {
             use super::*;
