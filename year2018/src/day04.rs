@@ -17,7 +17,7 @@ impl Solver for Day04 {
         sorted_events.sort();
         match part {
             Part::One => Ok(strategy_1(&sorted_events).to_string()),
-            Part::Two => Err("day 04 part 2 not yet implemented".to_string()),
+            Part::Two => Ok(strategy_2(&sorted_events).to_string()),
         }
     }
 }
@@ -37,6 +37,17 @@ fn strategy_1(sorted_events: &[Event]) -> u64 {
         .map(|(id, events)| (id, calculate_sleeping(events)))
         .max_by_key(|&(_id, (total_sleep, _most_sleeping_minute, _most_times_asleep))| total_sleep)
         .unwrap();
+    id * most_sleeping_minute as u64
+}
+
+fn strategy_2(sorted_events: &[Event]) -> u64 {
+    let guard_events = gather_guard_events(sorted_events);
+    let (id, (_total_sleep, most_sleeping_minute, _most_times_asleep)) = guard_events
+        .iter()
+        .map(|(id, events)| (id, calculate_sleeping(events)))
+        .max_by_key(
+            |&(_id, (_total_sleep, _most_sleeping_minute, most_times_asleep))| most_times_asleep,
+        ).unwrap();
     id * most_sleeping_minute as u64
 }
 
