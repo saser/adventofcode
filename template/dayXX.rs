@@ -8,7 +8,10 @@ struct DayXX;
 
 impl Solver for DayXX {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        Err("day XX not yet implemented".to_string())
+        match part {
+            Part::One => Err("day XX part 1 not yet implemented".to_string()),
+            Part::Two => Err("day XX part 2 not yet implemented".to_string()),
+        }
     }
 }
 
