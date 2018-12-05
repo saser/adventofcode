@@ -12,11 +12,21 @@ struct Day04;
 
 impl Solver for Day04 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let mut sorted_entries = parse_input(input);
+        sorted_entries.sort();
         match part {
             Part::One => Err("day 04 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 04 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+fn parse_input(input: &str) -> Vec<Event> {
+    input
+        .lines()
+        .map(Event::from_str)
+        .map(Result::unwrap)
+        .collect()
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
