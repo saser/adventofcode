@@ -1,5 +1,6 @@
 use base::{Part, Solver};
 use chrono::{NaiveDate, NaiveDateTime};
+use regex::Regex;
 
 use std::str::FromStr;
 
@@ -35,7 +36,19 @@ impl FromStr for EventType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        unimplemented!()
+        lazy_static! {
+            static ref BEGIN_RE: Regex = Regex::new(r"Guard #(?P<id>\d+) begins shift").unwrap();
+        }
+        if let Some(caps) = BEGIN_RE.captures(s) {
+            let id = u64::from_str(&caps["id"]).unwrap();
+            Ok(EventType::BeginsShift(id))
+        } else {
+            match s {
+                "falls asleep" => Ok(EventType::FallsAsleep),
+                "wakes up" => Ok(EventType::WakesUp),
+                _ => Err(format!("invalid event: \"{}\"", s)),
+            }
+        }
     }
 }
 
