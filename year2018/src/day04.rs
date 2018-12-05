@@ -1,6 +1,8 @@
 use base::{Part, Solver};
 use chrono::{NaiveDate, NaiveDateTime};
 
+use std::str::FromStr;
+
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day04)
 }
@@ -29,9 +31,59 @@ enum EventType {
     WakesUp,
 }
 
+impl FromStr for EventType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        unimplemented!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    mod parsing {
+        use super::*;
+
+        mod event_type {
+            use super::*;
+
+            #[test]
+            fn begins_shift_single_digit() {
+                let input = "Guard #4 begins shift";
+                let expected = EventType::BeginsShift(4);
+                assert_eq!(expected, EventType::from_str(input).unwrap());
+            }
+
+            #[test]
+            fn begins_shift_multiple_digits() {
+                let input = "Guard #1234 begins shift";
+                let expected = EventType::BeginsShift(1234);
+                assert_eq!(expected, EventType::from_str(input).unwrap());
+            }
+
+            #[test]
+            fn begin_shift_invalid_id() {
+                let input = "Guard #asd begins shift";
+                assert!(EventType::from_str(input).is_err());
+            }
+
+            #[test]
+            fn falls_asleep() {
+                let input = "falls asleep";
+                let expected = EventType::FallsAsleep;
+                assert_eq!(expected, EventType::from_str(input).unwrap());
+            }
+
+            #[test]
+            fn wakes_up() {
+                let input = "wakes up";
+                let expected = EventType::WakesUp;
+                assert_eq!(expected, EventType::from_str(input).unwrap());
+            }
+        }
+    }
 
     mod part1 {
         use super::*;
