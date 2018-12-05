@@ -9,10 +9,37 @@ struct Day05;
 impl Solver for Day05 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         match part {
-            Part::One => Err("day 05 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let mut chars = input.chars().collect();
+                remove_destroyed(&mut chars, 0);
+                Ok(chars.len().to_string())
+            }
             Part::Two => Err("day 05 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+fn remove_destroyed(chars: &mut Vec<char>, index: usize) {
+    if chars.len() == 0 || index == chars.len() - 1 {
+        return;
+    }
+    let c1 = chars[index];
+    let c2 = chars[index + 1];
+    if reacts(c1, c2) {
+        // We remove from the same index twice, since the first remove causes all elements to shift
+        // to the left, making `c2` now located at `index` insteaad of `index + 1`.
+        chars.remove(index);
+        chars.remove(index);
+        let new_index = if index == 0 { 0 } else { index - 1 };
+        remove_destroyed(chars, new_index);
+    } else {
+        remove_destroyed(chars, index + 1);
+    }
+}
+
+fn reacts(c1: char, c2: char) -> bool {
+    (c1.is_uppercase() && c2 == c1.to_lowercase().next().unwrap())
+        || (c2.is_uppercase() && c1 == c2.to_lowercase().next().unwrap())
 }
 
 #[cfg(test)]
