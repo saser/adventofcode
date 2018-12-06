@@ -10,23 +10,35 @@ impl Solver for Day05 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         match part {
             Part::One => {
-                let after_reactions = fully_react(input);
+                let after_reactions = fully_react(input.chars());
                 Ok(after_reactions.len().to_string())
             }
-            Part::Two => Err("day 05 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let best = (b'a'..=b'z')
+                    .map(char::from)
+                    .map(|c| fully_react_without(input, c))
+                    .map(|s| s.len())
+                    .min()
+                    .unwrap();
+                Ok(best.to_string())
+            }
         }
     }
 }
 
-fn fully_react(polymer: &str) -> String {
-    let mut chars = polymer
-        .chars()
-        .map(Option::Some)
-        .collect::<Vec<Option<char>>>();
+fn fully_react(char_iter: impl Iterator<Item = char>) -> String {
+    let mut chars = char_iter.map(Option::Some).collect::<Vec<Option<char>>>();
 
     remove_reactions(&mut chars);
 
     chars.iter().filter_map(|&opt_c| opt_c).collect()
+}
+
+fn fully_react_without(polymer: &str, unit: char) -> String {
+    let filtered = polymer
+        .chars()
+        .filter(|c| c.to_ascii_uppercase() != unit.to_ascii_uppercase());
+    fully_react(filtered)
 }
 
 fn remove_reactions(chars: &mut [Option<char>]) {
