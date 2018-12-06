@@ -102,6 +102,7 @@ fn read_input(path: &str) -> io::Result<String> {
     let mut input = String::new();
     let mut file = File::open(path)?;
     file.read_to_string(&mut input)?;
+    input = input.trim().to_string();
     Ok(input)
 }
 
