@@ -93,6 +93,14 @@ mod tests {
         use super::*;
 
         #[test]
+        fn with_input() {
+            let solver = get_solver();
+            let input = include_str!("../../inputs/2018/05").trim();
+            let expected = "9686";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
         fn example_1() {
             let solver = get_solver();
             let input = "aA";
