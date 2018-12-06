@@ -38,8 +38,7 @@ fn remove_destroyed(chars: &mut Vec<char>, index: usize) {
 }
 
 fn reacts(c1: char, c2: char) -> bool {
-    (c1.is_uppercase() && c2 == c1.to_lowercase().next().unwrap())
-        || (c2.is_uppercase() && c1 == c2.to_lowercase().next().unwrap())
+    c1 != c2 && c1.to_ascii_uppercase() == c2.to_ascii_uppercase()
 }
 
 #[cfg(test)]
