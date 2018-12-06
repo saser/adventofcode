@@ -10,31 +10,75 @@ impl Solver for Day05 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         match part {
             Part::One => {
-                let mut chars = input.chars().collect();
-                remove_destroyed(&mut chars, 0);
-                Ok(chars.len().to_string())
+                let after_reactions = fully_react(input);
+                Ok(after_reactions.len().to_string())
             }
             Part::Two => Err("day 05 part 2 not yet implemented".to_string()),
         }
     }
 }
 
-fn remove_destroyed(chars: &mut Vec<char>, index: usize) {
-    if chars.len() == 0 || index == chars.len() - 1 {
-        return;
+fn fully_react(polymer: &str) -> String {
+    let mut chars = polymer
+        .chars()
+        .map(Option::Some)
+        .collect::<Vec<Option<char>>>();
+
+    remove_reactions(&mut chars);
+
+    chars.iter().filter_map(|&opt_c| opt_c).collect()
+}
+
+fn remove_reactions(chars: &mut [Option<char>]) {
+    let mut c1_index = 0;
+    while c1_index < chars.len() {
+        let c2_index = match find_next_forward(chars, c1_index + 1) {
+            Some(i) => i,
+            None => break,
+        };
+        let c1 = chars[c1_index].unwrap();
+        let c2 = chars[c2_index].unwrap();
+        if reacts(c1, c2) {
+            chars[c1_index] = None;
+            chars[c2_index] = None;
+            c1_index = match find_next_backward(chars, c1_index) {
+                Some(i) => i,
+                None => match find_next_forward(chars, c2_index) {
+                    Some(i) => i,
+                    None => break,
+                },
+            };
+        } else {
+            c1_index = c2_index;
+        }
     }
-    let c1 = chars[index];
-    let c2 = chars[index + 1];
-    if reacts(c1, c2) {
-        // We remove from the same index twice, since the first remove causes all elements to shift
-        // to the left, making `c2` now located at `index` insteaad of `index + 1`.
-        chars.remove(index);
-        chars.remove(index);
-        let new_index = if index == 0 { 0 } else { index - 1 };
-        remove_destroyed(chars, new_index);
-    } else {
-        remove_destroyed(chars, index + 1);
+}
+
+fn find_next_forward(chars: &[Option<char>], start: usize) -> Option<usize> {
+    let mut index = None;
+    for i in start..chars.len() {
+        if chars[i].is_some() {
+            index = Some(i);
+            break;
+        }
     }
+    index
+}
+
+fn find_next_backward(chars: &[Option<char>], start: usize) -> Option<usize> {
+    let mut index = None;
+    let mut i = start;
+    loop {
+        if chars[i].is_some() {
+            index = Some(i);
+            break;
+        }
+        if i == 0 {
+            break;
+        }
+        i -= 1;
+    }
+    index
 }
 
 fn reacts(c1: char, c2: char) -> bool {
