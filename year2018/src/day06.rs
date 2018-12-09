@@ -204,10 +204,10 @@ mod tests {
         use super::*;
 
         #[test]
-        fn example() {
+        fn with_input() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = include_str!("../../inputs/2018/06").trim();
+            let expected = "40134";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
