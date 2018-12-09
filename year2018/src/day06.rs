@@ -25,8 +25,15 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+1, 1
+1, 6
+8, 3
+3, 4
+5, 5
+8, 9\
+            ";
+            let expected = "17";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
