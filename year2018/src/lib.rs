@@ -12,6 +12,7 @@ pub mod day02;
 pub mod day03;
 pub mod day04;
 pub mod day05;
+pub mod day06;
 
 pub struct Year2018;
 
@@ -27,6 +28,7 @@ impl YearDispatcher for Year2018 {
             03 => Ok(day03::get_solver()),
             04 => Ok(day04::get_solver()),
             05 => Ok(day05::get_solver()),
+            06 => Ok(day06::get_solver()),
             _ => Err(format!("no solver for day {}", day)),
         }
     }
