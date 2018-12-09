@@ -23,6 +23,14 @@ mod tests {
         use super::*;
 
         #[test]
+        fn with_input() {
+            let solver = get_solver();
+            let input = include_str!("../../inputs/YYYY/XX").trim();
+            let expected = "expected output";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
         fn example() {
             let solver = get_solver();
             let input = "put some input here";
@@ -33,6 +41,14 @@ mod tests {
 
     mod part2 {
         use super::*;
+
+        #[test]
+        fn with_input() {
+            let solver = get_solver();
+            let input = include_str!("../../inputs/YYYY/XX").trim();
+            let expected = "expected output";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
 
         #[test]
         fn example() {

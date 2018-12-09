@@ -31,6 +31,9 @@ cp template/dayXX.rs "$mod_file"
 echo "$prefix: Replacing all occurrences of \`XX\` with \`$day_full\` in \`$mod_file\`."
 sed -E -i "s/XX/$day_full/g" "$mod_file"
 
+echo "$prefix: Replacing all occurrences of \`YYYY\` with \`$year\` in \`$mod_file\`."
+sed -E -i "s/YYYY/$year/g" "$mod_file"
+
 crate_file="$crate/src/lib.rs"
 last_day_full=$(sed -E -n "s/.*day(0[1-9]|[12][0-9]).*/\1/p" "$crate_file" | sort | tail -n 1)
 case "$last_day_full" in
