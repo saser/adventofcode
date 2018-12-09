@@ -1,9 +1,9 @@
-extern crate base;
+
 #[macro_use]
 extern crate clap;
-extern crate year2016;
-extern crate year2017;
-extern crate year2018;
+use year2016;
+use year2017;
+use year2018;
 
 use base::{Part, Solver, YearDispatcher};
 use clap::{App, Arg, ArgMatches};
@@ -37,7 +37,7 @@ fn main() {
     solve(solver, day, part, &input);
 }
 
-fn solve(solver: Box<Solver>, day: u8, part: Part, input: &str) {
+fn solve(solver: Box<dyn Solver>, day: u8, part: Part, input: &str) {
     let timer = Instant::now();
     let solution = solver.solve(part, input).unwrap_or_else(|e| {
         eprintln!(
@@ -90,7 +90,7 @@ fn create_app() -> App<'static, 'static> {
         )
 }
 
-fn parse_arguments(matches: &ArgMatches) -> Result<(u16, u8, Part, String), String> {
+fn parse_arguments(matches: &ArgMatches<'_>) -> Result<(u16, u8, Part, String), String> {
     let year = value_t!(matches.value_of("year"), u16).unwrap();
     let day = value_t!(matches.value_of("day"), u8).unwrap();
     if day < 1 || day > 25 {

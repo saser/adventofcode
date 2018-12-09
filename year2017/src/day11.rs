@@ -2,7 +2,7 @@ use base::{Part, Solver};
 use std::ops::Add;
 use std::str::FromStr;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day11)
 }
 

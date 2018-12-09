@@ -1,7 +1,7 @@
 use base::grid::*;
 use base::{Part, Solver};
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day19)
 }
 
@@ -130,7 +130,7 @@ impl From<char> for Tile {
             '-' => Tile::Horizontal,
             '|' => Tile::Vertical,
             '+' => Tile::Corner,
-            'A'...'Z' => Tile::Letter(c),
+            'A'..='Z' => Tile::Letter(c),
             _ => Tile::Empty,
         }
     }

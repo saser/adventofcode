@@ -2,7 +2,7 @@ use base::{Part, Solver};
 
 use std::collections::HashMap;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day02)
 }
 

@@ -2,7 +2,7 @@ use base::grid::*;
 use base::{Part, Solver};
 use std::collections::HashMap;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day03)
 }
 
@@ -75,11 +75,11 @@ struct Spiral {
     grid: HashMap<Point, u64>,
     pos: Point,
     value: u64,
-    next_value_fun: Box<Fn(&Spiral) -> u64>,
+    next_value_fun: Box<dyn Fn(&Spiral) -> u64>,
 }
 
 impl Spiral {
-    fn new(next_value_fun: Box<Fn(&Spiral) -> u64>) -> Spiral {
+    fn new(next_value_fun: Box<dyn Fn(&Spiral) -> u64>) -> Spiral {
         let initial_pos = Point { x: 0, y: 0 };
         let mut initial_grid = HashMap::new();
         initial_grid.insert(initial_pos, 1);

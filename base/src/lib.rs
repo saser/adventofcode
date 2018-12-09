@@ -22,7 +22,7 @@ impl FromStr for Part {
 }
 
 impl fmt::Display for Part {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match *self {
             Part::One => "1",
             Part::Two => "2",

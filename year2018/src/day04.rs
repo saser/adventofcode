@@ -5,7 +5,7 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::str::FromStr;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day04)
 }
 

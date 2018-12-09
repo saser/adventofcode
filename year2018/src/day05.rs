@@ -1,7 +1,7 @@
 use base::{Part, Solver};
 use rayon::prelude::*;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day05)
 }
 

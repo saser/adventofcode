@@ -3,7 +3,7 @@ use regex::Regex;
 use std::collections::VecDeque;
 use std::str::FromStr;
 
-pub fn get_solver() -> Box<Solver> {
+pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day16)
 }
 
