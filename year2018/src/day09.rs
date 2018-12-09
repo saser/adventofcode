@@ -1,3 +1,8 @@
+use lazy_static::lazy_static;
+use regex::Regex;
+
+use std::str::FromStr;
+
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<Solver> {
@@ -8,11 +13,25 @@ struct Day09;
 
 impl Solver for Day09 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let (players, last_marble) = parse_input(input);
         match part {
             Part::One => Err("day 09 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 09 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+fn parse_input(input: &str) -> (usize, u64) {
+    lazy_static! {
+        static ref INPUT_RE: Regex = Regex::new(
+            r"(?P<players>\d+) players; last marble is worth (?P<last_marble>\d+) points"
+        )
+        .unwrap();
+    }
+    let captures = INPUT_RE.captures(input).unwrap();
+    let players = usize::from_str(&captures["players"]).unwrap();
+    let last_marble = u64::from_str(&captures["last_marble"]).unwrap();
+    (players, last_marble)
 }
 
 #[cfg(test)]
