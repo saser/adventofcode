@@ -47,7 +47,8 @@ fn strategy_2(sorted_events: &[Event]) -> u64 {
         .map(|(id, events)| (id, calculate_sleeping(events)))
         .max_by_key(
             |&(_id, (_total_sleep, _most_sleeping_minute, most_times_asleep))| most_times_asleep,
-        ).unwrap();
+        )
+        .unwrap();
     id * most_sleeping_minute as u64
 }
 
@@ -92,7 +93,8 @@ fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32, u32) {
             } else {
                 true
             }
-        }).collect::<Vec<(u32, EventType)>>();
+        })
+        .collect::<Vec<(u32, EventType)>>();
     combined.sort();
     let mut last_event_minute = 0;
     let mut total_sleep = 0;

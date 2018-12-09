@@ -95,7 +95,8 @@ impl Iterator for Tiles {
                 })
         } else {
             None
-        }.unwrap_or(self.tile_traveler.traveler.direction);
+        }
+        .unwrap_or(self.tile_traveler.traveler.direction);
         self.tile_traveler.traveler.direction = next_dir;
 
         let Point {

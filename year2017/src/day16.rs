@@ -81,10 +81,12 @@ fn programs_to_string(programs: &VecDeque<char>) -> String {
 
 fn perform_move(programs: &mut VecDeque<char>, m: Move) {
     match m {
-        Move::Spin(spin) => for _ in 0..spin {
-            let program = programs.pop_back().unwrap();
-            programs.push_front(program);
-        },
+        Move::Spin(spin) => {
+            for _ in 0..spin {
+                let program = programs.pop_back().unwrap();
+                programs.push_front(program);
+            }
+        }
         Move::Exchange(i, j) => programs.swap(i, j),
         Move::Partner(p1, p2) => {
             let (i, _) = programs

@@ -28,7 +28,8 @@ fn perform_instructions(instrs: &[(Turn, u64)]) -> Vec<Traveler> {
             state.turn(turn);
             state.step_n(steps);
             Some(*state)
-        }).collect()
+        })
+        .collect()
 }
 
 fn final_position(instrs: &[(Turn, u64)]) -> Point {
@@ -46,7 +47,8 @@ fn parse_input(input: &str) -> Vec<(Turn, u64)> {
             let turn = Turn::from_str(&captures["dir"]).unwrap();
             let steps = u64::from_str(&captures["steps"]).unwrap();
             (turn, steps)
-        }).collect()
+        })
+        .collect()
 }
 
 #[cfg(test)]

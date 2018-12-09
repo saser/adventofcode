@@ -68,18 +68,21 @@ fn create_app() -> App<'static, 'static> {
                 .takes_value(true)
                 .possible_values(&["2016", "2017", "2018"])
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("day")
                 .help("Specifies which day (1-25) to run")
                 .takes_value(true)
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("part")
                 .help("Specifies which part of the problem to run")
                 .takes_value(true)
                 .possible_values(&["1", "2"])
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("input_file")
                 .help("Path to file containing input to problem")
                 .takes_value(true)

@@ -38,7 +38,8 @@ impl Solver for Day03 {
                             let point_claims = map.get(point).unwrap();
                             point_claims.len() == 1 && point_claims[0] == claim
                         })
-                    }).unwrap();
+                    })
+                    .unwrap();
                 Ok(lonely_claim.id.to_string())
             }
         }
