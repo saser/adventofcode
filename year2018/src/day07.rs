@@ -1,4 +1,12 @@
+use lazy_static::lazy_static;
+use regex::Regex;
+
+use std::collections::{HashMap, HashSet};
+
 use base::{Part, Solver};
+
+type Dependencies = HashMap<char, HashSet<char>>;
+type Dependants = HashMap<char, HashSet<char>>;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day07)
@@ -8,11 +16,44 @@ struct Day07;
 
 impl Solver for Day07 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let (dependencies, dependants) = parse_input(input);
         match part {
             Part::One => Err("day 07 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 07 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+fn parse_input(input: &str) -> (Dependencies, Dependants) {
+    let mut dependencies = HashMap::new();
+    let mut dependants = HashMap::new();
+    input
+        .lines()
+        .map(parse_instruction)
+        .for_each(|(dependency, dependant)| {
+            dependencies
+                .entry(dependant)
+                .or_insert_with(HashSet::new)
+                .insert(dependency);
+            dependants
+                .entry(dependency)
+                .or_insert_with(HashSet::new)
+                .insert(dependant);
+        });
+    (dependencies, dependants)
+}
+
+fn parse_instruction(instruction: &str) -> (char, char) {
+    lazy_static! {
+        static ref INSTR_RE: Regex = Regex::new(
+            r"Step (?P<dependency>\w) must be finished before step (?P<dependant>\w) can begin."
+        )
+        .unwrap();
+    }
+    let captures = INSTR_RE.captures(instruction).unwrap();
+    let dependency = captures["dependency"].chars().collect::<Vec<char>>()[0];
+    let dependant = captures["dependant"].chars().collect::<Vec<char>>()[0];
+    (dependency, dependant)
 }
 
 #[cfg(test)]
