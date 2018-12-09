@@ -32,10 +32,10 @@ fn main() {
         process::exit(1);
     });
 
-    solve(solver, day, part, &input);
+    solve(&*solver, day, part, &input);
 }
 
-fn solve(solver: Box<dyn Solver>, day: u8, part: Part, input: &str) {
+fn solve(solver: &Solver, day: u8, part: Part, input: &str) {
     let timer = Instant::now();
     let solution = solver.solve(part, input).unwrap_or_else(|e| {
         eprintln!(
@@ -50,7 +50,7 @@ fn solve(solver: Box<dyn Solver>, day: u8, part: Part, input: &str) {
 }
 
 fn format_duration(duration: Duration) -> String {
-    let total_ns: u64 = duration.as_secs() * 1_000_000_000 + duration.subsec_nanos() as u64;
+    let total_ns: u64 = duration.as_secs() * 1_000_000_000 + u64::from(duration.subsec_nanos());
     let total_ms: f64 = total_ns as f64 / 1e+6;
     format!("{:.3} ms ({} ns)", total_ms, total_ns)
 }
