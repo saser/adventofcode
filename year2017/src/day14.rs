@@ -1,5 +1,5 @@
-use base::{Part, Solver};
 use crate::day10;
+use base::{Part, Solver};
 
 use std::collections::{HashSet, VecDeque};
 
@@ -44,7 +44,8 @@ fn binary_to_vec(binary: &str) -> Vec<bool> {
             '1' => true,
             '0' => false,
             _ => panic!("invalid digit in binary string: {}", c),
-        }).collect()
+        })
+        .collect()
 }
 
 fn bits_in_hash(hash: &str) -> usize {
