@@ -1,13 +1,14 @@
-use year2016;
-use year2017;
-use year2018;
-
-use base::{Part, Solver, YearDispatcher};
 use clap::{value_t, App, Arg, ArgMatches};
+
 use std::fs::File;
 use std::io::{self, Read};
 use std::process;
 use std::time::{Duration, Instant};
+
+use base::{Part, Solver, YearDispatcher};
+use year2016;
+use year2017;
+use year2018;
 
 static APP_NAME: &'static str = "aoc";
 static APP_VERSION: &'static str = "0.1.0";

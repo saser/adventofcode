@@ -1,7 +1,7 @@
-use base::{Part, Solver};
-
 use std::collections::HashSet;
 use std::str::FromStr;
+
+use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day01)

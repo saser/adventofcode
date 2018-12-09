@@ -1,10 +1,11 @@
-use base::{Part, Solver};
 use chrono::{NaiveDateTime, Timelike};
 use lazy_static::lazy_static;
 use regex::Regex;
 
 use std::collections::HashMap;
 use std::str::FromStr;
+
+use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day04)

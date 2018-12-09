@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use base::grid::*;
 use base::{Part, Solver};
-use std::collections::HashMap;
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day03)

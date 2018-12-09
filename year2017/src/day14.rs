@@ -1,7 +1,7 @@
+use std::collections::{HashSet, VecDeque};
+
 use crate::day10;
 use base::{Part, Solver};
-
-use std::collections::{HashSet, VecDeque};
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day14)
