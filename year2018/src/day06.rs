@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 type Coordinates = HashMap<char, Point>;
+type Distances = HashMap<char, u64>;
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day06)
@@ -13,7 +14,16 @@ pub fn get_solver() -> Box<dyn Solver> {
 struct Day06;
 
 impl Solver for Day06 {
-    fn solve(&self, part: Part, _input: &str) -> Result<String, String> {
+    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let coordinates = parse_input(input);
+        let bb = BoundingBox::from_points(
+            coordinates
+                .values()
+                .cloned()
+                .collect::<Vec<Point>>()
+                .as_slice(),
+        );
+        let minimal_distances = bounding_box_minimal_distances(&bb, &coordinates);
         match part {
             Part::One => Err("day 06 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 06 part 2 not yet implemented".to_string()),
@@ -52,6 +62,53 @@ impl BoundingBox {
             height: (bottom_right.y - top_left.y) as u64,
         }
     }
+
+    fn points(&self) -> Vec<Point> {
+        (self.x..self.x + self.width)
+            .flat_map(|x| {
+                (self.y..self.y + self.height).map(move |y| Point {
+                    x: x as i64,
+                    y: y as i64,
+                })
+            })
+            .collect()
+    }
+}
+
+fn distances(point: &Point, coordinates: &Coordinates) -> Distances {
+    coordinates
+        .iter()
+        .map(|(&c, &coord_point)| (c, point.manhattan_distance_to(coord_point)))
+        .collect()
+}
+
+fn bounding_box_distances(
+    bb: &BoundingBox,
+    coordinates: &Coordinates,
+) -> HashMap<Point, Distances> {
+    bb.points()
+        .iter()
+        .map(|&point| (point, distances(&point, coordinates)))
+        .collect()
+}
+
+fn minimal_distances(distances: &Distances) -> Vec<char> {
+    let minimal_distance = *distances.values().min().unwrap();
+    distances
+        .keys()
+        .cloned()
+        .filter(|k| distances[k] == minimal_distance)
+        .collect()
+}
+
+fn bounding_box_minimal_distances(
+    bb: &BoundingBox,
+    coordinates: &Coordinates,
+) -> HashMap<Point, Vec<char>> {
+    bounding_box_distances(bb, coordinates)
+        .iter()
+        .map(|(&point, distances)| (point, minimal_distances(distances)))
+        .collect()
 }
 
 #[cfg(test)]
