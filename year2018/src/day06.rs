@@ -25,21 +25,22 @@ impl Solver for Day06 {
                 .collect::<Vec<Point>>()
                 .as_slice(),
         );
-        let minimal_distances = bounding_box_minimal_distances(&bb, &coordinates);
-        let edge_points = bb.edge_points();
-        let mut infinite_coordinates = HashSet::new();
-        let mut closest_points = HashMap::new();
-        for (point, coordinates) in minimal_distances.iter() {
-            if coordinates.len() == 1 {
-                let c = coordinates[0];
-                closest_points.entry(c).or_insert_with(Vec::new).push(point);
-                if edge_points.contains(point) {
-                    infinite_coordinates.insert(c);
-                }
-            }
-        }
+        let distances = bounding_box_distances(&bb, &coordinates);
         match part {
             Part::One => {
+                let minimal_distances = all_minimal_distances(&distances);
+                let edge_points = bb.edge_points();
+                let mut infinite_coordinates = HashSet::new();
+                let mut closest_points = HashMap::new();
+                for (point, coordinates) in minimal_distances.iter() {
+                    if coordinates.len() == 1 {
+                        let c = coordinates[0];
+                        closest_points.entry(c).or_insert_with(Vec::new).push(point);
+                        if edge_points.contains(point) {
+                            infinite_coordinates.insert(c);
+                        }
+                    }
+                }
                 let max_area = closest_points
                     .par_iter()
                     .filter(|(c, _points)| !infinite_coordinates.contains(c))
@@ -48,7 +49,18 @@ impl Solver for Day06 {
                     .unwrap();
                 Ok(max_area.to_string())
             }
-            Part::Two => Err("day 06 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let limit = 10_000;
+                let count = distances
+                    .par_iter()
+                    .map(|(_point, distance_map)| {
+                        distance_map.values().cloned().collect::<Vec<u64>>()
+                    })
+                    .map(|ds| ds.iter().sum::<u64>())
+                    .filter(|&sum| sum < limit)
+                    .count();
+                Ok(count.to_string())
+            }
         }
     }
 }
@@ -151,12 +163,8 @@ fn minimal_distances(distances: &Distances) -> Vec<char> {
         .collect()
 }
 
-fn bounding_box_minimal_distances(
-    bb: &BoundingBox,
-    coordinates: &Coordinates,
-) -> HashMap<Point, Vec<char>> {
-    bounding_box_distances(bb, coordinates)
-        .par_iter()
+fn all_minimal_distances(map: &HashMap<Point, Distances>) -> HashMap<Point, Vec<char>> {
+    map.par_iter()
         .map(|(&point, distances)| (point, minimal_distances(distances)))
         .collect()
 }
