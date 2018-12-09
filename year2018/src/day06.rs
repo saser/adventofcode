@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
 
@@ -30,7 +32,7 @@ impl Solver for Day06 {
         for (point, coordinates) in minimal_distances.iter() {
             if coordinates.len() == 1 {
                 let c = coordinates[0];
-                *closest_points.entry(c).or_insert(0) += 1;
+                closest_points.entry(c).or_insert_with(Vec::new).push(point);
                 if edge_points.contains(point) {
                     infinite_coordinates.insert(c);
                 }
@@ -39,9 +41,9 @@ impl Solver for Day06 {
         match part {
             Part::One => {
                 let max_area = closest_points
-                    .iter()
+                    .par_iter()
                     .filter(|(c, _points)| !infinite_coordinates.contains(c))
-                    .map(|(_c, points)| points)
+                    .map(|(_c, points)| points.len())
                     .max()
                     .unwrap();
                 Ok(max_area.to_string())
@@ -67,10 +69,17 @@ struct BoundingBox {
 
 impl BoundingBox {
     fn from_points(points: &[Point]) -> Self {
-        let x_min = points.iter().map(|&point| point.x).min().unwrap();
-        let y_min = points.iter().map(|&point| point.y).min().unwrap();
-        let x_max = points.iter().map(|&point| point.x).max().unwrap();
-        let y_max = points.iter().map(|&point| point.y).max().unwrap();
+        let first_point = points[0];
+        let mut x_min = first_point.x;
+        let mut x_max = first_point.x;
+        let mut y_min = first_point.y;
+        let mut y_max = first_point.y;
+        for &point in &points[1..] {
+            x_min = x_min.min(point.x);
+            y_min = y_min.min(point.y);
+            x_max = x_max.max(point.x);
+            y_max = y_max.max(point.y);
+        }
         BoundingBox {
             x_min,
             y_min,
@@ -118,7 +127,7 @@ impl BoundingBox {
 
 fn distances(point: &Point, coordinates: &Coordinates) -> Distances {
     coordinates
-        .iter()
+        .par_iter()
         .map(|(&c, &coord_point)| (c, point.manhattan_distance_to(coord_point)))
         .collect()
 }
@@ -128,7 +137,7 @@ fn bounding_box_distances(
     coordinates: &Coordinates,
 ) -> HashMap<Point, Distances> {
     bb.points()
-        .iter()
+        .par_iter()
         .map(|&point| (point, distances(&point, coordinates)))
         .collect()
 }
@@ -147,7 +156,7 @@ fn bounding_box_minimal_distances(
     coordinates: &Coordinates,
 ) -> HashMap<Point, Vec<char>> {
     bounding_box_distances(bb, coordinates)
-        .iter()
+        .par_iter()
         .map(|(&point, distances)| (point, minimal_distances(distances)))
         .collect()
 }
