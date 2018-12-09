@@ -1,7 +1,10 @@
 use base::grid::Point;
 use base::{Part, Solver};
 
+use std::collections::HashMap;
 use std::str::FromStr;
+
+type Coordinates = HashMap<char, Point>;
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day06)
@@ -18,12 +21,10 @@ impl Solver for Day06 {
     }
 }
 
-fn parse_input(input: &str) -> Vec<Point> {
-    input
-        .lines()
-        .map(Point::from_str)
-        .map(Result::unwrap)
-        .collect()
+fn parse_input(input: &str) -> Coordinates {
+    let alphabet = (b'A'..=b'Z').map(char::from);
+    let points = input.lines().map(Point::from_str).map(Result::unwrap);
+    alphabet.zip(points).collect()
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
