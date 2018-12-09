@@ -1,5 +1,9 @@
+use lazy_static::lazy_static;
+use regex::Regex;
+
 use std::default::Default;
 use std::fmt;
+use std::num::ParseIntError;
 use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign};
 use std::str::FromStr;
 
@@ -89,6 +93,20 @@ pub struct Point {
 impl fmt::Display for Point {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({}, {})", self.x, self.y)
+    }
+}
+
+impl FromStr for Point {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        lazy_static! {
+            static ref POINT_RE: Regex = Regex::new(r"(?P<x>\d+), (?P<y>\d+)").unwrap();
+        }
+        let captures = POINT_RE.captures(s).unwrap();
+        let x = i64::from_str(&captures["x"])?;
+        let y = i64::from_str(&captures["y"])?;
+        Ok(Point { x, y })
     }
 }
 
