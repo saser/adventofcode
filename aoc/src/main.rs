@@ -35,7 +35,7 @@ fn main() {
     solve(&*solver, day, part, &input);
 }
 
-fn solve(solver: &Solver, day: u8, part: Part, input: &str) {
+fn solve(solver: &dyn Solver, day: u8, part: Part, input: &str) {
     let timer = Instant::now();
     let solution = solver.solve(part, input).unwrap_or_else(|e| {
         eprintln!(
