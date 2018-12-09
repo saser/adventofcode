@@ -199,15 +199,27 @@ Step F must be finished before step E can begin.\
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/07");
-            let expected = "expected output";
+            let expected = "948";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
 
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+Step C must be finished before step A can begin.
+Step C must be finished before step F can begin.
+Step A must be finished before step B can begin.
+Step A must be finished before step D can begin.
+Step B must be finished before step E can begin.
+Step D must be finished before step E can begin.
+Step F must be finished before step E can begin.\
+                ";
+            // This expected answer is with the 60+ second duration rule, and 5 workers. The
+            // example given in the description of the problem used durations equal to the order in
+            // the alphabet (so 'A' = 1 s, 'B' = 2 s, ...) and used two workers. In that case,
+            // the answer should be 15.
+            let expected = "253";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
