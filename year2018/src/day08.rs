@@ -17,7 +17,10 @@ impl Solver for Day08 {
                 let sum = root.metadata_sum();
                 Ok(sum.to_string())
             }
-            Part::Two => Err("day 08 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let sum = root.value_sum();
+                Ok(sum.to_string())
+            }
         }
     }
 }
@@ -41,6 +44,18 @@ impl Node {
         let self_sum = self.metadata.iter().sum::<usize>();
         let children_sum = self.children.iter().map(Node::metadata_sum).sum::<usize>();
         self_sum + children_sum
+    }
+
+    fn value_sum(&self) -> usize {
+        if self.children.is_empty() {
+            return self.metadata_sum();
+        }
+        self.metadata
+            .iter()
+            .filter(|&&idx| idx != 0 && idx <= self.children.len())
+            .map(|&idx| &self.children[idx - 1])
+            .map(Node::value_sum)
+            .sum()
     }
 }
 
@@ -98,7 +113,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/08").trim();
-            let expected = "expected output";
+            let expected = "25910";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
 
