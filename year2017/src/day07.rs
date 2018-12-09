@@ -59,9 +59,9 @@ impl FromStr for Program {
             programs.map(|program_str| program_str.split(", ").map(String::from).collect());
 
         Ok(Program {
-            name: name,
-            weight: weight,
-            holding_up: holding_up,
+            name,
+            weight,
+            holding_up,
             held_up_by: None,
         })
     }
@@ -114,13 +114,14 @@ fn calculate_tower_weights(
     let mut weight = 0;
     for prog in &held_up_progs {
         map.extend(calculate_tower_weights(tower, tower.get(prog).unwrap()));
-        weight += *map.get(prog).unwrap();
+        weight += map[prog];
     }
     weight += root.weight;
     map.insert(root.name.clone(), weight);
     map
 }
 
+#[allow(clippy::question_mark)]
 fn find_correct_weight(
     tower: &HashMap<String, Program>,
     tower_weights: &HashMap<String, u64>,
@@ -138,7 +139,7 @@ fn find_correct_weight(
             return correct_weight;
         }
         map.entry(*tower_weights.get(held_up_prog).unwrap())
-            .or_insert(Vec::new())
+            .or_insert_with(Vec::new)
             .push(held_up_prog.clone());
     }
 

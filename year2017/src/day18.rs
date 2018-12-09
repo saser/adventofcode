@@ -43,8 +43,8 @@ impl Processor {
         let registers = initialize_registers(instructions);
         let instruction_pointer = 0;
         Processor {
-            registers: registers,
-            instruction_pointer: instruction_pointer,
+            registers,
+            instruction_pointer,
             instructions: instructions.to_vec(),
             last_frequency: None,
             recovered_frequency: None,
@@ -53,7 +53,7 @@ impl Processor {
 
     fn op_to_value(&self, op: Operand) -> i64 {
         match op {
-            Operand::Register(reg) => *self.registers.get(&reg).unwrap(),
+            Operand::Register(reg) => self.registers[&reg],
             Operand::Literal(val) => val,
         }
     }
@@ -178,12 +178,9 @@ fn initialize_registers(instructions: &[Instruction]) -> HashMap<char, i64> {
             Instruction::Jgz(op1, op2) => vec![op1, op2],
         };
         for op in operands.into_iter() {
-            match op {
-                Operand::Register(reg) => {
-                    map.insert(reg, 0);
-                }
-                _ => {}
-            };
+            if let Operand::Register(reg) = op {
+                map.insert(reg, 0);
+            }
         }
     }
     map

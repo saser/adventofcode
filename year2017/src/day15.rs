@@ -10,7 +10,7 @@ struct Day15;
 
 const MUL_A: u64 = 16807;
 const MUL_B: u64 = 48271;
-const MOD: u64 = 2147483647;
+const MOD: u64 = 2_147_483_647;
 
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {

@@ -109,7 +109,7 @@ fn perform_moves_n(programs: &mut VecDeque<char>, moves: &[Move], iterations: us
     let mut seen: Vec<String> = Vec::with_capacity(1_000_000);
     let mut final_configuration = programs_to_string(programs);
     seen.push(final_configuration.clone());
-    for i in 1..iterations + 1 {
+    for i in 1..=iterations {
         for &m in moves {
             perform_move(programs, m);
         }
@@ -117,7 +117,7 @@ fn perform_moves_n(programs: &mut VecDeque<char>, moves: &[Move], iterations: us
         let configuration = programs_to_string(programs);
         final_configuration = configuration.to_string();
         // Credits for the idea below goes to Magnus Hagmar.
-        if &seen[0] == &final_configuration {
+        if seen[0] == final_configuration {
             final_configuration = seen[iterations % i].clone();
             break;
         }

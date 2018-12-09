@@ -53,7 +53,7 @@ fn indices_wrapping(slice_length: usize, start: usize, length: usize) -> Vec<usi
 }
 
 fn reverse_by_indices<T: Copy>(slice: &mut [T], indices: &[usize]) {
-    if indices.len() < 1 {
+    if indices.is_empty() {
         return;
     }
 
@@ -102,7 +102,7 @@ fn knot_hash_n<T: Copy>(slice: &mut [T], lengths: &[u8], n: u64) {
 
 fn hash_and_multiply(slice: &mut [u8], lengths: &[u8]) -> u64 {
     knot_hash(slice, lengths, 0, 0);
-    slice[0] as u64 * slice[1] as u64
+    u64::from(slice[0]) * u64::from(slice[1])
 }
 
 fn add_suffix(lengths: &[u8]) -> Vec<u8> {

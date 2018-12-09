@@ -14,7 +14,7 @@ impl Solver for Day11 {
         let (final_position, furthest) = directions
             .as_slice()
             .iter()
-            .map(HexDirection::as_point)
+            .map(|hex_dir| hex_dir.as_point())
             .fold((Point3D::origin(), 0), |(point, furthest), dir| {
                 let new_point = point + dir;
                 let new_furthest = std::cmp::max(furthest, new_point.manhattan_distance() / 2);
@@ -47,7 +47,7 @@ struct Point3D {
 
 impl Point3D {
     fn from(x: i64, y: i64, z: i64) -> Point3D {
-        Point3D { x: x, y: y, z: z }
+        Point3D { x, y, z }
     }
 
     fn origin() -> Point3D {
@@ -82,9 +82,9 @@ enum HexDirection {
 }
 
 impl HexDirection {
-    fn as_point(&self) -> Point3D {
+    fn as_point(self) -> Point3D {
         // A hexgrid can be represented as a "stack of boxes" in a kind of staircase pattern.
-        match *self {
+        match self {
             HexDirection::NorthEast => Point3D::from(1, 0, 1),
             HexDirection::SouthWest => Point3D::from(-1, 0, -1),
             HexDirection::North => Point3D::from(0, 1, 1),

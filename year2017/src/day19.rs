@@ -24,10 +24,10 @@ fn parse_input(input: &str) -> Vec<Vec<Tile>> {
 }
 
 fn parse_line(line: &str) -> Vec<Tile> {
-    line.chars().map(|c| Tile::from(c)).collect()
+    line.chars().map(Tile::from).collect()
 }
 
-fn find_starting_point(grid: &Vec<Vec<Tile>>) -> Point {
+fn find_starting_point(grid: &[Vec<Tile>]) -> Point {
     let (column, _) = grid[0]
         .iter()
         .enumerate()
@@ -58,8 +58,8 @@ struct TileTraveler {
 }
 
 impl TileTraveler {
-    fn from(grid: &Vec<Vec<Tile>>) -> TileTraveler {
-        let grid = grid.clone();
+    fn from(grid: &[Vec<Tile>]) -> TileTraveler {
+        let grid = grid.to_owned();
         let traveler = Traveler {
             pos: find_starting_point(&grid),
             direction: Direction::North,

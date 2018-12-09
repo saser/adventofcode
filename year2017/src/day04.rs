@@ -15,7 +15,7 @@ impl Solver for Day04 {
             Part::One => contains_unique_passwords,
             Part::Two => contains_no_anagrams,
         };
-        Ok(count_valid(validator, passphrases.clone()).to_string())
+        Ok(count_valid(validator, &passphrases).to_string())
     }
 }
 
@@ -28,20 +28,20 @@ fn parse_input(input: &str) -> Vec<Vec<String>> {
         .collect()
 }
 
-fn count_valid(validator: fn(Vec<String>) -> bool, passphrases: Vec<Vec<String>>) -> usize {
+fn count_valid(validator: fn(&[String]) -> bool, passphrases: &[Vec<String>]) -> usize {
     passphrases
         .iter()
-        .filter(|&phrase| validator(phrase.clone()))
+        .filter(|&phrase| validator(&phrase))
         .count()
 }
 
-fn contains_unique_passwords(passphrase: Vec<String>) -> bool {
+fn contains_unique_passwords(passphrase: &[String]) -> bool {
     let words = passphrase.len();
-    let set: HashSet<String> = passphrase.into_iter().collect();
+    let set: HashSet<String> = passphrase.iter().cloned().collect();
     set.len() == words
 }
 
-fn contains_no_anagrams(passphrase: Vec<String>) -> bool {
+fn contains_no_anagrams(passphrase: &[String]) -> bool {
     fn sort_string(s: &str) -> String {
         let mut chars: Vec<char> = s.chars().collect();
         chars.sort();

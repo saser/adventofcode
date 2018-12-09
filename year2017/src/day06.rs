@@ -43,7 +43,7 @@ fn count_redistributions(banks: &[u64]) -> (u64, u64) {
             .entry(distribution.clone())
             .or_insert(counter as u64);
     }
-    let first_distribution_in_loop = distributions.get(&distribution).unwrap();
+    let first_distribution_in_loop = &distributions[&distribution];
 
     (counter as u64, counter as u64 - first_distribution_in_loop)
 }
@@ -65,12 +65,12 @@ fn redistribute(banks: &[u64]) -> Vec<u64> {
     vec
 }
 
-fn find_max_index<T: Ord>(banks: &[T]) -> usize {
+fn find_max_index<T: Ord + Copy>(banks: &[T]) -> usize {
     banks
         .iter()
         .enumerate()
-        .fold(0, |max_index, (index, bank)| {
-            if bank > &banks[max_index] {
+        .fold(0, |max_index, (index, &bank)| {
+            if bank > banks[max_index] {
                 index
             } else {
                 max_index

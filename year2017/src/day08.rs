@@ -72,7 +72,7 @@ fn perform_instruction(
     let mut map = registers.clone();
     let mut new_highest_value = highest_value;
     if check_condition(registers, &instruction.cond) {
-        let register_value = *map.get(&instruction.register).unwrap();
+        let register_value = map[&instruction.register];
         let new_value = perform_operation(instruction.op, register_value);
         new_highest_value = cmp::max(highest_value, new_value);
         map.insert(
@@ -163,9 +163,9 @@ impl FromStr for Condition {
         let cmp = Comparison::from_str(&captures["cmp"]).unwrap();
         let value = i64::from_str(&captures["value"]).unwrap();
         Ok(Condition {
-            register: register,
-            cmp: cmp,
-            value: value,
+            register,
+            cmp,
+            value,
         })
     }
 }
@@ -186,11 +186,7 @@ impl FromStr for Instruction {
         let register = before_condition[0].to_string();
         let op = Operation::from_str(before_condition[1])?;
         let cond = Condition::from_str(parts[1])?;
-        Ok(Instruction {
-            register: register,
-            op: op,
-            cond: cond,
-        })
+        Ok(Instruction { register, op, cond })
     }
 }
 

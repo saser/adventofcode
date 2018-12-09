@@ -37,7 +37,7 @@ impl SpiralTraveler {
         let mut traveler = Traveler::default();
         traveler.direction = Direction::East;
         SpiralTraveler {
-            traveler: traveler,
+            traveler,
             current_layer: 1,
             steps_to_corners: Vec::with_capacity(4),
             to_corner: 1,
@@ -89,7 +89,7 @@ impl Spiral {
             grid: initial_grid,
             pos: initial_pos,
             value: 1,
-            next_value_fun: next_value_fun,
+            next_value_fun,
         }
     }
 }

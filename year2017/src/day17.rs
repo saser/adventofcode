@@ -29,7 +29,7 @@ fn build_ring_buffer(final_value: usize, length: usize) -> (Vec<usize>, usize) {
     let mut vec = Vec::with_capacity(final_value + 1);
     vec.push(0);
     let mut current_position = 0;
-    for i in 1..final_value + 1 {
+    for i in 1..=final_value {
         let index_to_insert = ((current_position + length) % i) + 1;
         vec.insert(index_to_insert, i);
         current_position = index_to_insert;
