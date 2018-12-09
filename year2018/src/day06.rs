@@ -47,19 +47,15 @@ struct BoundingBox {
 
 impl BoundingBox {
     fn from_points(points: &[Point]) -> Self {
-        let top_left = points.iter().fold(Point::origin(), |acc, point| Point {
-            x: acc.x.min(point.x),
-            y: acc.y.min(point.y),
-        });
-        let bottom_right = points.iter().fold(Point::origin(), |acc, point| Point {
-            x: acc.x.max(point.x),
-            y: acc.y.max(point.y),
-        });
+        let top_left_x = points.iter().map(|&point| point.x).min().unwrap();
+        let top_left_y = points.iter().map(|&point| point.y).min().unwrap();
+        let bottom_right_x = points.iter().map(|&point| point.x).max().unwrap();
+        let bottom_right_y = points.iter().map(|&point| point.y).max().unwrap();
         BoundingBox {
-            x: top_left.x as u64,
-            y: top_left.y as u64,
-            width: (bottom_right.x - top_left.x) as u64,
-            height: (bottom_right.y - top_left.y) as u64,
+            x: top_left_x as u64,
+            y: top_left_y as u64,
+            width: 1 + (bottom_right_x - top_left_x) as u64,
+            height: 1 + (bottom_right_y - top_left_y) as u64,
         }
     }
 
