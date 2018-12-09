@@ -7,7 +7,7 @@ pub fn get_solver() -> Box<Solver> {
 struct Day06;
 
 impl Solver for Day06 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+    fn solve(&self, part: Part, _input: &str) -> Result<String, String> {
         match part {
             Part::One => Err("day 06 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 06 part 2 not yet implemented".to_string()),

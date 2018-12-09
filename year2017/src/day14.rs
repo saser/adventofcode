@@ -1,5 +1,5 @@
 use base::{Part, Solver};
-use day10;
+use crate::day10;
 
 use std::collections::{HashSet, VecDeque};
 
