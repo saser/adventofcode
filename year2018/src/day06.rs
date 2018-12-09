@@ -1,4 +1,7 @@
+use base::grid::Point;
 use base::{Part, Solver};
+
+use std::str::FromStr;
 
 pub fn get_solver() -> Box<dyn Solver> {
     Box::new(Day06)
@@ -11,6 +14,41 @@ impl Solver for Day06 {
         match part {
             Part::One => Err("day 06 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 06 part 2 not yet implemented".to_string()),
+        }
+    }
+}
+
+fn parse_input(input: &str) -> Vec<Point> {
+    input
+        .lines()
+        .map(Point::from_str)
+        .map(Result::unwrap)
+        .collect()
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+struct BoundingBox {
+    x: u64,
+    y: u64,
+    width: u64,
+    height: u64,
+}
+
+impl BoundingBox {
+    fn from_points(points: &[Point]) -> Self {
+        let top_left = points.iter().fold(Point::origin(), |acc, point| Point {
+            x: acc.x.min(point.x),
+            y: acc.y.min(point.y),
+        });
+        let bottom_right = points.iter().fold(Point::origin(), |acc, point| Point {
+            x: acc.x.max(point.x),
+            y: acc.y.max(point.y),
+        });
+        BoundingBox {
+            x: top_left.x as u64,
+            y: top_left.y as u64,
+            width: (bottom_right.x - top_left.x) as u64,
+            height: (bottom_right.y - top_left.y) as u64,
         }
     }
 }
