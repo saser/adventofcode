@@ -24,7 +24,7 @@ impl<T> Grid<T> {
         }
         let mut grid: Vec<Vec<T>> = Vec::with_capacity(rows);
         (0..cols).for_each(|_| grid.push(Vec::with_capacity(cols)));
-        Grid { grid: grid }
+        Grid { grid }
     }
 
     /// Returns the number of rows in the grid.
@@ -191,15 +191,15 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub fn turn(&self, turn: Turn) -> Direction {
+    pub fn turn(self, turn: Turn) -> Direction {
         match turn {
-            Turn::Clockwise => match *self {
+            Turn::Clockwise => match self {
                 Direction::North => Direction::East,
                 Direction::East => Direction::South,
                 Direction::South => Direction::West,
                 Direction::West => Direction::North,
             },
-            Turn::CounterClockwise => match *self {
+            Turn::CounterClockwise => match self {
                 Direction::North => Direction::West,
                 Direction::East => Direction::North,
                 Direction::South => Direction::East,
@@ -208,18 +208,18 @@ impl Direction {
         }
     }
 
-    pub fn as_point(&self) -> Point {
-        let x = match *self {
+    pub fn as_point(self) -> Point {
+        let x = match self {
             Direction::East => 1,
             Direction::West => -1,
             _ => 0,
         };
-        let y = match *self {
+        let y = match self {
             Direction::North => 1,
             Direction::South => -1,
             _ => 0,
         };
-        Point { x: x, y: y }
+        Point { x, y }
     }
 }
 
