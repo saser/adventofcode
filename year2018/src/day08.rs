@@ -105,8 +105,8 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
+            let expected = "66";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
