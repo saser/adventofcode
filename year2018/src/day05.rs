@@ -1,4 +1,5 @@
 use base::{Part, Solver};
+use rayon::prelude::*;
 
 pub fn get_solver() -> Box<Solver> {
     Box::new(Day05)
@@ -14,9 +15,10 @@ impl Solver for Day05 {
                 Ok(after_reactions.len().to_string())
             }
             Part::Two => {
-                let best = (b'a'..=b'z')
-                    .map(char::from)
-                    .map(|c| fully_react_without(input, c))
+                let chars = (b'a'..=b'z').map(char::from).collect::<Vec<char>>();
+                let best = chars
+                    .par_iter()
+                    .map(|&c| fully_react_without(input, c))
                     .map(|s| s.len())
                     .min()
                     .unwrap();
