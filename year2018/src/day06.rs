@@ -31,6 +31,38 @@ impl Solver for Day06 {
     }
 }
 
+fn print_minimal_distances(minimal_distances: &HashMap<Point, Vec<char>>) {
+    let bb = BoundingBox::from_points(
+        minimal_distances
+            .keys()
+            .cloned()
+            .collect::<Vec<Point>>()
+            .as_slice(),
+    );
+    let adjusted_distances = minimal_distances.iter().map(|(&point, distances)| {
+        let adjusted_point = point
+            - Point {
+                x: bb.x as i64,
+                y: bb.y as i64,
+            };
+        (adjusted_point, distances)
+    });
+    let mut grid: Vec<Vec<char>> = vec![vec![' '; bb.width as usize]; bb.height as usize];
+    for (point, distances) in adjusted_distances {
+        let c = if distances.len() == 1 {
+            distances[0]
+        } else {
+            '.'
+        };
+        grid[point.y as usize][point.x as usize] = c;
+    }
+    for row in &grid {
+        let mut s = String::new();
+        s.extend(row);
+        println!("{}", s);
+    }
+}
+
 fn parse_input(input: &str) -> Coordinates {
     let alphabet = (b'A'..=b'Z').map(char::from);
     let points = input.lines().map(Point::from_str).map(Result::unwrap);
