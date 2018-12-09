@@ -1,8 +1,8 @@
-use base::grid::{Direction, Point};
-use base::{Part, Solver};
-
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
+
+use base::grid::Point;
+use base::{Part, Solver};
 
 type Coordinates = HashMap<char, Point>;
 type Distances = HashMap<char, u64>;
@@ -24,140 +24,95 @@ impl Solver for Day06 {
                 .as_slice(),
         );
         let minimal_distances = bounding_box_minimal_distances(&bb, &coordinates);
+        let edge_points = bb.edge_points();
+        let mut infinite_coordinates = HashSet::new();
+        let mut closest_points = HashMap::new();
+        for (point, coordinates) in minimal_distances.iter() {
+            if coordinates.len() == 1 {
+                let c = coordinates[0];
+                *closest_points.entry(c).or_insert(0) += 1;
+                if edge_points.contains(point) {
+                    infinite_coordinates.insert(c);
+                }
+            }
+        }
         match part {
-            Part::One => Err("day 06 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let max_area = closest_points
+                    .iter()
+                    .filter(|(c, _points)| !infinite_coordinates.contains(c))
+                    .map(|(_c, points)| points)
+                    .max()
+                    .unwrap();
+                Ok(max_area.to_string())
+            }
             Part::Two => Err("day 06 part 2 not yet implemented".to_string()),
         }
     }
 }
 
-fn print_minimal_distances(minimal_distances: &HashMap<Point, Vec<char>>) {
-    let bb = BoundingBox::from_points(
-        minimal_distances
-            .keys()
-            .cloned()
-            .collect::<Vec<Point>>()
-            .as_slice(),
-    );
-    let adjusted_distances = minimal_distances.iter().map(|(&point, distances)| {
-        let adjusted_point = point
-            - Point {
-                x: bb.x as i64,
-                y: bb.y as i64,
-            };
-        (adjusted_point, distances)
-    });
-    let mut grid: Vec<Vec<char>> = vec![vec![' '; bb.width as usize]; bb.height as usize];
-    for (point, distances) in adjusted_distances {
-        let c = if distances.len() == 1 {
-            distances[0]
-        } else {
-            '.'
-        };
-        grid[point.y as usize][point.x as usize] = c;
-    }
-    for row in &grid {
-        let mut s = String::new();
-        s.extend(row);
-        println!("{}", s);
-    }
-}
-
 fn parse_input(input: &str) -> Coordinates {
-    let alphabet = (b'A'..=b'Z').map(char::from);
+    let alphabet = (b'A'..).map(char::from);
     let points = input.lines().map(Point::from_str).map(Result::unwrap);
     alphabet.zip(points).collect()
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 struct BoundingBox {
-    x: u64,
-    y: u64,
-    width: u64,
-    height: u64,
+    x_min: i64,
+    y_min: i64,
+    x_max: i64,
+    y_max: i64,
 }
 
 impl BoundingBox {
     fn from_points(points: &[Point]) -> Self {
-        let top_left_x = points.iter().map(|&point| point.x).min().unwrap();
-        let top_left_y = points.iter().map(|&point| point.y).min().unwrap();
-        let bottom_right_x = points.iter().map(|&point| point.x).max().unwrap();
-        let bottom_right_y = points.iter().map(|&point| point.y).max().unwrap();
+        let x_min = points.iter().map(|&point| point.x).min().unwrap();
+        let y_min = points.iter().map(|&point| point.y).min().unwrap();
+        let x_max = points.iter().map(|&point| point.x).max().unwrap();
+        let y_max = points.iter().map(|&point| point.y).max().unwrap();
         BoundingBox {
-            x: top_left_x as u64,
-            y: top_left_y as u64,
-            width: 1 + (bottom_right_x - top_left_x) as u64,
-            height: 1 + (bottom_right_y - top_left_y) as u64,
+            x_min,
+            y_min,
+            x_max,
+            y_max,
         }
     }
 
-    fn points(&self) -> Vec<Point> {
-        (self.x..self.x + self.width)
-            .flat_map(|x| {
-                (self.y..self.y + self.height).map(move |y| Point {
-                    x: x as i64,
-                    y: y as i64,
-                })
-            })
-            .collect()
+    fn height(&self) -> u64 {
+        1 + (self.y_min - self.y_max).abs() as u64
     }
-}
 
-fn is_infinite(c: char, coordinates: &Coordinates) -> bool {
-    let initial_point = coordinates[&c];
-    let initial_distances = distances(&initial_point, coordinates);
-    [
-        Direction::North,
-        Direction::East,
-        Direction::South,
-        Direction::West,
-    ]
-    .iter()
-    .any(|dir| {
-        is_infinite_aux(
-            c,
-            dir,
-            &(initial_point + dir.as_point()),
-            coordinates,
-            &initial_distances,
-        )
-    })
-}
+    fn width(&self) -> u64 {
+        1 + (self.x_min - self.x_max).abs() as u64
+    }
 
-fn did_increase(new_distances: &Distances, previous_distances: &Distances) -> bool {
-    new_distances
-        .keys()
-        .all(|c| new_distances[c] > previous_distances[c])
-}
+    fn points(&self) -> HashSet<Point> {
+        let mut points = HashSet::with_capacity((self.width() * self.height()) as usize);
+        for x in self.x_min..=self.x_max {
+            for y in self.y_min..=self.y_max {
+                points.insert(Point { x, y });
+            }
+        }
+        points
+    }
 
-fn any_is_closer_or_equal(reference: char, distances: &Distances) -> bool {
-    distances
-        .iter()
-        .filter(|(&c, _distance)| c != reference)
-        .any(|(_c, &distance)| distance <= distances[&reference])
-}
+    fn edge_points(&self) -> HashSet<Point> {
+        // fn edge_points(&self) -> Vec<Point> {
+        let mut points = Vec::with_capacity(2 * (self.width() + self.height()) as usize - 4);
+        for x in self.x_min..self.x_max {
+            points.push(Point { x, y: self.y_min });
+            points.push(Point { x, y: self.y_max });
+        }
+        for y in self.y_min..self.y_max {
+            points.push(Point { x: self.x_min, y });
+            points.push(Point { x: self.x_max, y });
+        }
+        let mut set = HashSet::with_capacity(points.len());
+        set.extend(points);
+        set
 
-fn is_infinite_aux(
-    reference: char,
-    direction: &Direction,
-    point: &Point,
-    coordinates: &Coordinates,
-    previous_distances: &Distances,
-) -> bool {
-    let new_distances = distances(point, coordinates);
-    if did_increase(&new_distances, previous_distances) {
-        true
-    } else if any_is_closer_or_equal(reference, &new_distances) {
-        false
-    } else {
-        let new_point = *point + direction.as_point();
-        is_infinite_aux(
-            reference,
-            direction,
-            &new_point,
-            coordinates,
-            &new_distances,
-        )
+        // points
     }
 }
 
