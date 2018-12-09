@@ -1,4 +1,5 @@
 use base::{Part, Solver};
+use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
 use std::str::FromStr;

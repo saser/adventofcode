@@ -1,5 +1,6 @@
 use base::{Part, Solver};
 use chrono::{NaiveDateTime, Timelike};
+use lazy_static::lazy_static;
 use regex::Regex;
 
 use std::collections::HashMap;

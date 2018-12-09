@@ -1,11 +1,9 @@
-#[macro_use]
-extern crate clap;
 use year2016;
 use year2017;
 use year2018;
 
 use base::{Part, Solver, YearDispatcher};
-use clap::{App, Arg, ArgMatches};
+use clap::{value_t, App, Arg, ArgMatches};
 use std::fs::File;
 use std::io::{self, Read};
 use std::process;
