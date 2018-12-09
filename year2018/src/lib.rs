@@ -14,6 +14,7 @@ pub fn get_dispatcher() -> Box<dyn YearDispatcher> {
 }
 
 impl YearDispatcher for Year2018 {
+    #[allow(clippy::zero_prefixed_literal)]
     fn get_solver(&self, day: u8) -> Result<Box<dyn Solver>, String> {
         match day {
             01 => Ok(day01::get_solver()),

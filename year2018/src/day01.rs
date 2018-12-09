@@ -32,7 +32,7 @@ fn final_frequency(changes: &[i64]) -> i64 {
 
 fn first_duplicate_frequency(changes: &[i64]) -> i64 {
     let looped_frequencies = changes.iter().cycle().scan(0, |acc, &x| {
-        *acc = *acc + x;
+        *acc += x;
         Some(*acc)
     });
     let mut seen = HashSet::new();

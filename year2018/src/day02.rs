@@ -49,7 +49,7 @@ fn character_counts(box_id: &str) -> HashMap<char, u64> {
 
 fn contains_any_two_three(counts: &HashMap<char, u64>) -> (i64, i64) {
     let mut contains = (0, 0);
-    for (_c, &count) in counts {
+    for &count in counts.values() {
         if count == 2 {
             contains.0 = 1;
         } else if count == 3 {

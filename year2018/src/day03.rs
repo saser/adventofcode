@@ -36,7 +36,7 @@ impl Solver for Day03 {
                 let lonely_claim = candidate_claims
                     .find(|&claim| {
                         claim.covered_points().iter().all(|point| {
-                            let point_claims = map.get(point).unwrap();
+                            let point_claims = &map[point];
                             point_claims.len() == 1 && point_claims[0] == claim
                         })
                     })
@@ -92,7 +92,7 @@ fn build_map(claims: &[Claim]) -> HashMap<(usize, usize), Vec<&Claim>> {
     for claim in claims {
         for i in claim.x..claim.x + claim.dx {
             for j in claim.y..claim.y + claim.dy {
-                let point_claims = map.entry((i, j)).or_insert(Vec::new());
+                let point_claims = map.entry((i, j)).or_insert_with(Vec::new);
                 point_claims.push(claim);
             }
         }

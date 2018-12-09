@@ -71,8 +71,8 @@ fn remove_reactions(chars: &mut [Option<char>]) {
 
 fn find_next_forward(chars: &[Option<char>], start: usize) -> Option<usize> {
     let mut index = None;
-    for i in start..chars.len() {
-        if chars[i].is_some() {
+    for (i, opt_c) in chars.iter().enumerate().skip(start) {
+        if opt_c.is_some() {
             index = Some(i);
             break;
         }

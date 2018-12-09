@@ -39,7 +39,7 @@ fn strategy_1(sorted_events: &[Event]) -> u64 {
         .map(|(id, events)| (id, calculate_sleeping(events)))
         .max_by_key(|&(_id, (total_sleep, _most_sleeping_minute, _most_times_asleep))| total_sleep)
         .unwrap();
-    id * most_sleeping_minute as u64
+    id * u64::from(most_sleeping_minute)
 }
 
 fn strategy_2(sorted_events: &[Event]) -> u64 {
@@ -51,7 +51,7 @@ fn strategy_2(sorted_events: &[Event]) -> u64 {
             |&(_id, (_total_sleep, _most_sleeping_minute, most_times_asleep))| most_times_asleep,
         )
         .unwrap();
-    id * most_sleeping_minute as u64
+    id * u64::from(most_sleeping_minute)
 }
 
 fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType)>>> {
@@ -70,7 +70,7 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
         let event_type = event.event_type;
         if let EventType::BeginsShift(id) = event_type {
             map.entry(current_guard)
-                .or_insert(Vec::new())
+                .or_insert_with(Vec::new)
                 .push(current_events);
             current_guard = id;
             current_events = Vec::new();
@@ -79,12 +79,12 @@ fn gather_guard_events(events: &[Event]) -> HashMap<u64, Vec<Vec<(u32, EventType
         }
     }
     map.entry(current_guard)
-        .or_insert(Vec::new())
+        .or_insert_with(Vec::new)
         .push(current_events);
     map
 }
 
-fn calculate_sleeping(events: &Vec<Vec<(u32, EventType)>>) -> (u32, u32, u32) {
+fn calculate_sleeping(events: &[Vec<(u32, EventType)>]) -> (u32, u32, u32) {
     let mut combined = events
         .into_iter()
         .cloned()
