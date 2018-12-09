@@ -1,4 +1,4 @@
-use base::grid::Point;
+use base::grid::{Direction, Point};
 use base::{Part, Solver};
 
 use std::collections::HashMap;
@@ -100,6 +100,64 @@ impl BoundingBox {
                 })
             })
             .collect()
+    }
+}
+
+fn is_infinite(c: char, coordinates: &Coordinates) -> bool {
+    let initial_point = coordinates[&c];
+    let initial_distances = distances(&initial_point, coordinates);
+    [
+        Direction::North,
+        Direction::East,
+        Direction::South,
+        Direction::West,
+    ]
+    .iter()
+    .any(|dir| {
+        is_infinite_aux(
+            c,
+            dir,
+            &(initial_point + dir.as_point()),
+            coordinates,
+            &initial_distances,
+        )
+    })
+}
+
+fn did_increase(new_distances: &Distances, previous_distances: &Distances) -> bool {
+    new_distances
+        .keys()
+        .all(|c| new_distances[c] > previous_distances[c])
+}
+
+fn any_is_closer_or_equal(reference: char, distances: &Distances) -> bool {
+    distances
+        .iter()
+        .filter(|(&c, _distance)| c != reference)
+        .any(|(_c, &distance)| distance <= distances[&reference])
+}
+
+fn is_infinite_aux(
+    reference: char,
+    direction: &Direction,
+    point: &Point,
+    coordinates: &Coordinates,
+    previous_distances: &Distances,
+) -> bool {
+    let new_distances = distances(point, coordinates);
+    if did_increase(&new_distances, previous_distances) {
+        true
+    } else if any_is_closer_or_equal(reference, &new_distances) {
+        false
+    } else {
+        let new_point = *point + direction.as_point();
+        is_infinite_aux(
+            reference,
+            direction,
+            &new_point,
+            coordinates,
+            &new_distances,
+        )
     }
 }
 
