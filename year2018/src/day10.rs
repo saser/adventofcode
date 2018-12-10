@@ -108,8 +108,17 @@ position=< 5,  9> velocity=< 1, -2>
 position=<14,  7> velocity=<-2,  0>
 position=<-3,  6> velocity=< 2, -1>\
             ";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+            let expected = "\
+#   #  ###
+#   #   # 
+#   #   # 
+#####   # 
+#   #   # 
+#   #   # 
+#   #   # 
+#   #  ###\
+            ";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap().trim());
         }
     }
 
