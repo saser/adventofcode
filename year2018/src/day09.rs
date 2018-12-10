@@ -21,7 +21,11 @@ impl Solver for Day09 {
                 let winner = scores.iter().max().unwrap();
                 Ok(winner.to_string())
             }
-            Part::Two => Err("day 09 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let scores = play_game(players, last_marble * 100);
+                let winner = scores.iter().max().unwrap();
+                Ok(winner.to_string())
+            }
         }
     }
 }
@@ -132,15 +136,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/09").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let expected = "3527845091";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
