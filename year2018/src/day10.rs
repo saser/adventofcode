@@ -17,15 +17,10 @@ struct Day10;
 impl Solver for Day10 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let mut stars = parse_input(input);
+        let (seconds, output) = run_until_aligned(&mut stars);
         match part {
-            Part::One => {
-                let (_seconds, output) = run_until_message(&mut stars);
-                Ok(output)
-            }
-            Part::Two => {
-                let (seconds, _output) = run_until_message(&mut stars);
-                Ok(seconds.to_string())
-            }
+            Part::One => Ok(output),
+            Part::Two => Ok(seconds.to_string()),
         }
     }
 }
@@ -100,7 +95,7 @@ fn print_stars(stars: &[Star]) -> String {
     output
 }
 
-fn run_until_message(stars: &mut [Star]) -> (u64, String) {
+fn run_until_aligned(stars: &mut [Star]) -> (u64, String) {
     let mut seconds = 0;
     while !stars_aligned(stars) {
         step_stars(stars);
@@ -123,19 +118,15 @@ fn stars_aligned(stars: &[Star]) -> bool {
         .collect::<Vec<Point>>();
     stars
         .iter()
-        .map(|star| mdiffs(&star.position, &positions))
-        .map(|mdiffs| mdiffs.into_iter().min().unwrap())
-        .all(|min_mdiff| min_mdiff <= limit)
+        .map(|star| distances(&star.position, &positions))
+        .map(|distances| distances.into_iter().min().unwrap())
+        .all(|min_distance| min_distance <= limit)
 }
 
-fn mdiff(p1: &Point, p2: &Point) -> u64 {
-    p1.manhattan_distance_to(*p2)
-}
-
-fn mdiffs(p: &Point, ps: &[Point]) -> Vec<u64> {
+fn distances(p: &Point, ps: &[Point]) -> Vec<u64> {
     ps.iter()
         .filter(|&p_| p_ != p)
-        .map(|p_| mdiff(p, p_))
+        .map(|&p_| p.manhattan_distance_to(p_))
         .collect()
 }
 
