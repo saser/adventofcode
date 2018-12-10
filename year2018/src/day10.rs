@@ -1,10 +1,11 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use std::fmt::Write;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-use base::grid::Point;
+use base::grid::{Grid, Point};
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -15,8 +16,12 @@ struct Day10;
 
 impl Solver for Day10 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let mut stars = parse_input(input);
         match part {
-            Part::One => Err("day 10 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let (_seconds, output) = run_until_message(&mut stars);
+                Ok(output)
+            }
             Part::Two => Err("day 10 part 2 not yet implemented".to_string()),
         }
     }
@@ -57,6 +62,80 @@ fn parse_input(input: &str) -> Vec<Star> {
         .collect()
 }
 
+fn print_stars(stars: &[Star]) -> String {
+    let x_min = stars.iter().map(|&star| star.position.x).min().unwrap();
+    let y_min = stars.iter().map(|&star| star.position.y).min().unwrap();
+    let min = Point { x: x_min, y: y_min };
+    let adjusted_positions = stars
+        .iter()
+        .map(|&star| star.position - min)
+        .collect::<Vec<Point>>();
+    let cols = 1 + adjusted_positions
+        .iter()
+        .map(|&position| position.x as usize)
+        .max()
+        .unwrap();
+    let rows = 1 + adjusted_positions
+        .iter()
+        .map(|&position| position.y as usize)
+        .max()
+        .unwrap();
+    let mut output = String::with_capacity(rows * cols);
+    output.push('\n');
+    let mut grid = Grid::with(rows as usize, cols as usize, &' ');
+    for &position in &adjusted_positions {
+        let transposed = Point {
+            x: position.y,
+            y: position.x,
+        };
+        grid[transposed] = '#';
+    }
+    for i in 0..grid.rows() {
+        let s = grid.row(i).iter().collect::<String>();
+        writeln!(&mut output, "{}", s).unwrap();
+    }
+    output
+}
+
+fn run_until_message(stars: &mut [Star]) -> (u64, String) {
+    let mut seconds = 0;
+    while !stars_aligned(stars) {
+        step_stars(stars);
+        seconds += 1;
+    }
+    (seconds, print_stars(stars))
+}
+
+fn step_stars(stars: &mut [Star]) {
+    for star in stars {
+        star.position += star.velocity;
+    }
+}
+
+fn stars_aligned(stars: &[Star]) -> bool {
+    let limit = 2;
+    let positions = stars
+        .iter()
+        .map(|&star| star.position)
+        .collect::<Vec<Point>>();
+    stars
+        .iter()
+        .map(|star| mdiffs(&star.position, &positions))
+        .map(|mdiffs| mdiffs.into_iter().min().unwrap())
+        .all(|min_mdiff| min_mdiff <= limit)
+}
+
+fn mdiff(p1: &Point, p2: &Point) -> u64 {
+    p1.manhattan_distance_to(*p2)
+}
+
+fn mdiffs(p: &Point, ps: &[Point]) -> Vec<u64> {
+    ps.iter()
+        .filter(|&p_| p_ != p)
+        .map(|p_| mdiff(p, p_))
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -68,8 +147,19 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/10").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+            let expected = "\
+#    #  #####   #####   #    #  #####   #####   #    #   #### 
+#    #  #    #  #    #  #    #  #    #  #    #  #   #   #    #
+#    #  #    #  #    #  #    #  #    #  #    #  #  #    #     
+#    #  #    #  #    #  #    #  #    #  #    #  # #     #     
+######  #####   #####   ######  #####   #####   ##      #     
+#    #  #  #    #       #    #  #    #  #  #    ##      #  ###
+#    #  #   #   #       #    #  #    #  #   #   # #     #    #
+#    #  #   #   #       #    #  #    #  #   #   #  #    #    #
+#    #  #    #  #       #    #  #    #  #    #  #   #   #   ##
+#    #  #    #  #       #    #  #####   #    #  #    #   ### #\
+            ";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap().trim());
         }
 
         #[test]

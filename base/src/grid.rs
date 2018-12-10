@@ -13,24 +13,6 @@ pub struct Grid<T> {
 }
 
 impl<T> Grid<T> {
-    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
-    ///
-    /// # Panics
-    ///
-    /// Panics if either `rows`, `cols`, or both are less than 1.
-    pub fn new(rows: usize, cols: usize) -> Grid<T> {
-        if rows < 1 || cols < 1 {
-            panic!(
-                "a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
-                rows = rows,
-                cols = cols
-            )
-        }
-        let mut grid: Vec<Vec<T>> = Vec::with_capacity(rows);
-        (0..cols).for_each(|_| grid.push(Vec::with_capacity(cols)));
-        Grid { grid }
-    }
-
     /// Returns the number of rows in the grid.
     pub fn rows(&self) -> usize {
         self.grid.len()
@@ -54,7 +36,35 @@ impl<T> Grid<T> {
     }
 }
 
+impl<T: Default + Clone> Grid<T> {
+    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
+    ///
+    /// # Panics
+    ///
+    /// Panics if either `rows`, `cols`, or both are less than 1.
+    pub fn new(rows: usize, cols: usize) -> Grid<T> {
+        Grid::with(rows, cols, &T::default())
+    }
+}
+
 impl<T: Clone> Grid<T> {
+    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
+    ///
+    /// # Panics
+    ///
+    /// Panics if either `rows`, `cols`, or both are less than 1.
+    pub fn with(rows: usize, cols: usize, default: &T) -> Grid<T> {
+        if rows < 1 || cols < 1 {
+            panic!(
+                "a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
+                rows = rows,
+                cols = cols
+            )
+        }
+        let grid = vec![vec![default.clone(); cols]; rows];
+        Grid { grid }
+    }
+
     /// Returns a vector with the elements on row `row` in the grid.
     pub fn row(&self, row: usize) -> Vec<T> {
         self.grid[row].clone()
@@ -107,6 +117,12 @@ impl FromStr for Point {
         let x = i64::from_str(&captures["x"])?;
         let y = i64::from_str(&captures["y"])?;
         Ok(Point { x, y })
+    }
+}
+
+impl Into<(usize, usize)> for Point {
+    fn into(self) -> (usize, usize) {
+        (self.x as usize, self.y as usize)
     }
 }
 
