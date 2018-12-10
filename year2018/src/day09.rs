@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use std::collections::VecDeque;
 use std::str::FromStr;
 
 use base::{Part, Solver};
@@ -15,13 +16,17 @@ impl Solver for Day09 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (players, last_marble) = parse_input(input);
         match part {
-            Part::One => Err("day 09 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let scores = play_game(players, last_marble);
+                let winner = scores.iter().max().unwrap();
+                Ok(winner.to_string())
+            }
             Part::Two => Err("day 09 part 2 not yet implemented".to_string()),
         }
     }
 }
 
-fn parse_input(input: &str) -> (usize, u64) {
+fn parse_input(input: &str) -> (usize, usize) {
     lazy_static! {
         static ref INPUT_RE: Regex = Regex::new(
             r"(?P<players>\d+) players; last marble is worth (?P<last_marble>\d+) points"
@@ -30,8 +35,30 @@ fn parse_input(input: &str) -> (usize, u64) {
     }
     let captures = INPUT_RE.captures(input).unwrap();
     let players = usize::from_str(&captures["players"]).unwrap();
-    let last_marble = u64::from_str(&captures["last_marble"]).unwrap();
+    let last_marble = usize::from_str(&captures["last_marble"]).unwrap();
     (players, last_marble)
+}
+
+fn play_game(players: usize, last_marble: usize) -> Vec<usize> {
+    let mut scores = vec![0; players];
+    let mut ring = VecDeque::new();
+    ring.push_front(0);
+    for marble in 1..=last_marble {
+        if marble % 23 == 0 {
+            for _ in 0..7 {
+                let popped = ring.pop_back().unwrap();
+                ring.push_front(popped);
+            }
+            scores[marble % players] += marble + ring.pop_front().unwrap();
+        } else {
+            for _ in 0..2 {
+                let popped = ring.pop_front().unwrap();
+                ring.push_back(popped);
+            }
+            ring.push_front(marble);
+        }
+    }
+    scores
 }
 
 #[cfg(test)]
@@ -45,7 +72,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/09").trim();
-            let expected = "expected output";
+            let expected = "436720";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
