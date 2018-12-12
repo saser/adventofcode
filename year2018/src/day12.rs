@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -10,7 +8,7 @@ struct Day12;
 
 impl Solver for Day12 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (pots, map) = parse_input(input);
+        let (mut pots, map) = parse_input(input);
         match part {
             Part::One => Err("day 12 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 12 part 2 not yet implemented".to_string()),
@@ -18,7 +16,7 @@ impl Solver for Day12 {
     }
 }
 
-fn parse_input(input: &str) -> (VecDeque<usize>, Vec<usize>) {
+fn parse_input(input: &str) -> (Vec<usize>, Vec<usize>) {
     let mut lines = input.lines();
     let initial_state_line = lines.next().unwrap();
     let parts = initial_state_line.split(": ").collect::<Vec<&str>>();
@@ -30,7 +28,7 @@ fn parse_input(input: &str) -> (VecDeque<usize>, Vec<usize>) {
         let (idx, bit) = parse_pattern(line);
         map[idx] = bit;
     }
-    (VecDeque::from(initial_bits), map)
+    (initial_bits, map)
 }
 
 fn parse_pattern(line: &str) -> (usize, usize) {
@@ -53,6 +51,18 @@ fn bitstring_to_bits(bitstring: &str) -> Vec<usize> {
             _ => panic!("invalid char: {}", c),
         })
         .collect()
+}
+
+fn pad_with_zeroes(pots: &Vec<usize>, pad: usize) -> Vec<usize> {
+    let mut padded = pots.clone();
+    let pattern = vec![0; pad];
+    while &padded[..pad] != &pattern[..] {
+        padded.insert(0, 0);
+    }
+    while &padded[padded.len() - pad..] != &pattern[..] {
+        padded.insert(padded.len(), 0);
+    }
+    padded
 }
 
 #[cfg(test)]
