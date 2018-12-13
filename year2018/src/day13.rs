@@ -200,14 +200,14 @@ fn parse_input(input: &str) -> (Tiles, Carts) {
 
 fn tick(tiles: &Tiles, carts: &Carts) -> (Carts, Vec<(usize, usize)>) {
     let mut remaining_carts = carts.clone();
-    let mut destroyed_carts = Carts::new();
     let mut collision_positions = Vec::new();
     for cart in carts.iter() {
+        if !remaining_carts.contains(cart) {
+            continue;
+        }
         let stepped_cart = step_cart(tiles, cart);
         remaining_carts.remove(cart);
         if let Some(other_cart) = did_collide(&stepped_cart, &remaining_carts) {
-            destroyed_carts.insert(other_cart);
-            destroyed_carts.insert(stepped_cart);
             remaining_carts.remove(&other_cart);
             remaining_carts.remove(&stepped_cart);
             collision_positions.push((stepped_cart.row, stepped_cart.col));
