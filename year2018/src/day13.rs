@@ -62,6 +62,8 @@ impl From<char> for Tile {
             '/' => Tile::ForwardSlash,
             '+' => Tile::Intersection,
             '\\' => Tile::BackwardSlash,
+            '<' | '>' => Tile::Horizontal,
+            '^' | 'v' => Tile::Vertical,
             _ => Tile::None,
         }
     }
