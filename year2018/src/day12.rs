@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -15,7 +17,11 @@ impl Solver for Day12 {
                 let sum = sum_after_n_generations(n, &pots, &map);
                 Ok(sum.to_string())
             }
-            Part::Two => Err("day 12 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let n = 50_000_000_000;
+                let sum = sum_after_n_generations(n, &pots, &map);
+                Ok(sum.to_string())
+            }
         }
     }
 }
@@ -104,10 +110,37 @@ fn generation(pots: &Vec<usize>, map: &[usize], first_one: isize) -> (Vec<usize>
     (trimmed, new_first_one)
 }
 
-fn n_generations(n: usize, pots: &Vec<usize>, map: &[usize]) -> (Vec<usize>, isize) {
-    (0..n).fold((pots.clone(), 0), |(acc_pots, acc_first_one), _x| {
-        generation(&acc_pots, map, acc_first_one)
-    })
+fn n_generations_from(
+    n: usize,
+    start_gen: usize,
+    pots: &Vec<usize>,
+    map: &[usize],
+    first_one: isize,
+) -> (Vec<usize>, isize) {
+    let mut seen = HashMap::new();
+    let mut current_pots = pots.clone();
+    let mut current_first_one = first_one;
+    seen.insert(current_pots.clone(), (start_gen, current_first_one));
+    for gen in 1..=n {
+        let (new_pots, new_first_one) = generation(&current_pots, map, current_first_one);
+        if let Some((seen_gen, seen_first_one)) = seen.get(&new_pots) {
+            let loop_length = gen - seen_gen;
+            let number_of_loops = (n - seen_gen) as isize / loop_length as isize;
+            let generations_left = (n - seen_gen) % loop_length;
+            let diff = new_first_one - seen_first_one;
+            return n_generations_from(
+                generations_left,
+                *seen_gen,
+                &new_pots,
+                map,
+                seen_first_one + diff * number_of_loops,
+            );
+        }
+        seen.insert(new_pots.clone(), (gen, new_first_one));
+        current_pots = new_pots;
+        current_first_one = new_first_one;
+    }
+    (current_pots, current_first_one)
 }
 
 fn sum_pot_indices(pots: &[usize], first_one: isize) -> isize {
@@ -118,7 +151,7 @@ fn sum_pot_indices(pots: &[usize], first_one: isize) -> isize {
 }
 
 fn sum_after_n_generations(n: usize, pots: &Vec<usize>, map: &[usize]) -> isize {
-    let (new_pots, first_one) = n_generations(n, pots, map);
+    let (new_pots, first_one) = n_generations_from(n, 0, pots, map, 0);
     sum_pot_indices(&new_pots, first_one)
 }
 
@@ -170,15 +203,7 @@ initial state: #..#.#..##......###...###
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/12").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let expected = "2600000001872";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
