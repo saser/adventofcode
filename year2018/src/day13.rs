@@ -101,9 +101,8 @@ fn parse_input(input: &str) -> (Tiles, Carts) {
     let ncols = char_grid.iter().map(|row| row.len()).max().unwrap();
     let mut tiles = Grid::new(nrows, ncols);
     let mut carts = BTreeSet::new();
-    for row in 0..nrows {
-        for col in 0..ncols {
-            let c = char_grid[row][col];
+    for (row, row_chars) in char_grid.iter().enumerate() {
+        for (col, &c) in row_chars.iter().enumerate() {
             if ['^', '>', 'v', '<'].contains(&c) {
                 let dir = Direction::from(c);
                 carts.insert(Cart {
