@@ -14,11 +14,28 @@ type Carts = BTreeSet<Cart>;
 
 impl Solver for Day13 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let (tiles, carts) = parse_input(input);
         match part {
-            Part::One => Err("day 13 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let (mut remaining_carts, mut collision_positions) = tick(&tiles, &carts);
+                while collision_positions.is_empty() {
+                    let (new_remaining_carts, new_collision_positions) =
+                        tick(&tiles, &remaining_carts);
+                    remaining_carts = new_remaining_carts;
+                    collision_positions = new_collision_positions;
+                }
+                let (x, y) = rowcol_to_xy(collision_positions[0]);
+                Ok(format!("{},{}", x, y))
+            }
             Part::Two => Err("day 13 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+fn rowcol_to_xy((row, col): (usize, usize)) -> (usize, usize) {
+    let x = col;
+    let y = row;
+    (x, y)
 }
 
 fn print_tracks(tiles: &Tiles, carts: &Carts) {
@@ -102,6 +119,26 @@ impl From<char> for Direction {
     }
 }
 
+impl Direction {
+    fn turn(&self, t: &Turn) -> Self {
+        match *t {
+            Turn::Left => match *self {
+                Direction::Up => Direction::Left,
+                Direction::Right => Direction::Up,
+                Direction::Down => Direction::Right,
+                Direction::Left => Direction::Down,
+            },
+            Turn::Right => match *self {
+                Direction::Up => Direction::Right,
+                Direction::Right => Direction::Down,
+                Direction::Down => Direction::Left,
+                Direction::Left => Direction::Up,
+            },
+            Turn::Straight => *self,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
 enum Turn {
     Left,
@@ -146,6 +183,7 @@ fn parse_input(input: &str) -> (Tiles, Carts) {
     let mut carts = BTreeSet::new();
     for (row, row_chars) in char_grid.iter().enumerate() {
         for (col, &c) in row_chars.iter().enumerate() {
+            tiles[(row, col)] = Tile::from(char_grid[row][col]);
             if ['^', '>', 'v', '<'].contains(&c) {
                 let dir = Direction::from(c);
                 carts.insert(Cart {
@@ -154,12 +192,71 @@ fn parse_input(input: &str) -> (Tiles, Carts) {
                     dir,
                     turn: Turn::Left,
                 });
-            } else {
-                tiles[(row, col)] = Tile::from(char_grid[row][col]);
             }
         }
     }
     (tiles, carts)
+}
+
+fn tick(tiles: &Tiles, carts: &Carts) -> (Carts, Vec<(usize, usize)>) {
+    let mut remaining_carts = carts.clone();
+    let mut destroyed_carts = Carts::new();
+    let mut collision_positions = Vec::new();
+    for cart in carts.iter() {
+        let stepped_cart = step_cart(tiles, cart);
+        remaining_carts.remove(cart);
+        if let Some(other_cart) = did_collide(&stepped_cart, &remaining_carts) {
+            destroyed_carts.insert(other_cart);
+            destroyed_carts.insert(stepped_cart);
+            remaining_carts.remove(&other_cart);
+            remaining_carts.remove(&stepped_cart);
+            collision_positions.push((stepped_cart.row, stepped_cart.col));
+        } else {
+            remaining_carts.insert(stepped_cart);
+        }
+    }
+    (remaining_carts, collision_positions)
+}
+
+fn did_collide(cart: &Cart, carts: &Carts) -> Option<Cart> {
+    let destroyed_cart = carts
+        .iter()
+        .cloned()
+        .find(|&other_cart| cart.row == other_cart.row && cart.col == other_cart.col);
+    destroyed_cart
+}
+
+fn step_cart(tiles: &Tiles, cart: &Cart) -> Cart {
+    let (new_row, new_col) = match cart.dir {
+        Direction::Up => (cart.row - 1, cart.col),
+        Direction::Right => (cart.row, cart.col + 1),
+        Direction::Down => (cart.row + 1, cart.col),
+        Direction::Left => (cart.row, cart.col - 1),
+    };
+    let (new_dir, new_turn) = match tiles[(new_row, new_col)] {
+        Tile::ForwardSlash => (
+            match cart.dir {
+                Direction::Up | Direction::Down => cart.dir.turn(&Turn::Right),
+                Direction::Right | Direction::Left => cart.dir.turn(&Turn::Left),
+            },
+            cart.turn,
+        ),
+        Tile::BackwardSlash => (
+            match cart.dir {
+                Direction::Up | Direction::Down => cart.dir.turn(&Turn::Left),
+                Direction::Right | Direction::Left => cart.dir.turn(&Turn::Right),
+            },
+            cart.turn,
+        ),
+        Tile::Intersection => (cart.dir.turn(&cart.turn), cart.turn.next()),
+        _ => (cart.dir, cart.turn),
+    };
+    Cart {
+        row: new_row,
+        col: new_col,
+        dir: new_dir,
+        turn: new_turn,
+    }
 }
 
 #[cfg(test)]
@@ -173,7 +270,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/13").trim();
-            let expected = "expected output";
+            let expected = "16,45";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
