@@ -27,7 +27,16 @@ impl Solver for Day13 {
                 let (x, y) = rowcol_to_xy(collision_positions[0]);
                 Ok(format!("{},{}", x, y))
             }
-            Part::Two => Err("day 13 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let mut remaining_carts = carts.clone();
+                while remaining_carts.len() > 1 {
+                    remaining_carts = tick(&tiles, &remaining_carts).0;
+                }
+                println!("remaining carts: {:?}", remaining_carts);
+                let remaining_cart = remaining_carts.iter().next().unwrap();
+                let (x, y) = rowcol_to_xy((remaining_cart.row, remaining_cart.col));
+                Ok(format!("{},{}", x, y))
+            }
         }
     }
 }
@@ -38,6 +47,7 @@ fn rowcol_to_xy((row, col): (usize, usize)) -> (usize, usize) {
     (x, y)
 }
 
+#[allow(dead_code)]
 fn print_tracks(tiles: &Tiles, carts: &Carts) {
     let nrows = tiles.rows();
     let ncols = tiles.cols();
@@ -277,7 +287,7 @@ mod tests {
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/13_example").trim();
+            let input = include_str!("../../inputs/2018/13_example1").trim();
             let expected = "7,3";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
@@ -289,16 +299,16 @@ mod tests {
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/13").trim();
-            let expected = "expected output";
+            let input = include_str!("../../inputs/2018/13").trim_end();
+            let expected = "21,91";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
 
         #[test]
         fn example() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = include_str!("../../inputs/2018/13_example2").trim();
+            let expected = "6,4";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
