@@ -21,6 +21,23 @@ impl Solver for Day13 {
     }
 }
 
+fn print_tracks(tiles: &Tiles, carts: &Carts) {
+    let nrows = tiles.rows();
+    let ncols = tiles.cols();
+    let mut chars = vec![vec![' '; ncols]; nrows];
+    for row in 0..nrows {
+        for col in 0..ncols {
+            chars[row][col] = tiles[(row, col)].into();
+        }
+    }
+    for &cart in carts.iter() {
+        chars[cart.row][cart.col] = cart.into();
+    }
+    for line in &chars {
+        println!("{}", line.iter().collect::<String>());
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum Tile {
     None,
@@ -46,6 +63,19 @@ impl From<char> for Tile {
             '+' => Tile::Intersection,
             '\\' => Tile::BackwardSlash,
             _ => Tile::None,
+        }
+    }
+}
+
+impl Into<char> for Tile {
+    fn into(self) -> char {
+        match self {
+            Tile::None => ' ',
+            Tile::Vertical => '|',
+            Tile::Horizontal => '-',
+            Tile::Intersection => '+',
+            Tile::ForwardSlash => '/',
+            Tile::BackwardSlash => '\\',
         }
     }
 }
@@ -93,6 +123,17 @@ struct Cart {
     col: usize,
     dir: Direction,
     turn: Turn,
+}
+
+impl Into<char> for Cart {
+    fn into(self) -> char {
+        match self.dir {
+            Direction::Up => '^',
+            Direction::Right => '>',
+            Direction::Down => 'v',
+            Direction::Left => '<',
+        }
+    }
 }
 
 fn parse_input(input: &str) -> (Tiles, Carts) {
