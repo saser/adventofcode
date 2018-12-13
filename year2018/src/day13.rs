@@ -15,6 +15,62 @@ impl Solver for Day13 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+enum Tile {
+    None,
+    Vertical,
+    Horizontal,
+    Intersection,
+    ForwardSlash,
+    BackwardSlash,
+}
+
+impl Default for Tile {
+    fn default() -> Self {
+        Tile::None
+    }
+}
+
+impl From<char> for Tile {
+    fn from(c: char) -> Self {
+        match c {
+            '|' => Tile::Vertical,
+            '-' => Tile::Horizontal,
+            '/' => Tile::ForwardSlash,
+            '+' => Tile::Intersection,
+            '\\' => Tile::BackwardSlash,
+            _ => Tile::None,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
+enum Direction {
+    Up,
+    Right,
+    Down,
+    Left,
+}
+
+impl From<char> for Direction {
+    fn from(c: char) -> Self {
+        match c {
+            '^' => Direction::Up,
+            '>' => Direction::Right,
+            'v' => Direction::Down,
+            '<' => Direction::Left,
+            _ => panic!("invalid direction char: {}", c),
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
+struct Cart {
+    row: usize,
+    col: usize,
+    dir: Direction,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
