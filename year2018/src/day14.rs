@@ -29,6 +29,7 @@ fn parse_input(input: &str) -> usize {
     usize::from_str(input).unwrap()
 }
 
+#[allow(dead_code)]
 fn print_scores(scores: &[usize], indices: &[usize]) {
     for (i, score) in scores.iter().enumerate() {
         let surround = if i == indices[0] {
@@ -122,10 +123,34 @@ mod tests {
         }
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "51589";
+            let expected = "9";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "01245";
+            let expected = "5";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "92510";
+            let expected = "59414";
+            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "59414";
+            let expected = "2018";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
