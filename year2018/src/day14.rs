@@ -31,10 +31,34 @@ mod tests {
         }
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "9";
+            let expected = "5158916779";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "5";
+            let expected = "0124515891";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "18";
+            let expected = "9251071085";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "2018";
+            let expected = "5941429882";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
