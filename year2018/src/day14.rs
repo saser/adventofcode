@@ -11,9 +11,13 @@ struct Day14;
 impl Solver for Day14 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let made_recipes = parse_input(input);
-        let scores = generate_scores(made_recipes + 10);
+        let nr_recipes = made_recipes + 10;
+        let mut scores = Vec::with_capacity(nr_recipes);
+        scores.extend(&[3, 7]);
+        let mut indices = [0, 1];
         match part {
             Part::One => {
+                generate_scores(&mut scores, &mut indices, nr_recipes);
                 let following_ten = scores.iter().skip(made_recipes).take(10);
                 let s = following_ten
                     .map(|score| score.to_string())
@@ -44,23 +48,22 @@ fn print_scores(scores: &[usize], indices: &[usize]) {
     println!();
 }
 
-fn generate_scores(nr_recipes: usize) -> Vec<usize> {
-    let indices = &mut [0, 1];
-    let mut scores = Vec::with_capacity(nr_recipes);
-    scores.push(3);
-    scores.push(7);
-    while scores.len() < nr_recipes {
-        let sum = indices.iter().map(|&idx| scores[idx]).sum::<usize>();
-        if sum >= 10 {
-            scores.push(1);
-        }
-        scores.push(sum % 10);
-        for idx in indices.iter_mut() {
-            *idx += 1 + scores[*idx];
-            *idx %= scores.len();
-        }
+fn add_scores_to(scores: &mut Vec<usize>, indices: &mut [usize]) {
+    let sum = indices.iter().map(|&idx| scores[idx]).sum::<usize>();
+    if sum >= 10 {
+        scores.push(1);
     }
-    scores
+    scores.push(sum % 10);
+    for idx in indices.iter_mut() {
+        *idx += 1 + scores[*idx];
+        *idx %= scores.len();
+    }
+}
+
+fn generate_scores(scores: &mut Vec<usize>, indices: &mut [usize], nr_recipes: usize) {
+    while scores.len() < nr_recipes {
+        add_scores_to(scores, indices);
+    }
 }
 
 #[cfg(test)]
