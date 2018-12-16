@@ -24,7 +24,15 @@ impl Solver for Day14 {
                     .collect::<String>();
                 Ok(s)
             }
-            Part::Two => Err("day 14 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let pattern = input
+                    .chars()
+                    .map(|c| c.to_string())
+                    .map(|s| usize::from_str(&s).unwrap())
+                    .collect::<Vec<usize>>();
+                let recipes_before = generate_until_pattern(&mut scores, &mut indices, &pattern);
+                Ok(recipes_before.to_string())
+            }
         }
     }
 }
@@ -63,6 +71,52 @@ fn add_scores_to(scores: &mut Vec<usize>, indices: &mut [usize]) {
 fn generate_scores(scores: &mut Vec<usize>, indices: &mut [usize], nr_recipes: usize) {
     while scores.len() < nr_recipes {
         add_scores_to(scores, indices);
+    }
+}
+
+fn generate_until_pattern(
+    scores: &mut Vec<usize>,
+    indices: &mut [usize],
+    pattern: &[usize],
+) -> usize {
+    let n = pattern.len();
+    while scores.len() < n {
+        add_scores_to(scores, indices);
+    }
+    let mut found = false;
+    let mut starting_from = 0;
+    while !found {
+        match contains_subslice_starting_from(&scores, pattern, starting_from) {
+            (true, idx) => {
+                found = true;
+                starting_from = idx;
+            }
+            (false, idx) => {
+                starting_from = idx + 1;
+                add_scores_to(scores, indices);
+            }
+        };
+    }
+    starting_from
+}
+
+fn contains_subslice_starting_from<T>(
+    slice: &[T],
+    pattern: &[T],
+    starting_from: usize,
+) -> (bool, usize)
+where
+    T: PartialEq,
+{
+    let n = pattern.len();
+    if let Some((idx, _subslice)) = slice[starting_from..]
+        .windows(n)
+        .enumerate()
+        .find(|&(_i, subslice)| subslice == pattern)
+    {
+        (true, starting_from + idx)
+    } else {
+        (false, slice.len() - n)
     }
 }
 
@@ -121,7 +175,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/14").trim();
-            let expected = "expected output";
+            let expected = "20286858";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
 
