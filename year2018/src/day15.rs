@@ -14,6 +14,8 @@ type Units = BTreeMap<Pos, Unit>;
 
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let (cavern, units) = parse_input(input);
+        print_cavern(&cavern);
         match part {
             Part::One => Err("day 15 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 15 part 2 not yet implemented".to_string()),
@@ -53,10 +55,66 @@ struct Unit {
     attack_power: i64,
 }
 
+impl Unit {
+    fn new(unit_type: UnitType) -> Self {
+        Unit {
+            unit_type,
+            hitpoints: 200,
+            attack_power: 3,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 enum UnitType {
     Goblin,
     Elf,
+}
+
+fn parse_input(input: &str) -> (Cavern, Units) {
+    let mut cavern = Cavern::new();
+    let mut units = Units::new();
+    for (row, line) in input.lines().enumerate() {
+        for (col, c) in line.chars().enumerate() {
+            let pos = Pos(row, col);
+            let opt_unit = match c {
+                'G' => Some(Unit::new(UnitType::Goblin)),
+                'E' => Some(Unit::new(UnitType::Elf)),
+                _ => None,
+            };
+            let tile = match c {
+                '#' => Tile::Wall,
+                '.' => Tile::Open,
+                'G' | 'E' => Tile::Unit(opt_unit.unwrap()),
+                _ => unreachable!(),
+            };
+            cavern.insert(pos, tile);
+            if let Some(unit) = opt_unit {
+                units.insert(pos, unit);
+            }
+        }
+    }
+    (cavern, units)
+}
+
+fn print_cavern(cavern: &Cavern) {
+    let mut last_row = 0;
+    for (&Pos(row, _col), &tile) in cavern.iter() {
+        if row > last_row {
+            println!();
+        }
+        last_row = row;
+        let c = match tile {
+            Tile::Wall => '#',
+            Tile::Open => '.',
+            Tile::Unit(unit) => match unit.unit_type {
+                UnitType::Goblin => 'G',
+                UnitType::Elf => 'E',
+            },
+        };
+        print!("{}", c);
+    }
+    println!();
 }
 
 #[cfg(test)]
