@@ -31,10 +31,100 @@ mod tests {
         }
 
         #[test]
-        fn example() {
+        fn example_1() {
             let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let input = "\
+#######
+#.G...#
+#...EG#
+#.#.#G#
+#..G#E#
+#.....#
+#######\
+            ";
+            let expected = "27730";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_2() {
+            let solver = get_solver();
+            let input = "\
+#######
+#G..#E#
+#E#E.E#
+#G.##.#
+#...#E#
+#...E.#
+#######\
+            ";
+            let expected = "36334";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_3() {
+            let solver = get_solver();
+            let input = "\
+#######
+#E..EG#
+#.#G.E#
+#E.##E#
+#G..#.#
+#..E#.#
+#######\
+            ";
+            let expected = "39514";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_4() {
+            let solver = get_solver();
+            let input = "\
+#######
+#E.G#.#
+#.#G..#
+#G.#.G#
+#G..#.#
+#...E.#
+#######\
+            ";
+            let expected = "27755";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_5() {
+            let solver = get_solver();
+            let input = "\
+#######
+#.E...#
+#.#..G#
+#.###.#
+#E#G#G#
+#...#G#
+#######\
+            ";
+            let expected = "28944";
+            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+        }
+
+        #[test]
+        fn example_6() {
+            let solver = get_solver();
+            let input = "\
+#########
+#G......#
+#.E.#...#
+#..##..G#
+#...##..#
+#...#...#
+#.G...G.#
+#.....G.#
+#########\
+            ";
+            let expected = "18740";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
