@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use base::{Part, Solver};
 
@@ -115,6 +115,22 @@ fn print_cavern(cavern: &Cavern) {
         print!("{}", c);
     }
     println!();
+}
+
+fn adjacent_positions(Position(row, col): Position) -> BTreeSet<Position> {
+    [(-1, 0), (0, -1), (1, 0), (0, 1)]
+        .into_iter()
+        .map(|(drow, dcol)| Position(row + drow, col + dcol))
+        .collect()
+}
+
+fn in_range(position: Position, cavern: &Cavern) -> BTreeSet<Position> {
+    adjacent_positions(position)
+        .into_iter()
+        .filter(|adjacent| {
+            cavern.contains_key(&adjacent) && *cavern.get(&adjacent).unwrap() == Tile::Open
+        })
+        .collect()
 }
 
 #[cfg(test)]
