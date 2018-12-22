@@ -1,3 +1,6 @@
+use std::cmp::Ordering;
+use std::collections::BTreeMap;
+
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -6,6 +9,9 @@ pub fn get_solver() -> Box<dyn Solver> {
 
 struct Day15;
 
+type Cavern = BTreeMap<Pos, Tile>;
+type Units = BTreeMap<Pos, Unit>;
+
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         match part {
@@ -13,6 +19,44 @@ impl Solver for Day15 {
             Part::Two => Err("day 15 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+struct Pos(usize, usize);
+
+impl Ord for Pos {
+    fn cmp(&self, other: &Pos) -> Ordering {
+        match self.0.cmp(&other.0) {
+            Ordering::Equal => self.1.cmp(&other.1),
+            ordering => ordering,
+        }
+    }
+}
+
+impl PartialOrd for Pos {
+    fn partial_cmp(&self, other: &Pos) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+enum Tile {
+    Wall,
+    Open,
+    Unit(Unit),
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+struct Unit {
+    unit_type: UnitType,
+    hitpoints: i64,
+    attack_power: i64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+enum UnitType {
+    Goblin,
+    Elf,
 }
 
 #[cfg(test)]
