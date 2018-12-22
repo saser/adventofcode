@@ -9,8 +9,8 @@ pub fn get_solver() -> Box<dyn Solver> {
 
 struct Day15;
 
-type Cavern = BTreeMap<Pos, Tile>;
-type Units = BTreeMap<Pos, Unit>;
+type Cavern = BTreeMap<Position, Tile>;
+type Units = BTreeMap<Position, Unit>;
 
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
@@ -24,10 +24,10 @@ impl Solver for Day15 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-struct Pos(usize, usize);
+struct Position(usize, usize);
 
-impl Ord for Pos {
-    fn cmp(&self, other: &Pos) -> Ordering {
+impl Ord for Position {
+    fn cmp(&self, other: &Position) -> Ordering {
         match self.0.cmp(&other.0) {
             Ordering::Equal => self.1.cmp(&other.1),
             ordering => ordering,
@@ -35,8 +35,8 @@ impl Ord for Pos {
     }
 }
 
-impl PartialOrd for Pos {
-    fn partial_cmp(&self, other: &Pos) -> Option<Ordering> {
+impl PartialOrd for Position {
+    fn partial_cmp(&self, other: &Position) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
@@ -76,7 +76,7 @@ fn parse_input(input: &str) -> (Cavern, Units) {
     let mut units = Units::new();
     for (row, line) in input.lines().enumerate() {
         for (col, c) in line.chars().enumerate() {
-            let pos = Pos(row, col);
+            let pos = Position(row, col);
             let opt_unit = match c {
                 'G' => Some(Unit::new(UnitType::Goblin)),
                 'E' => Some(Unit::new(UnitType::Elf)),
@@ -88,9 +88,9 @@ fn parse_input(input: &str) -> (Cavern, Units) {
                 'G' | 'E' => Tile::Unit(opt_unit.unwrap()),
                 _ => unreachable!(),
             };
-            cavern.insert(pos, tile);
+            cavern.insert(position, tile);
             if let Some(unit) = opt_unit {
-                units.insert(pos, unit);
+                units.insert(position, unit);
             }
         }
     }
@@ -99,7 +99,7 @@ fn parse_input(input: &str) -> (Cavern, Units) {
 
 fn print_cavern(cavern: &Cavern) {
     let mut last_row = 0;
-    for (&Pos(row, _col), &tile) in cavern.iter() {
+    for (&Position(row, _col), &tile) in cavern.iter() {
         if row > last_row {
             println!();
         }
