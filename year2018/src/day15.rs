@@ -24,7 +24,7 @@ impl Solver for Day15 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-struct Position(usize, usize);
+struct Position(isize, isize);
 
 impl Ord for Position {
     fn cmp(&self, other: &Position) -> Ordering {
@@ -76,7 +76,7 @@ fn parse_input(input: &str) -> (Cavern, Units) {
     let mut units = Units::new();
     for (row, line) in input.lines().enumerate() {
         for (col, c) in line.chars().enumerate() {
-            let pos = Position(row, col);
+            let position = Position(row as isize, col as isize);
             let opt_unit = match c {
                 'G' => Some(Unit::new(UnitType::Goblin)),
                 'E' => Some(Unit::new(UnitType::Elf)),
