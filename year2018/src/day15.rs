@@ -24,12 +24,15 @@ impl Solver for Day15 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-struct Position(isize, isize);
+struct Position {
+    row: isize,
+    col: isize,
+}
 
 impl Ord for Position {
     fn cmp(&self, other: &Position) -> Ordering {
-        match self.0.cmp(&other.0) {
-            Ordering::Equal => self.1.cmp(&other.1),
+        match self.row.cmp(&other.row) {
+            Ordering::Equal => self.col.cmp(&other.col),
             ordering => ordering,
         }
     }
@@ -76,7 +79,10 @@ fn parse_input(input: &str) -> (Cavern, Units) {
     let mut units = Units::new();
     for (row, line) in input.lines().enumerate() {
         for (col, c) in line.chars().enumerate() {
-            let position = Position(row as isize, col as isize);
+            let position = Position {
+                row: row as isize,
+                col: col as isize,
+            };
             let opt_unit = match c {
                 'G' => Some(Unit::new(UnitType::Goblin)),
                 'E' => Some(Unit::new(UnitType::Elf)),
@@ -99,11 +105,11 @@ fn parse_input(input: &str) -> (Cavern, Units) {
 
 fn print_cavern(cavern: &Cavern) {
     let mut last_row = 0;
-    for (&Position(row, _col), &tile) in cavern.iter() {
-        if row > last_row {
+    for (&position, &tile) in cavern.iter() {
+        if position.row > last_row {
             println!();
         }
-        last_row = row;
+        last_row = position.row;
         let c = match tile {
             Tile::Wall => '#',
             Tile::Open => '.',
@@ -117,10 +123,13 @@ fn print_cavern(cavern: &Cavern) {
     println!();
 }
 
-fn adjacent_positions(Position(row, col): Position) -> BTreeSet<Position> {
+fn adjacent_positions(position: Position) -> BTreeSet<Position> {
     [(-1, 0), (0, -1), (1, 0), (0, 1)]
         .into_iter()
-        .map(|(drow, dcol)| Position(row + drow, col + dcol))
+        .map(|(drow, dcol)| Position {
+            row: position.row + drow,
+            col: position.col + dcol,
+        })
         .collect()
 }
 
