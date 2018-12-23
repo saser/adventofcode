@@ -59,6 +59,112 @@ impl fmt::Display for Sample {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+enum Mode {
+    Ignored,
+    Immediate,
+    Register,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+enum OpType {
+    Addition,
+    Multiplication,
+    BitwiseAnd,
+    BitwiseOr,
+    Assignment,
+    GreaterThanTesting,
+    EqualityTesting,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Op {
+    op_type: OpType,
+    a_mode: Mode,
+    b_mode: Mode,
+}
+
+impl Op {
+    fn apply(&self, instruction: Instruction, registers: &Registers) -> Registers {
+        let a = match self.a_mode {
+            Mode::Ignored => None,
+            Mode::Immediate => Some(instruction.a),
+            Mode::Register => Some(registers[instruction.a]),
+        };
+
+        let b = match self.b_mode {
+            Mode::Ignored => None,
+            Mode::Immediate => Some(instruction.b),
+            Mode::Register => Some(registers[instruction.b]),
+        };
+        let c = instruction.c;
+        let output = match self.op_type {
+            OpType::Addition => a.unwrap() + b.unwrap(),
+            OpType::Multiplication => a.unwrap() * b.unwrap(),
+            OpType::BitwiseAnd => a.unwrap() & b.unwrap(),
+            OpType::BitwiseOr => a.unwrap() | b.unwrap(),
+            OpType::Assignment => a.unwrap(),
+            OpType::GreaterThanTesting => usize::from(a.unwrap() > b.unwrap()),
+            OpType::EqualityTesting => usize::from(a.unwrap() == b.unwrap()),
+        };
+        let mut new_registers = *registers;
+        new_registers[c] = output;
+        new_registers
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+enum OpCode {
+    Addr,
+    Addi,
+    Mulr,
+    Muli,
+    Banr,
+    Bani,
+    Borr,
+    Bori,
+    Setr,
+    Seti,
+    Gtir,
+    Gtri,
+    Gtrr,
+    Eqir,
+    Eqri,
+    Eqrr,
+}
+
+impl OpCode {
+    fn op(&self) -> Op {
+        let (op_type, a_mode, b_mode) = match *self {
+            OpCode::Addr => (OpType::Addition, Mode::Register, Mode::Register),
+            OpCode::Addi => (OpType::Addition, Mode::Register, Mode::Immediate),
+            OpCode::Mulr => (OpType::Multiplication, Mode::Register, Mode::Register),
+            OpCode::Muli => (OpType::Multiplication, Mode::Register, Mode::Immediate),
+            OpCode::Banr => (OpType::BitwiseAnd, Mode::Register, Mode::Register),
+            OpCode::Bani => (OpType::BitwiseAnd, Mode::Register, Mode::Immediate),
+            OpCode::Borr => (OpType::BitwiseOr, Mode::Register, Mode::Register),
+            OpCode::Bori => (OpType::BitwiseOr, Mode::Register, Mode::Immediate),
+            OpCode::Setr => (OpType::Assignment, Mode::Register, Mode::Ignored),
+            OpCode::Seti => (OpType::Assignment, Mode::Immediate, Mode::Ignored),
+            OpCode::Gtir => (OpType::GreaterThanTesting, Mode::Immediate, Mode::Register),
+            OpCode::Gtri => (OpType::GreaterThanTesting, Mode::Register, Mode::Immediate),
+            OpCode::Gtrr => (OpType::GreaterThanTesting, Mode::Register, Mode::Register),
+            OpCode::Eqir => (OpType::EqualityTesting, Mode::Immediate, Mode::Register),
+            OpCode::Eqri => (OpType::EqualityTesting, Mode::Register, Mode::Immediate),
+            OpCode::Eqrr => (OpType::EqualityTesting, Mode::Register, Mode::Register),
+        };
+        Op {
+            op_type,
+            a_mode,
+            b_mode,
+        }
+    }
+
+    fn apply(&self, instruction: Instruction, registers: &Registers) -> Registers {
+        self.op().apply(instruction, registers)
+    }
+}
+
 fn parse_input(input: &str) -> (Vec<Sample>, Program) {
     let mut lines = input.lines().peekable();
     let mut samples = Vec::new();
