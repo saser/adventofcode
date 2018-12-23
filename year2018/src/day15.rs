@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap};
 
@@ -27,7 +29,30 @@ impl Solver for Day15 {
                 let outcome = full_rounds * hitpoints_sum;
                 Ok(outcome.to_string())
             }
-            Part::Two => Err("day 15 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let (full_rounds, units_after_combat) = (3..)
+                    .filter_map(|power| {
+                        let (
+                            full_rounds,
+                            all_elves_alive,
+                            _cavern_after_combat,
+                            units_after_combat,
+                        ) = combat_until_elf_dies(power, &cavern, &units);
+                        if all_elves_alive {
+                            Some((full_rounds, units_after_combat))
+                        } else {
+                            None
+                        }
+                    })
+                    .next()
+                    .unwrap();
+                let hitpoints_sum = units_after_combat
+                    .values()
+                    .map(|unit| unit.hitpoints as usize)
+                    .sum::<usize>();
+                let outcome = full_rounds * hitpoints_sum;
+                Ok(outcome.to_string())
+            }
         }
     }
 }
@@ -174,6 +199,48 @@ fn find_target_positions(target_unit_type: UnitType, units: &Units) -> BTreeSet<
             }
         })
         .collect()
+}
+
+fn combat_until_elf_dies(
+    elf_attack_power: i64,
+    cavern: &Cavern,
+    units: &Units,
+) -> (usize, bool, Cavern, Units) {
+    let mut current_cavern = cavern.clone();
+    let mut current_units = units.clone();
+    for (_unit_position, unit) in current_units.iter_mut() {
+        if unit.unit_type != UnitType::Elf {
+            continue;
+        }
+        unit.attack_power = elf_attack_power;
+    }
+    let count_elves = current_units
+        .values()
+        .filter(|unit| unit.unit_type == UnitType::Elf)
+        .count();
+    let mut full_rounds = 0;
+    let mut current_count_elves = count_elves;
+    let mut combat_ended = false;
+    while !combat_ended && current_count_elves == count_elves {
+        let (cavern_after_round, units_after_round, combat_ended_during_round) =
+            round(&current_cavern, &current_units);
+        current_cavern = cavern_after_round;
+        current_units = units_after_round;
+        combat_ended = combat_ended_during_round;
+        current_count_elves = current_units
+            .values()
+            .filter(|unit| unit.unit_type == UnitType::Elf)
+            .count();
+        if !combat_ended {
+            full_rounds += 1;
+        }
+    }
+    (
+        full_rounds,
+        current_count_elves == count_elves,
+        current_cavern,
+        current_units,
+    )
 }
 
 fn combat(cavern: &Cavern, units: &Units) -> (usize, Cavern, Units) {
