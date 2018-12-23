@@ -9,6 +9,7 @@ pub fn get_solver() -> Box<dyn Solver> {
 
 struct Day15;
 
+type Path = Vec<Position>;
 type Cavern = BTreeMap<Position, Tile>;
 type Units = BTreeMap<Position, Unit>;
 
@@ -142,18 +143,26 @@ fn in_range(position: Position, cavern: &Cavern) -> BTreeSet<Position> {
         .collect()
 }
 
-type Path = Vec<Position>;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 struct SPEntry {
-    distance: usize,
     position: Position,
     path: Path,
 }
 
 impl Ord for SPEntry {
     fn cmp(&self, other: &SPEntry) -> Ordering {
-        other.distance.cmp(&self.distance)
+        let mut ordering = other.path.len().cmp(&self.path.len());
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+        for (o, s) in other.path.iter().zip(self.path.iter()) {
+            ordering = o.cmp(s);
+            if ordering != Ordering::Equal {
+                break;
+            }
+        }
+        ordering
     }
 }
 
@@ -163,76 +172,32 @@ impl PartialOrd for SPEntry {
     }
 }
 
-fn shortest_paths(from: Position, to: Position, cavern: &Cavern) -> Option<Vec<Path>> {
+fn shortest_path(from: Position, to: Position, cavern: &Cavern) -> Option<Path> {
     let mut queue = BinaryHeap::new();
-    let mut visited: BTreeMap<Position, SPEntry> = BTreeMap::new();
-    let mut paths = Vec::new();
-    let mut opt_shortest_distance = None;
-    queue.extend(in_range_entries(from, 0, &Vec::new(), cavern));
+    let mut visited: BTreeMap<Position, Path> = BTreeMap::new();
+    queue.extend(in_range_entries(from, &Vec::new(), cavern));
     while let Some(next) = queue.pop() {
-        println!("next.position: {:?}", next.position);
-        print!("visited positions:");
-        for (&position, entry) in visited.iter() {
-            print!(
-                " ({}, {}) @ {},",
-                position.row, position.col, entry.distance
-            );
-        }
-        println!();
-        if next.position == to {
-            visited.insert(next.position, next.clone());
-            if paths.is_empty() {
-                paths.push(next.path);
-                opt_shortest_distance = Some(next.distance);
-                continue;
-            }
-            let shortest_distance = opt_shortest_distance.unwrap();
-            if next.distance == shortest_distance {
-                paths.push(next.path);
-                continue;
+        if let Some(path) = visited.get(&next.position) {
+            if next.path.len() == path.len() && next.path[0] < path[0] {
+                visited.insert(next.position, next.path.clone());
             } else {
-                // We have encountered a path to the `to` position that is longer than any
-                // previously encountered path, so there can exist no more equally good paths.
-                // Therefore we return prematurely.
-                return Some(paths);
+                continue;
             }
         }
-        if visited.contains_key(&next.position) {
-            continue;
-        }
-        visited.insert(next.position, next.clone());
-        queue.extend(in_range_entries(
-            next.position,
-            next.distance,
-            &next.path,
-            cavern,
-        ))
+        visited.insert(next.position, next.path.clone());
+        queue.extend(in_range_entries(next.position, &next.path, cavern))
     }
-    if paths.len() == 0 {
-        None
-    } else {
-        Some(paths)
-    }
+    visited.remove(&to)
 }
 
-fn in_range_entries(
-    position: Position,
-    base_distance: usize,
-    base_path: &Path,
-    cavern: &Cavern,
-) -> Vec<SPEntry> {
+fn in_range_entries(position: Position, base_path: &Path, cavern: &Cavern) -> Vec<SPEntry> {
     in_range(position, cavern)
         .iter()
         .map(|&in_range| {
-            let distance = base_distance + 1;
             let position = in_range;
             let mut path = base_path.clone();
             path.push(position);
-            SPEntry {
-                distance,
-                position,
-                path,
-            }
+            SPEntry { position, path }
         })
         .collect()
 }
@@ -240,42 +205,6 @@ fn in_range_entries(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    mod movement {
-        use super::*;
-
-        #[test]
-        fn multiple_shortest_paths() {
-            let input = "\
-#######
-#.E...#
-#.....#
-#...G.#
-#######\
-            ";
-            let (cavern, units) = parse_input(input);
-            let unit_positions = units.keys().cloned().collect::<Vec<Position>>();
-            let elf_position = unit_positions[0];
-            let Position {
-                row: goblin_row,
-                col: goblin_col,
-            } = unit_positions[1];
-            // The chosen position is the one marked with `+`, in accordance with the example.
-            // #######
-            // #.E...#
-            // #...+.#
-            // #...G.#
-            // #######
-            let chosen_position = Position {
-                row: goblin_row - 1,
-                col: goblin_col,
-            };
-            let paths = shortest_paths(elf_position, chosen_position, &cavern).unwrap();
-            assert_eq!(2, paths.len());
-            assert_eq!(3, paths[0].len());
-            assert_eq!(3, paths[1].len());
-        }
-    }
 
     mod part1 {
         use super::*;
