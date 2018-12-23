@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use base::{Part, Solver};
@@ -50,10 +50,10 @@ struct Sample {
 }
 
 impl Sample {
-    fn candidates(&self) -> BTreeSet<OpCode> {
-        OpCode::all()
+    fn candidates(&self) -> BTreeSet<Opcode> {
+        Opcode::all()
             .into_iter()
-            .filter(|op_code| op_code.apply(self.instruction, &self.before) == self.after)
+            .filter(|opcode| opcode.apply(self.instruction, &self.before) == self.after)
             .collect()
     }
 }
@@ -121,7 +121,7 @@ impl Op {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-enum OpCode {
+enum Opcode {
     Addr,
     Addi,
     Mulr,
@@ -140,49 +140,49 @@ enum OpCode {
     Eqrr,
 }
 
-impl OpCode {
-    fn all() -> BTreeSet<OpCode> {
+impl Opcode {
+    fn all() -> BTreeSet<Opcode> {
         let mut set = BTreeSet::new();
-        for &op_code in &[
-            OpCode::Addr,
-            OpCode::Addi,
-            OpCode::Mulr,
-            OpCode::Muli,
-            OpCode::Banr,
-            OpCode::Bani,
-            OpCode::Borr,
-            OpCode::Bori,
-            OpCode::Setr,
-            OpCode::Seti,
-            OpCode::Gtir,
-            OpCode::Gtri,
-            OpCode::Gtrr,
-            OpCode::Eqir,
-            OpCode::Eqri,
-            OpCode::Eqrr,
+        for &opcode in &[
+            Opcode::Addr,
+            Opcode::Addi,
+            Opcode::Mulr,
+            Opcode::Muli,
+            Opcode::Banr,
+            Opcode::Bani,
+            Opcode::Borr,
+            Opcode::Bori,
+            Opcode::Setr,
+            Opcode::Seti,
+            Opcode::Gtir,
+            Opcode::Gtri,
+            Opcode::Gtrr,
+            Opcode::Eqir,
+            Opcode::Eqri,
+            Opcode::Eqrr,
         ] {
-            set.insert(op_code);
+            set.insert(opcode);
         }
         set
     }
     fn op(&self) -> Op {
         let (op_type, a_mode, b_mode) = match *self {
-            OpCode::Addr => (OpType::Addition, Mode::Register, Mode::Register),
-            OpCode::Addi => (OpType::Addition, Mode::Register, Mode::Immediate),
-            OpCode::Mulr => (OpType::Multiplication, Mode::Register, Mode::Register),
-            OpCode::Muli => (OpType::Multiplication, Mode::Register, Mode::Immediate),
-            OpCode::Banr => (OpType::BitwiseAnd, Mode::Register, Mode::Register),
-            OpCode::Bani => (OpType::BitwiseAnd, Mode::Register, Mode::Immediate),
-            OpCode::Borr => (OpType::BitwiseOr, Mode::Register, Mode::Register),
-            OpCode::Bori => (OpType::BitwiseOr, Mode::Register, Mode::Immediate),
-            OpCode::Setr => (OpType::Assignment, Mode::Register, Mode::Ignored),
-            OpCode::Seti => (OpType::Assignment, Mode::Immediate, Mode::Ignored),
-            OpCode::Gtir => (OpType::GreaterThanTesting, Mode::Immediate, Mode::Register),
-            OpCode::Gtri => (OpType::GreaterThanTesting, Mode::Register, Mode::Immediate),
-            OpCode::Gtrr => (OpType::GreaterThanTesting, Mode::Register, Mode::Register),
-            OpCode::Eqir => (OpType::EqualityTesting, Mode::Immediate, Mode::Register),
-            OpCode::Eqri => (OpType::EqualityTesting, Mode::Register, Mode::Immediate),
-            OpCode::Eqrr => (OpType::EqualityTesting, Mode::Register, Mode::Register),
+            Opcode::Addr => (OpType::Addition, Mode::Register, Mode::Register),
+            Opcode::Addi => (OpType::Addition, Mode::Register, Mode::Immediate),
+            Opcode::Mulr => (OpType::Multiplication, Mode::Register, Mode::Register),
+            Opcode::Muli => (OpType::Multiplication, Mode::Register, Mode::Immediate),
+            Opcode::Banr => (OpType::BitwiseAnd, Mode::Register, Mode::Register),
+            Opcode::Bani => (OpType::BitwiseAnd, Mode::Register, Mode::Immediate),
+            Opcode::Borr => (OpType::BitwiseOr, Mode::Register, Mode::Register),
+            Opcode::Bori => (OpType::BitwiseOr, Mode::Register, Mode::Immediate),
+            Opcode::Setr => (OpType::Assignment, Mode::Register, Mode::Ignored),
+            Opcode::Seti => (OpType::Assignment, Mode::Immediate, Mode::Ignored),
+            Opcode::Gtir => (OpType::GreaterThanTesting, Mode::Immediate, Mode::Register),
+            Opcode::Gtri => (OpType::GreaterThanTesting, Mode::Register, Mode::Immediate),
+            Opcode::Gtrr => (OpType::GreaterThanTesting, Mode::Register, Mode::Register),
+            Opcode::Eqir => (OpType::EqualityTesting, Mode::Immediate, Mode::Register),
+            Opcode::Eqri => (OpType::EqualityTesting, Mode::Register, Mode::Immediate),
+            Opcode::Eqrr => (OpType::EqualityTesting, Mode::Register, Mode::Register),
         };
         Op {
             op_type,
