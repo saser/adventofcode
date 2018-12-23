@@ -16,9 +16,20 @@ type Units = BTreeMap<Position, Unit>;
 impl Solver for Day15 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (cavern, units) = parse_input(input);
-        print_cavern(&cavern);
         match part {
-            Part::One => Err("day 15 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let (full_rounds, cavern_after_combat, units_after_combat) =
+                    combat(&cavern, &units);
+                let hitpoints_sum = units_after_combat
+                    .values()
+                    .map(|unit| unit.hitpoints as usize)
+                    .sum::<usize>();
+                let outcome = full_rounds * hitpoints_sum;
+                println!("Finally:");
+                print_cavern(&cavern_after_combat, &units_after_combat);
+                println!("{} * {} = {}", full_rounds, hitpoints_sum, outcome);
+                Ok((full_rounds * hitpoints_sum).to_string())
+            }
             Part::Two => Err("day 15 part 2 not yet implemented".to_string()),
         }
     }
@@ -104,10 +115,21 @@ fn parse_input(input: &str) -> (Cavern, Units) {
     (cavern, units)
 }
 
-fn print_cavern(cavern: &Cavern) {
+fn print_cavern(cavern: &Cavern, units: &Units) {
     let mut last_row = 0;
     for (&position, &tile) in cavern.iter() {
         if position.row > last_row {
+            print!("   ");
+            for (unit_position, unit) in units.iter() {
+                if unit_position.row != last_row {
+                    continue;
+                }
+                let c = match unit.unit_type {
+                    UnitType::Goblin => 'G',
+                    UnitType::Elf => 'E',
+                };
+                print!("{}({}), ", c, unit.hitpoints);
+            }
             println!();
         }
         last_row = position.row;
@@ -143,6 +165,193 @@ fn in_range(position: Position, cavern: &Cavern) -> BTreeSet<Position> {
         .collect()
 }
 
+fn find_target_positions(target_unit_type: UnitType, cavern: &Cavern) -> BTreeSet<Position> {
+    cavern
+        .iter()
+        .filter_map(|(&position, &tile)| match tile {
+            Tile::Unit(unit) => {
+                if unit.unit_type == target_unit_type {
+                    Some(position)
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        })
+        .collect()
+}
+
+fn combat(cavern: &Cavern, units: &Units) -> (usize, Cavern, Units) {
+    let mut current_cavern = cavern.clone();
+    let mut current_units = units.clone();
+    let mut full_rounds = 0;
+    let mut combat_ended = false;
+    println!("Initially:");
+    print_cavern(cavern, units);
+    while !combat_ended {
+        println!("======== begin round {} ========", full_rounds + 1);
+        let (cavern_after_round, units_after_round, combat_ended_during_round) =
+            round(&current_cavern, &current_units);
+        current_cavern = cavern_after_round;
+        current_units = units_after_round;
+        combat_ended = combat_ended_during_round;
+        if !combat_ended {
+            full_rounds += 1;
+        }
+    }
+    (full_rounds, current_cavern, current_units)
+}
+
+fn round(cavern: &Cavern, units: &Units) -> (Cavern, Units, bool) {
+    let mut current_cavern = cavern.clone();
+    let mut current_units = units.clone();
+    for &acting_position in units.keys() {
+        if !current_units.contains_key(&acting_position) {
+            // The unit that would have acted has died.
+            continue;
+        }
+        let (cavern_after_turn, units_after_turn, combat_ended) =
+            turn(acting_position, &current_cavern, &current_units);
+        println!("turn");
+        print_cavern(&cavern_after_turn, &units_after_turn);
+        if combat_ended {
+            return (cavern_after_turn, units_after_turn, true);
+        }
+        current_cavern = cavern_after_turn;
+        current_units = units_after_turn;
+    }
+    (current_cavern, current_units, false)
+}
+
+fn turn(acting_position: Position, cavern: &Cavern, units: &Units) -> (Cavern, Units, bool) {
+    let acting_unit = *units.get(&acting_position).unwrap();
+    let target_unit_type = match acting_unit.unit_type {
+        UnitType::Goblin => UnitType::Elf,
+        UnitType::Elf => UnitType::Goblin,
+    };
+    let target_positions = find_target_positions(target_unit_type, cavern);
+    if target_positions.is_empty() {
+        // There are no targets at all, so combat ends without anything being changed.
+        return (cavern.clone(), units.clone(), true);
+    }
+
+    // There are still targets left.
+    if let Some((cavern_after_attacking, units_after_attacking)) =
+        perform_attack_if_possible(acting_position, &target_positions, cavern, units)
+    {
+        // The acting unit could perform an attack, so end the turn and return the results of
+        // attacking.
+        return (cavern_after_attacking, units_after_attacking, false);
+    }
+
+    // The acting unit is not currently in range of attacking anyone, and will therefore try to
+    // move.
+    let in_range_positions = target_positions
+        .iter()
+        .flat_map(|&target_position| in_range(target_position, cavern))
+        .collect::<BTreeSet<Position>>();
+    if in_range_positions.is_empty() {
+        // There are no open squares adjacent to any of the targets, so the acting unit cannot
+        // move, ending its turn without anything being changed.
+        return (cavern.clone(), units.clone(), false);
+    }
+
+    // The acting tries to move (might not be able to move due to being locked in).
+    let (position_after_moving, cavern_after_moving, units_after_moving) =
+        perform_move(acting_position, &in_range_positions, cavern, units);
+
+    let mut new_cavern = cavern_after_moving.clone();
+    let mut new_units = units_after_moving.clone();
+    // After moving, the acting unit might be able to attack a target.
+    if let Some((cavern_after_attacking, units_after_attacking)) = perform_attack_if_possible(
+        position_after_moving,
+        &target_positions,
+        &cavern_after_moving,
+        &units_after_moving,
+    ) {
+        new_cavern = cavern_after_attacking;
+        new_units = units_after_attacking;
+    }
+
+    // The unit has moved and possibly attacked, ending its turn.
+    (new_cavern, new_units, false)
+}
+
+fn perform_attack_if_possible(
+    acting_position: Position,
+    target_positions: &BTreeSet<Position>,
+    cavern: &Cavern,
+    units: &Units,
+) -> Option<(Cavern, Units)> {
+    let adjacent_positions_to_acting = adjacent_positions(acting_position);
+    let attackable_positions = target_positions & &adjacent_positions_to_acting;
+    if attackable_positions.is_empty() {
+        None
+    } else {
+        let acting_unit = *units.get(&acting_position).unwrap();
+        Some(perform_attack(
+            acting_unit,
+            &attackable_positions,
+            cavern,
+            units,
+        ))
+    }
+}
+
+fn perform_attack(
+    acting_unit: Unit,
+    attackable_positions: &BTreeSet<Position>,
+    cavern: &Cavern,
+    units: &Units,
+) -> (Cavern, Units) {
+    let mut new_cavern = cavern.clone();
+    let mut new_units = units.clone();
+    let target_position = *attackable_positions
+        .iter()
+        .min_by_key(|attackable_position| units.get(attackable_position).unwrap().hitpoints)
+        .unwrap();
+    let mut attacked_unit = new_units.remove(&target_position).unwrap();
+    attacked_unit.hitpoints -= acting_unit.attack_power;
+    if attacked_unit.hitpoints > 0 {
+        new_units.insert(target_position, attacked_unit);
+    } else {
+        // The attacked unit died, so remove it both from the cavern and from the units.
+        new_cavern.insert(target_position, Tile::Open);
+    }
+    (new_cavern, new_units)
+}
+
+fn perform_move(
+    start_position: Position,
+    in_range_positions: &BTreeSet<Position>,
+    cavern: &Cavern,
+    units: &Units,
+) -> (Position, Cavern, Units) {
+    let first_steps_with_distances = in_range_positions
+        .iter()
+        .filter_map(|&in_range_position| shortest_path(start_position, in_range_position, cavern))
+        .map(|path| (path[0], path.len()))
+        .collect::<Vec<(Position, usize)>>();
+    if first_steps_with_distances.is_empty() {
+        return (start_position, cavern.clone(), units.clone());
+    }
+    let (mut best_first_step, mut best_distance) = first_steps_with_distances[0];
+    for &(first_step, distance) in &first_steps_with_distances[1..] {
+        if distance < best_distance {
+            best_first_step = first_step;
+            best_distance = distance;
+        } else if distance == best_distance {
+            best_first_step = best_first_step.min(first_step);
+        }
+    }
+    let mut new_cavern = cavern.clone();
+    let mut new_units = units.clone();
+    let removed_tile = new_cavern.insert(start_position, Tile::Open).unwrap();
+    let removed_unit = new_units.remove(&start_position).unwrap();
+    new_cavern.insert(best_first_step, removed_tile);
+    new_units.insert(best_first_step, removed_unit);
+    (best_first_step, new_cavern, new_units)
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 struct SPEntry {
