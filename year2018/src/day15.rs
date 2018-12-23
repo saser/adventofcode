@@ -25,8 +25,7 @@ impl Solver for Day15 {
                     .map(|unit| unit.hitpoints as usize)
                     .sum::<usize>();
                 let outcome = full_rounds * hitpoints_sum;
-                println!("{} * {} = {}", full_rounds, hitpoints_sum, outcome);
-                Ok((full_rounds * hitpoints_sum).to_string())
+                Ok(outcome.to_string())
             }
             Part::Two => Err("day 15 part 2 not yet implemented".to_string()),
         }
