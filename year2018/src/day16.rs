@@ -15,6 +15,23 @@ impl Solver for Day16 {
     }
 }
 
+type Registers = [usize; 4];
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+struct Instruction {
+    opcode: usize,
+    a: usize,
+    b: usize,
+    c: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+struct Sample {
+    before: Registers,
+    instruction: Instruction,
+    after: Registers,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
