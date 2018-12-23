@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::fmt;
 
 use base::{Part, Solver};
@@ -11,17 +12,14 @@ struct Day16;
 impl Solver for Day16 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (samples, program) = parse_input(input);
-        for sample in samples {
-            println!("{}", sample);
-            println!();
-        }
-        println!();
-        for instruction in program {
-            println!("{}", instruction);
-        }
-        println!();
         match part {
-            Part::One => Err("day 16 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let count = samples
+                    .iter()
+                    .filter(|sample| sample.candidates().len() >= 3)
+                    .count();
+                Ok(count.to_string())
+            }
             Part::Two => Err("day 16 part 2 not yet implemented".to_string()),
         }
     }
@@ -49,6 +47,15 @@ struct Sample {
     before: Registers,
     instruction: Instruction,
     after: Registers,
+}
+
+impl Sample {
+    fn candidates(&self) -> BTreeSet<OpCode> {
+        OpCode::all()
+            .into_iter()
+            .filter(|op_code| op_code.apply(self.instruction, &self.before) == self.after)
+            .collect()
+    }
 }
 
 impl fmt::Display for Sample {
@@ -134,6 +141,30 @@ enum OpCode {
 }
 
 impl OpCode {
+    fn all() -> BTreeSet<OpCode> {
+        let mut set = BTreeSet::new();
+        for &op_code in &[
+            OpCode::Addr,
+            OpCode::Addi,
+            OpCode::Mulr,
+            OpCode::Muli,
+            OpCode::Banr,
+            OpCode::Bani,
+            OpCode::Borr,
+            OpCode::Bori,
+            OpCode::Setr,
+            OpCode::Seti,
+            OpCode::Gtir,
+            OpCode::Gtri,
+            OpCode::Gtrr,
+            OpCode::Eqir,
+            OpCode::Eqri,
+            OpCode::Eqrr,
+        ] {
+            set.insert(op_code);
+        }
+        set
+    }
     fn op(&self) -> Op {
         let (op_type, a_mode, b_mode) = match *self {
             OpCode::Addr => (OpType::Addition, Mode::Register, Mode::Register),
@@ -233,7 +264,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/16").trim();
-            let expected = "expected output";
+            let expected = "596";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
