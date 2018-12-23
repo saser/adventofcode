@@ -18,15 +18,13 @@ impl Solver for Day15 {
         let (cavern, units) = parse_input(input);
         match part {
             Part::One => {
-                let (full_rounds, cavern_after_combat, units_after_combat) =
+                let (full_rounds, _cavern_after_combat, units_after_combat) =
                     combat(&cavern, &units);
                 let hitpoints_sum = units_after_combat
                     .values()
                     .map(|unit| unit.hitpoints as usize)
                     .sum::<usize>();
                 let outcome = full_rounds * hitpoints_sum;
-                println!("Finally:");
-                print_cavern(&cavern_after_combat, &units_after_combat);
                 println!("{} * {} = {}", full_rounds, hitpoints_sum, outcome);
                 Ok((full_rounds * hitpoints_sum).to_string())
             }
@@ -115,6 +113,7 @@ fn parse_input(input: &str) -> (Cavern, Units) {
     (cavern, units)
 }
 
+#[allow(dead_code)]
 fn print_cavern(cavern: &Cavern, units: &Units) {
     let mut last_row = 0;
     for (&position, &tile) in cavern.iter() {
@@ -186,10 +185,7 @@ fn combat(cavern: &Cavern, units: &Units) -> (usize, Cavern, Units) {
     let mut current_units = units.clone();
     let mut full_rounds = 0;
     let mut combat_ended = false;
-    println!("Initially:");
-    print_cavern(cavern, units);
     while !combat_ended {
-        println!("======== begin round {} ========", full_rounds + 1);
         let (cavern_after_round, units_after_round, combat_ended_during_round) =
             round(&current_cavern, &current_units);
         current_cavern = cavern_after_round;
@@ -212,8 +208,6 @@ fn round(cavern: &Cavern, units: &Units) -> (Cavern, Units, bool) {
         }
         let (cavern_after_turn, units_after_turn, combat_ended) =
             turn(acting_position, &current_cavern, &current_units);
-        println!("turn");
-        print_cavern(&cavern_after_turn, &units_after_turn);
         if combat_ended {
             return (cavern_after_turn, units_after_turn, true);
         }
@@ -327,30 +321,30 @@ fn perform_move(
     cavern: &Cavern,
     units: &Units,
 ) -> (Position, Cavern, Units) {
-    let first_steps_with_distances = in_range_positions
-        .iter()
-        .filter_map(|&in_range_position| shortest_path(start_position, in_range_position, cavern))
-        .map(|path| (path[0], path.len()))
-        .collect::<Vec<(Position, usize)>>();
-    if first_steps_with_distances.is_empty() {
-        return (start_position, cavern.clone(), units.clone());
-    }
-    let (mut best_first_step, mut best_distance) = first_steps_with_distances[0];
-    for &(first_step, distance) in &first_steps_with_distances[1..] {
-        if distance < best_distance {
-            best_first_step = first_step;
-            best_distance = distance;
-        } else if distance == best_distance {
-            best_first_step = best_first_step.min(first_step);
-        }
-    }
+    let mut new_position = start_position;
     let mut new_cavern = cavern.clone();
     let mut new_units = units.clone();
-    let removed_tile = new_cavern.insert(start_position, Tile::Open).unwrap();
-    let removed_unit = new_units.remove(&start_position).unwrap();
-    new_cavern.insert(best_first_step, removed_tile);
-    new_units.insert(best_first_step, removed_unit);
-    (best_first_step, new_cavern, new_units)
+    let chosen = in_range_positions
+        .iter()
+        .filter_map(|&in_range_position| {
+            shortest_path(start_position, in_range_position, cavern)
+                .map(|path| (in_range_position, path))
+        })
+        .min_by(
+            |(position1, path1), (position2, path2)| match path1.len().cmp(&path2.len()) {
+                Ordering::Equal => position1.cmp(position2),
+                ordering => ordering,
+            },
+        );
+    if let Some((_chosen_position, chosen_path)) = chosen {
+        let first_step = chosen_path[0];
+        let removed_tile = new_cavern.insert(start_position, Tile::Open).unwrap();
+        let removed_unit = new_units.remove(&start_position).unwrap();
+        new_position = first_step;
+        new_cavern.insert(first_step, removed_tile);
+        new_units.insert(first_step, removed_unit);
+    }
+    (new_position, new_cavern, new_units)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -422,7 +416,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/15").trim();
-            let expected = "expected output";
+            let expected = "201638";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
