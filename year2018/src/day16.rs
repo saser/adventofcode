@@ -236,14 +236,6 @@ mod tests {
             let expected = "expected output";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
     }
 
     mod part2 {
