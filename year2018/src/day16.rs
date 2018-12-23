@@ -11,6 +11,15 @@ struct Day16;
 impl Solver for Day16 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (samples, program) = parse_input(input);
+        for sample in samples {
+            println!("{}", sample);
+            println!();
+        }
+        println!();
+        for instruction in program {
+            println!("{}", instruction);
+        }
+        println!();
         match part {
             Part::One => Err("day 16 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 16 part 2 not yet implemented".to_string()),
@@ -78,7 +87,11 @@ fn parse_input(input: &str) -> (Vec<Sample>, Program) {
         // samples; if it is not empty, we assume that is the start of a new sample.
         next_line = lines.peek().unwrap();
     }
-    unimplemented!()
+    let program = lines
+        .skip_while(|&line| line == "")
+        .map(parse_instruction)
+        .collect();
+    (samples, program)
 }
 
 fn parse_registers(line: &str) -> Registers {
