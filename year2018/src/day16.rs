@@ -20,9 +20,48 @@ impl Solver for Day16 {
                     .count();
                 Ok(count.to_string())
             }
-            Part::Two => Err("day 16 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let opcode_map = determine_opcodes(&samples);
+                let final_registers = program.iter().fold([0; 4], |registers, &instruction| {
+                    let opcode = opcode_map[&instruction.opcode];
+                    opcode.apply(instruction, &registers)
+                });
+                Ok(final_registers[0].to_string())
+            }
         }
     }
+}
+
+fn determine_opcodes(samples: &[Sample]) -> BTreeMap<usize, Opcode> {
+    let mut samples_by_opcode = BTreeMap::new();
+    for &sample in samples {
+        let opcode_samples = samples_by_opcode
+            .entry(sample.instruction.opcode)
+            .or_insert_with(Vec::new);
+        opcode_samples.push(sample);
+    }
+    let mut candidates_by_opcode = samples_by_opcode
+        .iter()
+        .map(|(&opcode, samples)| {
+            let candidates = samples
+                .iter()
+                .fold(Opcode::all(), |acc, sample| &acc & &sample.candidates());
+            (opcode, candidates)
+        })
+        .collect::<BTreeMap<usize, BTreeSet<Opcode>>>();
+    let mut determined = BTreeMap::new();
+    while let Some((opcode, single_candidate_set)) = candidates_by_opcode
+        .iter()
+        .filter(|(_opcode, candidates)| candidates.len() == 1)
+        .next()
+    {
+        let candidate = *single_candidate_set.iter().next().unwrap();
+        determined.insert(*opcode, candidate);
+        for candidate_set in candidates_by_opcode.values_mut() {
+            candidate_set.remove(&candidate);
+        }
+    }
+    determined
 }
 
 type Registers = [usize; 4];
@@ -276,15 +315,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/16").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let expected = "554";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
