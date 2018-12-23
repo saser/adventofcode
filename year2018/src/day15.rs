@@ -163,18 +163,15 @@ fn in_range(position: Position, cavern: &Cavern) -> BTreeSet<Position> {
         .collect()
 }
 
-fn find_target_positions(target_unit_type: UnitType, cavern: &Cavern) -> BTreeSet<Position> {
-    cavern
+fn find_target_positions(target_unit_type: UnitType, units: &Units) -> BTreeSet<Position> {
+    units
         .iter()
-        .filter_map(|(&position, &tile)| match tile {
-            Tile::Unit(unit) => {
-                if unit.unit_type == target_unit_type {
-                    Some(position)
-                } else {
-                    None
-                }
+        .filter_map(|(&unit_position, unit)| {
+            if unit.unit_type == target_unit_type {
+                Some(unit_position)
+            } else {
+                None
             }
-            _ => None,
         })
         .collect()
 }
@@ -222,7 +219,7 @@ fn turn(acting_position: Position, cavern: &Cavern, units: &Units) -> (Cavern, U
         UnitType::Goblin => UnitType::Elf,
         UnitType::Elf => UnitType::Goblin,
     };
-    let target_positions = find_target_positions(target_unit_type, cavern);
+    let target_positions = find_target_positions(target_unit_type, units);
     if target_positions.is_empty() {
         // There are no targets at all, so combat ends without anything being changed.
         return (cavern.clone(), units.clone(), true);
