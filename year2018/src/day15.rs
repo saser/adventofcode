@@ -381,6 +381,12 @@ fn shortest_path(from: Position, to: Position, cavern: &Cavern) -> Option<Path> 
     queue.extend(in_range_entries(from, &Vec::new(), cavern));
     while let Some(current) = queue.pop() {
         if let Some(path) = visited.get(&current.position) {
+            if current.position == to && current.path.len() > path.len() {
+                // We know that there is already a path to the `to` position, and we have now
+                // encountered a new, longer path. That means that there are no more paths that can
+                // be better than the currently stored path, so we return early.
+                return visited.remove(&to);
+            }
             if current.path.len() == path.len() && current.path[0] < path[0] {
                 visited.insert(current.position, current.path.clone());
             } else {
