@@ -379,16 +379,16 @@ fn shortest_path(from: Position, to: Position, cavern: &Cavern) -> Option<Path> 
     let mut queue = BinaryHeap::new();
     let mut visited: BTreeMap<Position, Path> = BTreeMap::new();
     queue.extend(in_range_entries(from, &Vec::new(), cavern));
-    while let Some(next) = queue.pop() {
-        if let Some(path) = visited.get(&next.position) {
-            if next.path.len() == path.len() && next.path[0] < path[0] {
-                visited.insert(next.position, next.path.clone());
+    while let Some(current) = queue.pop() {
+        if let Some(path) = visited.get(&current.position) {
+            if current.path.len() == path.len() && current.path[0] < path[0] {
+                visited.insert(current.position, current.path.clone());
             } else {
                 continue;
             }
         }
-        visited.insert(next.position, next.path.clone());
-        queue.extend(in_range_entries(next.position, &next.path, cavern))
+        visited.insert(current.position, current.path.clone());
+        queue.extend(in_range_entries(current.position, &current.path, cavern))
     }
     visited.remove(&to)
 }
