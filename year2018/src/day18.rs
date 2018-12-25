@@ -20,8 +20,7 @@ impl Solver for Day18 {
         match part {
             Part::One => {
                 let iterations = 10;
-                let final_tiles =
-                    (0..iterations).fold(tiles, |acc_tiles, _i| iteration(&acc_tiles));
+                let final_tiles = run_iterations(iterations, &tiles);
                 let counts = count(final_tiles.iter());
                 let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
                 Ok(resource_value.to_string())
@@ -146,6 +145,23 @@ fn iteration(tiles: &Tiles) -> Tiles {
         }
     }
     new_tiles
+}
+
+fn run_iterations(iterations: usize, tiles: &Tiles) -> Tiles {
+    let mut current_tiles = tiles.clone();
+    let mut seen = HashMap::new();
+    seen.insert(current_tiles.clone(), 0);
+    for i in 1..=iterations {
+        let new_tiles = iteration(&current_tiles);
+        if let Some(seen_i) = seen.get(&new_tiles) {
+            let loop_length = i - seen_i;
+            let iterations_left = (iterations - seen_i) % loop_length;
+            return run_iterations(iterations_left, &new_tiles);
+        }
+        seen.insert(new_tiles.clone(), i);
+        current_tiles = new_tiles;
+    }
+    current_tiles
 }
 
 #[cfg(test)]
