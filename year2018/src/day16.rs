@@ -22,7 +22,7 @@ impl Solver for Day16 {
             }
             Part::Two => {
                 let opcode_map = determine_opcodes(&samples);
-                let final_registers = program.iter().fold([0; 4], |registers, &instruction| {
+                let final_registers = program.iter().fold(vec![0; 4], |registers, &instruction| {
                     let opcode = opcode_map[&instruction.opcode];
                     opcode.apply(instruction, &registers)
                 });
@@ -34,7 +34,7 @@ impl Solver for Day16 {
 
 fn determine_opcodes(samples: &[Sample]) -> BTreeMap<usize, Opcode> {
     let mut samples_by_opcode = BTreeMap::new();
-    for &sample in samples {
+    for sample in samples {
         let opcode_samples = samples_by_opcode
             .entry(sample.instruction.opcode)
             .or_insert_with(Vec::new);
@@ -64,7 +64,7 @@ fn determine_opcodes(samples: &[Sample]) -> BTreeMap<usize, Opcode> {
     determined
 }
 
-type Registers = [usize; 4];
+type Registers = Vec<usize>;
 type Program = Vec<Instruction>;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -81,7 +81,7 @@ impl fmt::Display for Instruction {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct Sample {
     before: Registers,
     instruction: Instruction,
@@ -153,7 +153,7 @@ impl Op {
             OpType::GreaterThanTesting => usize::from(a.unwrap() > b.unwrap()),
             OpType::EqualityTesting => usize::from(a.unwrap() == b.unwrap()),
         };
-        let mut new_registers = *registers;
+        let mut new_registers = registers.clone();
         new_registers[c] = output;
         new_registers
     }
@@ -275,7 +275,7 @@ fn parse_registers(line: &str) -> Registers {
     let stripped = line
         .trim_matches(|c| !is_bracket(c))
         .trim_matches(is_bracket);
-    let mut registers = [0; 4];
+    let mut registers = vec![0; 4];
     for (i, part) in stripped.split(", ").enumerate() {
         let register = part.parse::<usize>().unwrap();
         registers[i] = register;
