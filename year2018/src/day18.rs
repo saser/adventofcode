@@ -17,16 +17,14 @@ type Tiles = Grid<Tile>;
 impl Solver for Day18 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let tiles = parse_input(input);
-        match part {
-            Part::One => {
-                let iterations = 10;
-                let final_tiles = run_iterations(iterations, &tiles);
-                let counts = count(final_tiles.iter());
-                let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
-                Ok(resource_value.to_string())
-            }
-            Part::Two => Err("day 18 part 2 not yet implemented".to_string()),
-        }
+        let iterations = match part {
+            Part::One => 10,
+            Part::Two => 1_000_000_000,
+        };
+        let final_tiles = run_iterations(iterations, &tiles);
+        let counts = count(final_tiles.iter());
+        let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
+        Ok(resource_value.to_string())
     }
 }
 
@@ -206,15 +204,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/18").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let expected = "202272";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
