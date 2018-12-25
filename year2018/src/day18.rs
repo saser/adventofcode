@@ -1,10 +1,9 @@
-use nalgebra::DMatrix;
-
 use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
 
+use base::grid::Grid;
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -13,7 +12,7 @@ pub fn get_solver() -> Box<dyn Solver> {
 
 struct Day18;
 
-type Tiles = DMatrix<Tile>;
+type Tiles = Grid<Tile>;
 
 impl Solver for Day18 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
@@ -98,7 +97,13 @@ fn parse_input(input: &str) -> Tiles {
         .collect::<Vec<Vec<char>>>();
     let nrows = chars.len();
     let ncols = chars[0].len();
-    Tiles::from_fn(nrows, ncols, |row, col| Tile::from(chars[row][col]))
+    let mut grid = Tiles::with(nrows, ncols, &Tile::Open);
+    for row in 0..nrows {
+        for col in 0..ncols {
+            grid[(row, col)] = Tile::from(chars[row][col]);
+        }
+    }
+    grid
 }
 
 fn surrounding(row: usize, col: usize, tiles: &Tiles) -> Vec<Tile> {
@@ -106,22 +111,16 @@ fn surrounding(row: usize, col: usize, tiles: &Tiles) -> Vec<Tile> {
     let start_col = max(0, col as isize - 1) as usize;
     let end_row = min((tiles.nrows() - 1) as isize, (row + 1) as isize) as usize;
     let end_col = min((tiles.ncols() - 1) as isize, (col + 1) as isize) as usize;
-    let nrows = end_row - start_row + 1;
-    let ncols = end_col - start_col + 1;
-    let start = (start_row, start_col);
-    let shape = (nrows, ncols);
 
-    let mut surrounding = tiles
-        .slice(start, shape)
-        .iter()
-        .cloned()
-        .collect::<Vec<Tile>>();
-    let middle_tile = tiles[(row, col)];
-    let middle_tile_index = surrounding
-        .iter()
-        .position(|&tile| tile == middle_tile)
-        .unwrap();
-    surrounding.remove(middle_tile_index);
+    let mut surrounding = Vec::new();
+    for s_row in start_row..=end_row {
+        for s_col in start_col..=end_col {
+            if s_row == row && s_col == col {
+                continue;
+            }
+            surrounding.push(tiles[(s_row, s_col)]);
+        }
+    }
     surrounding
 }
 
@@ -138,11 +137,15 @@ where
 }
 
 fn iteration(tiles: &Tiles) -> Tiles {
-    Tiles::from_fn(tiles.nrows(), tiles.ncols(), |row, col| {
-        let tile = tiles[(row, col)];
-        let surrounding = surrounding(row, col, tiles);
-        tile.next(&surrounding)
-    })
+    let mut new_tiles = tiles.clone();
+    for row in 0..tiles.nrows() {
+        for col in 0..tiles.ncols() {
+            let tile = tiles[(row, col)];
+            let surrounding = surrounding(row, col, tiles);
+            new_tiles[(row, col)] = tile.next(&surrounding);
+        }
+    }
+    new_tiles
 }
 
 #[cfg(test)]
