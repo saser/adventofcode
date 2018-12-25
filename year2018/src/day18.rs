@@ -1,7 +1,9 @@
 use nalgebra::DMatrix;
 
 use std::cmp::{max, min};
+use std::collections::{HashMap, HashSet};
 use std::fmt;
+use std::hash::Hash;
 
 use base::{Part, Solver};
 
@@ -29,6 +31,37 @@ enum Tile {
     Open,
     Tree,
     Lumberyard,
+}
+
+impl Tile {
+    fn next(&self, surrounding: &[Tile]) -> Self {
+        let mut counts = count(surrounding.iter());
+        let trees = *counts.entry(&Tile::Tree).or_insert(0);
+        let lumberyards = *counts.entry(&Tile::Lumberyard).or_insert(0);
+        match *self {
+            Tile::Open => {
+                if trees >= 3 {
+                    Tile::Tree
+                } else {
+                    *self
+                }
+            }
+            Tile::Tree => {
+                if lumberyards >= 3 {
+                    Tile::Lumberyard
+                } else {
+                    *self
+                }
+            }
+            Tile::Lumberyard => {
+                if lumberyards >= 1 && trees >= 1 {
+                    *self
+                } else {
+                    Tile::Open
+                }
+            }
+        }
+    }
 }
 
 impl fmt::Display for Tile {
@@ -84,6 +117,18 @@ fn surrounding(row: usize, col: usize, tiles: &Tiles) -> Vec<Tile> {
         .unwrap();
     surrounding.remove(middle_tile_index);
     surrounding
+}
+
+fn count<T, I>(iter: I) -> HashMap<T, usize>
+where
+    T: Eq + Hash + Copy,
+    I: Iterator<Item = T>,
+{
+    let mut map = HashMap::new();
+    for item in iter {
+        *map.entry(item).or_insert(0) += 1;
+    }
+    map
 }
 
 #[cfg(test)]
