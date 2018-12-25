@@ -32,6 +32,36 @@ struct Position {
     col: usize,
 }
 
+impl Position {
+    fn up(&self) -> Self {
+        Position {
+            row: self.row - 1,
+            col: self.col,
+        }
+    }
+
+    fn down(&self) -> Self {
+        Position {
+            row: self.row + 1,
+            col: self.col,
+        }
+    }
+
+    fn left(&self) -> Self {
+        Position {
+            row: self.row,
+            col: self.col - 1,
+        }
+    }
+
+    fn right(&self) -> Self {
+        Position {
+            row: self.row,
+            col: self.col + 1,
+        }
+    }
+}
+
 impl Into<(usize, usize)> for Position {
     fn into(self) -> (usize, usize) {
         (self.row, self.col)
