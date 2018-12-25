@@ -1,7 +1,7 @@
 use nalgebra::DMatrix;
 
 use std::cmp::{max, min};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
 
@@ -18,9 +18,15 @@ type Tiles = DMatrix<Tile>;
 impl Solver for Day18 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let tiles = parse_input(input);
-        println!("{:?}", surrounding(0, 0, &tiles));
         match part {
-            Part::One => Err("day 18 part 1 not yet implemented".to_string()),
+            Part::One => {
+                let iterations = 10;
+                let final_tiles =
+                    (0..iterations).fold(tiles, |acc_tiles, _i| iteration(&acc_tiles));
+                let counts = count(final_tiles.iter());
+                let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
+                Ok(resource_value.to_string())
+            }
             Part::Two => Err("day 18 part 2 not yet implemented".to_string()),
         }
     }
@@ -131,6 +137,14 @@ where
     map
 }
 
+fn iteration(tiles: &Tiles) -> Tiles {
+    Tiles::from_fn(tiles.nrows(), tiles.ncols(), |row, col| {
+        let tile = tiles[(row, col)];
+        let surrounding = surrounding(row, col, tiles);
+        tile.next(&surrounding)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -142,7 +156,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/18").trim();
-            let expected = "expected output";
+            let expected = "545600";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
