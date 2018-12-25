@@ -34,6 +34,13 @@ impl<T> Grid<T> {
         let (row, col) = pos.into();
         &mut self.grid[row][col]
     }
+
+    /// Returns an iterator that iterates of the elements of the grid, in row-major order (meaning
+    /// that all elements of the first row appear (in order), and then the elements of the seconds
+    /// row, and so forth).
+    pub fn iter(&self) -> impl Iterator<Item = &T> {
+        self.grid.iter().flatten()
+    }
 }
 
 impl<T: Default + Clone> Grid<T> {
