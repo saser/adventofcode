@@ -4,6 +4,7 @@ use regex::Regex;
 use std::collections::BTreeSet;
 use std::iter;
 
+use base::grid::Grid as BaseGrid;
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -12,10 +13,12 @@ pub fn get_solver() -> Box<dyn Solver> {
 
 struct Day17;
 
+type Grid = BaseGrid<char>;
+
 impl Solver for Day17 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (grid, adjusted_spring) = parse_input(input);
-        print(&grid);
+        grid.print();
         match part {
             Part::One => Err("day 17 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 17 part 2 not yet implemented".to_string()),
@@ -29,7 +32,13 @@ struct Position {
     col: usize,
 }
 
-fn parse_input(input: &str) -> (Vec<Vec<char>>, Position) {
+impl Into<(usize, usize)> for Position {
+    fn into(self) -> (usize, usize) {
+        (self.row, self.col)
+    }
+}
+
+fn parse_input(input: &str) -> (Grid, Position) {
     let clay = input
         .lines()
         .fold(BTreeSet::new(), |acc, line| &acc | &parse_line(line));
@@ -43,15 +52,16 @@ fn parse_input(input: &str) -> (Vec<Vec<char>>, Position) {
     let max_col = clay_cols.clone().max().unwrap();
     let nrows = max_row - min_row + 1;
     let ncols = max_col - min_col + 1;
-    let mut grid = vec![vec!['.'; ncols]; nrows];
-    for &position in &clay {
-        grid[position.row - min_row][position.col - min_col] = '#';
-    }
-    let adjusted_spring = Position {
-        row: spring.row - min_row,
-        col: spring.col - min_col,
+    let adjust = |position: Position| Position {
+        row: position.row - min_row,
+        col: position.col - min_col,
     };
-    grid[adjusted_spring.row][adjusted_spring.col] = '+';
+    let mut grid = Grid::with(nrows, ncols, &'.');
+    for &position in &clay {
+        grid[adjust(position)] = '#';
+    }
+    let adjusted_spring = adjust(spring);
+    grid[adjusted_spring] = '+';
     (grid, adjusted_spring)
 }
 
@@ -73,15 +83,6 @@ fn parse_line(line: &str) -> BTreeSet<Position> {
             Position { col: x, row: y }
         })
         .collect()
-}
-
-fn print(grid: &Vec<Vec<char>>) {
-    for row in grid {
-        for c in row {
-            print!("{}", c);
-        }
-        println!();
-    }
 }
 
 #[cfg(test)]
