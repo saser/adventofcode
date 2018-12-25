@@ -14,12 +14,12 @@ pub struct Grid<T> {
 
 impl<T> Grid<T> {
     /// Returns the number of rows in the grid.
-    pub fn rows(&self) -> usize {
+    pub fn nrows(&self) -> usize {
         self.grid.len()
     }
 
     /// Returns the number of columns in the grid.
-    pub fn cols(&self) -> usize {
+    pub fn ncols(&self) -> usize {
         self.grid[0].len()
     }
 
@@ -37,31 +37,31 @@ impl<T> Grid<T> {
 }
 
 impl<T: Default + Clone> Grid<T> {
-    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
+    /// Creates a new grid, with a size of `nrows` rows and `ncols` cols.
     ///
     /// # Panics
     ///
-    /// Panics if either `rows`, `cols`, or both are less than 1.
-    pub fn new(rows: usize, cols: usize) -> Grid<T> {
-        Grid::with(rows, cols, &T::default())
+    /// Panics if either `nrows`, `ncols`, or both are less than 1.
+    pub fn new(nrows: usize, ncols: usize) -> Grid<T> {
+        Grid::with(nrows, ncols, &T::default())
     }
 }
 
 impl<T: Clone> Grid<T> {
-    /// Creates a new grid, with a size of `rows` rows and `cols` cols.
+    /// Creates a new grid, with a size of `nrows` rows and `ncols` cols.
     ///
     /// # Panics
     ///
-    /// Panics if either `rows`, `cols`, or both are less than 1.
-    pub fn with(rows: usize, cols: usize, default: &T) -> Grid<T> {
-        if rows < 1 || cols < 1 {
+    /// Panics if either `nrows`, `ncols`, or both are less than 1.
+    pub fn with(nrows: usize, ncols: usize, default: &T) -> Grid<T> {
+        if nrows < 1 || ncols < 1 {
             panic!(
-                "a grid must at least have 1 row and 1 col; got {rows} rows and {cols} cols",
-                rows = rows,
-                cols = cols
+                "a grid must at least have 1 row and 1 col; got {nrows} rows and {ncols} cols",
+                nrows = nrows,
+                ncols = ncols
             )
         }
-        let grid = vec![vec![default.clone(); cols]; rows];
+        let grid = vec![vec![default.clone(); ncols]; nrows];
         Grid { grid }
     }
 

@@ -49,8 +49,8 @@ fn rowcol_to_xy((row, col): (usize, usize)) -> (usize, usize) {
 
 #[allow(dead_code)]
 fn print_tracks(tiles: &Tiles, carts: &Carts) {
-    let nrows = tiles.rows();
-    let ncols = tiles.cols();
+    let nrows = tiles.nrows();
+    let ncols = tiles.ncols();
     let mut chars = vec![vec![' '; ncols]; nrows];
     for row in 0..nrows {
         for col in 0..ncols {

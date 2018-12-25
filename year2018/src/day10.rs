@@ -88,7 +88,7 @@ fn print_stars(stars: &[Star]) -> String {
         };
         grid[transposed] = '#';
     }
-    for i in 0..grid.rows() {
+    for i in 0..grid.nrows() {
         let s = grid.row(i).iter().collect::<String>();
         writeln!(&mut output, "{}", s).unwrap();
     }
