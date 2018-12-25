@@ -80,6 +80,17 @@ impl<T: Clone> Grid<T> {
     }
 }
 
+impl<T: fmt::Display> Grid<T> {
+    pub fn print(&self) {
+        for row in &self.grid {
+            for e in row {
+                print!("{}", e);
+            }
+            println!()
+        }
+    }
+}
+
 impl<T, Idx: Into<(usize, usize)>> Index<Idx> for Grid<T> {
     type Output = T;
 
