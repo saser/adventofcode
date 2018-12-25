@@ -64,15 +64,15 @@ fn determine_opcodes(samples: &[Sample]) -> BTreeMap<usize, Opcode> {
     determined
 }
 
-type Registers = Vec<usize>;
-type Program = Vec<Instruction>;
+pub type Registers = Vec<usize>;
+pub type Program = Vec<Instruction>;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-struct Instruction {
-    opcode: usize,
-    a: usize,
-    b: usize,
-    c: usize,
+pub struct Instruction {
+    pub opcode: usize,
+    pub a: usize,
+    pub b: usize,
+    pub c: usize,
 }
 
 impl fmt::Display for Instruction {
@@ -160,7 +160,7 @@ impl Op {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-enum Opcode {
+pub enum Opcode {
     Addr,
     Addi,
     Mulr,
@@ -230,7 +230,7 @@ impl Opcode {
         }
     }
 
-    fn apply(&self, instruction: Instruction, registers: &Registers) -> Registers {
+    pub fn apply(&self, instruction: Instruction, registers: &Registers) -> Registers {
         self.op().apply(instruction, registers)
     }
 }
