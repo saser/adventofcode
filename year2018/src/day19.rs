@@ -13,8 +13,9 @@ type OpcodeProgram = Vec<OpcodeInstruction>;
 impl Solver for Day19 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let (ip_register, program) = parse_input(input);
+        let final_registers = run_until_halt(ip_register, &program);
         match part {
-            Part::One => Err("day 19 part 1 not yet implemented".to_string()),
+            Part::One => Ok(final_registers[0].to_string()),
             Part::Two => Err("day 19 part 2 not yet implemented".to_string()),
         }
     }
@@ -74,6 +75,17 @@ fn parse_instruction_line(line: &str) -> OpcodeInstruction {
         opcode,
         instruction,
     }
+}
+
+fn run_until_halt(ip_register: usize, program: &OpcodeProgram) -> Registers {
+    let mut registers = vec![0; 6];
+    let mut ip = 0;
+    while ip < program.len() {
+        registers[ip_register] = ip;
+        registers = program[ip].apply(&registers);
+        ip = registers[ip_register] + 1;
+    }
+    registers
 }
 
 #[cfg(test)]
