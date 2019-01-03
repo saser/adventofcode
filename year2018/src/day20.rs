@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -10,12 +12,16 @@ impl Solver for Day20 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let regex = parse(input);
         println!("{:?}", regex);
+        let graph = construct(&regex);
+        println!("{:?}", graph);
         match part {
             Part::One => Err("day 20 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 20 part 2 not yet implemented".to_string()),
         }
     }
 }
+
+type Graph = HashMap<Position, HashSet<Position>>;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct Position {
@@ -126,6 +132,77 @@ fn parse_branch(regex_chars: &[char]) -> (Vec<Regex>, usize) {
 
 fn is_terminal(c: char) -> bool {
     ['N', 'E', 'S', 'W'].contains(&c)
+}
+
+fn construct(regex: &Regex) -> Graph {
+    let mut graph = Graph::new();
+    let origin = Position { x: 0, y: 0 };
+    let mut positions = HashSet::new();
+    positions.insert(origin);
+    construct_regex(regex, &positions, &mut graph);
+    graph
+}
+
+fn construct_regex(
+    regex: &Regex,
+    positions: &HashSet<Position>,
+    graph: &mut Graph,
+) -> HashSet<Position> {
+    let mut new_positions = positions.clone();
+    for token in &regex.tokens {
+        match token {
+            Token::Terminals(ref terminals) => {
+                new_positions = construct_terminals(terminals, &new_positions, graph);
+            }
+            Token::Branch(ref regexes) => {
+                new_positions = construct_branch(regexes, &new_positions, graph);
+            }
+        }
+    }
+    new_positions
+}
+
+fn construct_terminals(
+    terminals: &[char],
+    positions: &HashSet<Position>,
+    graph: &mut Graph,
+) -> HashSet<Position> {
+    let mut new_positions = HashSet::new();
+    for &position in positions {
+        let mut current_position = position;
+        for t in terminals {
+            let next_position = match t {
+                'N' => current_position.north(),
+                'E' => current_position.east(),
+                'S' => current_position.south(),
+                'W' => current_position.west(),
+                _ => unreachable!(),
+            };
+            graph
+                .entry(current_position)
+                .or_insert_with(HashSet::new)
+                .insert(next_position);
+            graph
+                .entry(next_position)
+                .or_insert_with(HashSet::new)
+                .insert(current_position);
+            current_position = next_position;
+        }
+        new_positions.insert(current_position);
+    }
+    new_positions
+}
+
+fn construct_branch(
+    regexes: &[Regex],
+    positions: &HashSet<Position>,
+    graph: &mut Graph,
+) -> HashSet<Position> {
+    let mut new_positions = HashSet::new();
+    for regex in regexes {
+        new_positions.extend(construct_regex(regex, positions, graph));
+    }
+    new_positions
 }
 
 #[cfg(test)]
