@@ -14,7 +14,14 @@ impl Solver for Day20 {
         let graph = construct(&regex);
         match part {
             Part::One => Ok(furthest(&graph).to_string()),
-            Part::Two => Err("day 20 part 2 not yet implemented".to_string()),
+            Part::Two => {
+                let distances = distances(&graph);
+                let count = distances
+                    .values()
+                    .filter(|&&distance| distance >= 1000)
+                    .count();
+                Ok(count.to_string())
+            }
         }
     }
 }
@@ -206,16 +213,16 @@ fn construct_branch(
     new_positions
 }
 
-fn furthest(graph: &Graph) -> u64 {
+fn distances(graph: &Graph) -> HashMap<Position, u64> {
+    let mut distances = HashMap::new();
     let mut furthest_distance = 0;
-    let mut visited = HashSet::new();
     let mut queue = VecDeque::new();
     queue.push_back((Position::origin(), 0));
     while let Some((position, distance)) = queue.pop_front() {
-        if visited.contains(&position) {
+        if distances.contains_key(&position) {
             continue;
         }
-        visited.insert(position);
+        distances.insert(position, distance);
         furthest_distance = furthest_distance.max(distance);
         if let Some(neighbors) = graph.get(&position) {
             for &neighbor in neighbors {
@@ -223,7 +230,11 @@ fn furthest(graph: &Graph) -> u64 {
             }
         }
     }
-    furthest_distance
+    distances
+}
+
+fn furthest(graph: &Graph) -> u64 {
+    *distances(graph).values().max().unwrap()
 }
 
 #[cfg(test)]
@@ -289,15 +300,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/20").trim();
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
+            let expected = "8492";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
     }
