@@ -17,6 +17,42 @@ impl Solver for Day20 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Position {
+    x: i64,
+    y: i64,
+}
+
+impl Position {
+    fn north(&self) -> Self {
+        Position {
+            x: self.x,
+            y: self.y + 1,
+        }
+    }
+
+    fn south(&self) -> Self {
+        Position {
+            x: self.x,
+            y: self.y - 1,
+        }
+    }
+
+    fn east(&self) -> Self {
+        Position {
+            x: self.x + 1,
+            y: self.y,
+        }
+    }
+
+    fn west(&self) -> Self {
+        Position {
+            x: self.x - 1,
+            y: self.y,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct Regex {
     tokens: Vec<Token>,
