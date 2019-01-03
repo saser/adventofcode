@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use base::{Part, Solver};
 
@@ -11,11 +11,9 @@ struct Day20;
 impl Solver for Day20 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
         let regex = parse(input);
-        println!("{:?}", regex);
         let graph = construct(&regex);
-        println!("{:?}", graph);
         match part {
-            Part::One => Err("day 20 part 1 not yet implemented".to_string()),
+            Part::One => Ok(furthest(&graph).to_string()),
             Part::Two => Err("day 20 part 2 not yet implemented".to_string()),
         }
     }
@@ -30,6 +28,10 @@ struct Position {
 }
 
 impl Position {
+    fn origin() -> Self {
+        Position { x: 0, y: 0 }
+    }
+
     fn north(&self) -> Self {
         Position {
             x: self.x,
@@ -136,9 +138,8 @@ fn is_terminal(c: char) -> bool {
 
 fn construct(regex: &Regex) -> Graph {
     let mut graph = Graph::new();
-    let origin = Position { x: 0, y: 0 };
     let mut positions = HashSet::new();
-    positions.insert(origin);
+    positions.insert(Position::origin());
     construct_regex(regex, &positions, &mut graph);
     graph
 }
@@ -205,6 +206,26 @@ fn construct_branch(
     new_positions
 }
 
+fn furthest(graph: &Graph) -> u64 {
+    let mut furthest_distance = 0;
+    let mut visited = HashSet::new();
+    let mut queue = VecDeque::new();
+    queue.push_back((Position::origin(), 0));
+    while let Some((position, distance)) = queue.pop_front() {
+        if visited.contains(&position) {
+            continue;
+        }
+        visited.insert(position);
+        furthest_distance = furthest_distance.max(distance);
+        if let Some(neighbors) = graph.get(&position) {
+            for &neighbor in neighbors {
+                queue.push_back((neighbor, distance + 1));
+            }
+        }
+    }
+    furthest_distance
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -216,7 +237,7 @@ mod tests {
         fn with_input() {
             let solver = get_solver();
             let input = include_str!("../../inputs/2018/20").trim();
-            let expected = "expected output";
+            let expected = "4214";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
 
