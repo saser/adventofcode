@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use base::{Part, Solver};
 
 pub fn get_solver() -> Box<dyn Solver> {
@@ -8,11 +10,50 @@ struct Day25;
 
 impl Solver for Day25 {
     fn solve(&self, part: Part, input: &str) -> Result<String, String> {
+        let points = parse_input(input);
         match part {
             Part::One => Err("day 25 part 1 not yet implemented".to_string()),
             Part::Two => Err("day 25 part 2 not yet implemented".to_string()),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct Point4D {
+    x: i64,
+    y: i64,
+    z: i64,
+    w: i64,
+}
+
+impl Point4D {
+    fn manhattan_distance_to(&self, other: Point4D) -> u64 {
+        ((self.x - other.x).abs()
+            + (self.y - other.y).abs()
+            + (self.z - other.z).abs()
+            + (self.w - other.w).abs()) as u64
+    }
+}
+
+impl FromStr for Point4D {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts = s.split(',').collect::<Vec<&str>>();
+        let x = i64::from_str(parts[0]).unwrap();
+        let y = i64::from_str(parts[1]).unwrap();
+        let z = i64::from_str(parts[2]).unwrap();
+        let w = i64::from_str(parts[3]).unwrap();
+        Ok(Point4D { x, y, z, w })
+    }
+}
+
+fn parse_input(input: &str) -> Vec<Point4D> {
+    input
+        .lines()
+        .map(Point4D::from_str)
+        .map(Result::unwrap)
+        .collect()
 }
 
 #[cfg(test)]
