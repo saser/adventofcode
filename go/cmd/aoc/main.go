@@ -8,9 +8,10 @@ import (
 )
 
 var (
-	fYear = flag.Uint("year", 0, "year of event")
-	fDay  = flag.Uint("day", 0, "day in event")
-	fPart = flag.Uint("part", 0, "part of day")
+	fYear  = flag.Uint("year", 0, "year of event")
+	fDay   = flag.Uint("day", 0, "day in event")
+	fPart  = flag.Uint("part", 0, "part of day")
+	fInput = flag.String("input", "", "path to file to read input from (default: read input from stdin)")
 )
 
 type Solution func(io.Reader) (string, error)
@@ -23,7 +24,7 @@ type Days map[uint]Day
 
 var okYears Years
 
-func imain() int {
+func imain() (exitCode int) {
 	flag.Parse()
 
 	year := *fYear
@@ -66,7 +67,31 @@ func imain() int {
 		fmt.Printf("Year %d, day %d, part %d has no solution.\n", year, day, part)
 		return 1
 	}
-	fmt.Printf("Should run solution for year %d, day %d, part %d here.\n", year, day, part)
+
+	var in io.Reader
+	input := *fInput
+	if input == "" {
+		in = os.Stdin
+	} else {
+		f, err := os.Open(input)
+		if err != nil {
+			fmt.Printf("Failed to open input file: %v\n", err)
+			return 2
+		}
+		in = f
+		defer func() {
+			if err := f.Close(); err != nil {
+				fmt.Printf("Failed to close input file: %v\n", err)
+				exitCode = 2
+			}
+		}()
+	}
+	answer, err := solution(in)
+	if err != nil {
+		fmt.Printf("Error while running solution: %v\n", err)
+		return 3
+	}
+	fmt.Println(answer)
 
 	return 0
 }
