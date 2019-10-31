@@ -30,7 +30,7 @@ func imain() (exitCode int) {
 		fmt.Println("A year must be specified.")
 		return 1
 	}
-	okDays, ok := okYears[year]
+	perDay, ok := solutions[year]
 	if !ok {
 		fmt.Printf("Invalid year: %d\n", *fYear)
 		return 1
@@ -41,7 +41,7 @@ func imain() (exitCode int) {
 		fmt.Println("A day must be specified.")
 		return 1
 	}
-	solutions, ok := okDays[day]
+	perPart, ok := perDay[day]
 	if !ok {
 		fmt.Printf("Year %d has no solution for day %d.\n", year, day)
 		return 1
@@ -57,9 +57,9 @@ func imain() (exitCode int) {
 	}
 	var solution Solution
 	if part == 1 {
-		solution = solutions.One
+		solution = perPart.One
 	} else {
-		solution = solutions.Two
+		solution = perPart.Two
 	}
 	if solution == nil {
 		fmt.Printf("Year %d, day %d, part %d has no solution.\n", year, day, part)
