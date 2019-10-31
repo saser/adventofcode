@@ -19,10 +19,8 @@ type Day struct {
 	One Solution
 	Two Solution
 }
-type Years map[uint]Days
-type Days map[uint]Day
 
-var okYears Years
+var solutions map[uint]map[uint]Day
 
 func imain() (exitCode int) {
 	flag.Parse()
