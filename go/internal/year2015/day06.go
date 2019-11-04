@@ -19,6 +19,14 @@ func Day06One(r io.Reader) (string, error) {
 	return solveDay06(instructions)
 }
 
+func Day06Two(r io.Reader) (string, error) {
+	instructions, err := parseDay06(r, 2)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
+	}
+	return solveDay06(instructions)
+}
+
 func solveDay06(instructions []day06Instruction) (string, error) {
 	grid := make([][]int, 0, 1000)
 	for x := 0; x < 1000; x++ {
@@ -124,5 +132,23 @@ func toggle(i int) int {
 		return 1
 	} else {
 		return 0
+	}
+}
+
+func increaseBy(d int) day06Operation {
+	return func(i int) int {
+		return i + d
+	}
+}
+
+func decrease(i int) int {
+	return int(math.Max(0, float64(i-1)))
+}
+
+func decrease2(i int) int {
+	if i == 0 {
+		return 0
+	} else {
+		return i - 1
 	}
 }
