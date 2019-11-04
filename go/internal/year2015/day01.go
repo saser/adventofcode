@@ -8,6 +8,14 @@ import (
 )
 
 func Day01One(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Day01Two(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanRunes)
 	floor := 0
@@ -25,8 +33,4 @@ func Day01One(r io.Reader) (string, error) {
 		}
 	}
 	return fmt.Sprint(floor), nil
-}
-
-func Day01Two(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
 }
