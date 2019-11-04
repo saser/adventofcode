@@ -46,6 +46,7 @@ func TestDay01(t *testing.T) {
 		}{
 			{name: "example1", input: ")", output: "1"},
 			{name: "example2", input: "()())", output: "5"},
+			{name: "actual", input: actual, output: "1783"},
 		} {
 			tt := tt
 			t.Run(tt.name, func(t *testing.T) {
