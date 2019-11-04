@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Saser/adventofcode/internal/inputs"
 	"github.com/Saser/adventofcode/internal/solution"
 	"github.com/stretchr/testify/require"
 )
@@ -78,11 +77,11 @@ type fileCase struct {
 	output string
 }
 
-func FromInputFile(t testing.TB, year, day int, output string) TestCase {
-	file, err := inputs.Open(year, day)
+func FromFile(t testing.TB, path string, output string) TestCase {
+	file, err := os.Open(path)
 	require.NoError(t, err)
 	return &fileCase{
-		name:   fmt.Sprintf("input-%d-%02d", year, day),
+		name:   fmt.Sprintf("file=%s", path),
 		file:   file,
 		output: output,
 	}

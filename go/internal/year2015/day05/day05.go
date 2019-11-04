@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func Day05One(r io.Reader) (string, error) {
+func Part1(r io.Reader) (string, error) {
 	lines, err := parseDay05(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 1: %w", err)
@@ -20,7 +20,7 @@ func Day05One(r io.Reader) (string, error) {
 	return solveDay05(lines, conditions), nil
 }
 
-func Day05Two(r io.Reader) (string, error) {
+func Part2(r io.Reader) (string, error) {
 	lines, err := parseDay05(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 2: %w", err)

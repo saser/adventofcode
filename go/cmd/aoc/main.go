@@ -29,12 +29,12 @@ type Day struct {
 
 var solutions = map[uint]map[uint]Day{
 	2015: map[uint]Day{
-		1: {One: year2015day01.Day01One, Two: year2015day01.Day01Two},
-		2: {One: year2015day02.Day02One, Two: year2015day02.Day02Two},
-		3: {One: year2015day03.Day03One, Two: year2015day03.Day03Two},
-		4: {One: year2015day04.Day04One, Two: year2015day04.Day04Two},
-		5: {One: year2015day05.Day05One, Two: year2015day05.Day05Two},
-		6: {One: year2015day06.Day06One, Two: year2015day06.Day06Two},
+		1: {One: year2015day01.Part1, Two: year2015day01.Part2},
+		2: {One: year2015day02.Part1, Two: year2015day02.Part2},
+		3: {One: year2015day03.Part1, Two: year2015day03.Part2},
+		4: {One: year2015day04.Part1, Two: year2015day04.Part2},
+		5: {One: year2015day05.Part1, Two: year2015day05.Part2},
+		6: {One: year2015day06.Part1, Two: year2015day06.Part2},
 	},
 }
 

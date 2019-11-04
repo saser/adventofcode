@@ -8,11 +8,11 @@ import (
 	"github.com/Saser/adventofcode/internal/geo"
 )
 
-func Day03One(r io.Reader) (string, error) {
+func Part1(r io.Reader) (string, error) {
 	return solveDay03(r, 1)
 }
 
-func Day03Two(r io.Reader) (string, error) {
+func Part2(r io.Reader) (string, error) {
 	return solveDay03(r, 2)
 }
 

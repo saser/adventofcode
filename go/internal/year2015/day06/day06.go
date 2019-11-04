@@ -11,7 +11,7 @@ import (
 	"github.com/Saser/adventofcode/internal/geo"
 )
 
-func Day06One(r io.Reader) (string, error) {
+func Part1(r io.Reader) (string, error) {
 	instructions, err := parseDay06(r, 1)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
@@ -19,7 +19,7 @@ func Day06One(r io.Reader) (string, error) {
 	return solveDay06(instructions)
 }
 
-func Day06Two(r io.Reader) (string, error) {
+func Part2(r io.Reader) (string, error) {
 	instructions, err := parseDay06(r, 2)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
