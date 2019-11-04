@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-func One(r io.Reader) (string, error) {
+func Day01One(r io.Reader) (string, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanRunes)
 	floor := 0
@@ -17,6 +17,8 @@ func One(r io.Reader) (string, error) {
 			floor++
 		case ")":
 			floor--
+		case "\n":
+			break
 		default:
 			return "", fmt.Errorf("year 2015, day 01, part 1: invalid token: %s", tok)
 		}

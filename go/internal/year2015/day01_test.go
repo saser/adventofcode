@@ -25,7 +25,7 @@ func TestDay01(t *testing.T) {
 		} {
 			tt := tt
 			t.Run(tt.name, func(t *testing.T) {
-				answer, err := One(strings.NewReader(tt.input))
+				answer, err := Day01One(strings.NewReader(tt.input))
 				require.NoError(t, err)
 				require.Equal(t, tt.output, answer)
 			})

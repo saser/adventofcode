@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/Saser/adventofcode/internal/year2015"
 )
 
 var (
@@ -20,7 +22,11 @@ type Day struct {
 	Two Solution
 }
 
-var solutions map[uint]map[uint]Day
+var solutions = map[uint]map[uint]Day{
+	2015: map[uint]Day{
+		1: {One: year2015.Day01One},
+	},
+}
 
 func imain() (exitCode int) {
 	flag.Parse()
