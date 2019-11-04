@@ -2,6 +2,7 @@ package year2015
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -29,6 +30,10 @@ func Day02One(r io.Reader) (string, error) {
 		requiredPaper += smallestSide
 	}
 	return fmt.Sprint(requiredPaper), nil
+}
+
+func Day02Two(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }
 
 type day02Box struct {
