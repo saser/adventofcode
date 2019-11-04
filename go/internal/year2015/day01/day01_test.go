@@ -1,4 +1,4 @@
-package year2015
+package day01
 
 import (
 	"testing"
