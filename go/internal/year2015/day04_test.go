@@ -16,11 +16,21 @@ func TestDay04(t *testing.T) {
 			testcase.Run(t, tc, Day04One)
 		}
 	})
+	t.Run("part2", func(t *testing.T) {
+		for _, tc := range []testcase.TestCase{
+			testcase.FromInputFile(t, 2015, 4, "9958218"),
+		} {
+			testcase.Run(t, tc, Day04Two)
+		}
+	})
 }
 
 func BenchmarkDay04(b *testing.B) {
 	tc := testcase.FromInputFile(b, 2015, 4, "")
 	b.Run("part1", func(b *testing.B) {
 		testcase.Bench(b, tc, Day04One)
+	})
+	b.Run("part2", func(b *testing.B) {
+		testcase.Bench(b, tc, Day04Two)
 	})
 }

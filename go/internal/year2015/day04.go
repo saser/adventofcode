@@ -12,6 +12,10 @@ func Day04One(r io.Reader) (string, error) {
 	return solveDay04(r, 0x00000fff)
 }
 
+func Day04Two(r io.Reader) (string, error) {
+	return solveDay04(r, 0x000000ff)
+}
+
 func solveDay04(r io.Reader, limit uint32) (string, error) {
 	br := bufio.NewReader(r)
 	prefix, _, err := br.ReadLine()
