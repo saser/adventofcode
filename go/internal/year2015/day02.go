@@ -2,7 +2,6 @@ package year2015
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -33,7 +32,26 @@ func Day02One(r io.Reader) (string, error) {
 }
 
 func Day02Two(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
+	boxes, err := parseDay02(r)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 02, part 2: %w", err)
+	}
+	requiredRibbon := 0
+	for _, box := range boxes {
+		smallestPerimeter := -1
+		for _, perimeter := range []int{
+			2 * (box.l + box.w),
+			2 * (box.w + box.h),
+			2 * (box.h + box.l),
+		} {
+			if smallestPerimeter == -1 || perimeter < smallestPerimeter {
+				smallestPerimeter = perimeter
+			}
+		}
+		requiredRibbon += smallestPerimeter
+		requiredRibbon += box.l * box.w * box.h
+	}
+	return fmt.Sprint(requiredRibbon), nil
 }
 
 type day02Box struct {
