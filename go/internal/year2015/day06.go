@@ -12,13 +12,17 @@ import (
 )
 
 func Day06One(r io.Reader) (string, error) {
-	instructions, err := parseDay06(r)
+	instructions, err := parseDay06(r, 1)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
 	}
-	grid := make([][]bool, 0, 1000)
+	return solveDay06(instructions)
+}
+
+func solveDay06(instructions []day06Instruction) (string, error) {
+	grid := make([][]int, 0, 1000)
 	for x := 0; x < 1000; x++ {
-		grid = append(grid, make([]bool, 1000))
+		grid = append(grid, make([]int, 1000))
 	}
 	for _, instruction := range instructions {
 		instruction.apply(grid)
@@ -26,15 +30,13 @@ func Day06One(r io.Reader) (string, error) {
 	count := 0
 	for _, row := range grid {
 		for _, light := range row {
-			if light {
-				count++
-			}
+			count += light
 		}
 	}
 	return fmt.Sprint(count), nil
 }
 
-type day06Operation func(bool) bool
+type day06Operation func(int) int
 
 type day06Instruction struct {
 	start     geo.Point
@@ -42,7 +44,7 @@ type day06Instruction struct {
 	operation day06Operation
 }
 
-func parseDay06(r io.Reader) ([]day06Instruction, error) {
+func parseDay06(r io.Reader, part int) ([]day06Instruction, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
 	re, err := regexp.Compile(`(turn on|turn off|toggle) (\d{1,3}),(\d{1,3}) through (\d{1,3}),(\d{1,3})`)
@@ -56,11 +58,23 @@ func parseDay06(r io.Reader) ([]day06Instruction, error) {
 		var operation day06Operation
 		switch matches[1] {
 		case "turn on":
-			operation = turnOn
+			if part == 1 {
+				operation = turnOn
+			} else {
+				operation = increaseBy(1)
+			}
 		case "turn off":
-			operation = turnOff
+			if part == 1 {
+				operation = turnOff
+			} else {
+				operation = decrease
+			}
 		case "toggle":
-			operation = toggle
+			if part == 1 {
+				operation = toggle
+			} else {
+				operation = increaseBy(2)
+			}
 		}
 		startX, err := strconv.Atoi(matches[2])
 		if err != nil {
@@ -85,7 +99,7 @@ func parseDay06(r io.Reader) ([]day06Instruction, error) {
 	return instructions, nil
 }
 
-func (d *day06Instruction) apply(grid [][]bool) {
+func (d *day06Instruction) apply(grid [][]int) {
 	xMin := int(math.Min(float64(d.start.X), float64(d.end.X)))
 	xMax := int(math.Max(float64(d.start.X), float64(d.end.X)))
 	yMin := int(math.Min(float64(d.start.Y), float64(d.end.Y)))
@@ -97,14 +111,18 @@ func (d *day06Instruction) apply(grid [][]bool) {
 	}
 }
 
-func turnOn(_ bool) bool {
-	return true
+func turnOn(_ int) int {
+	return 1
 }
 
-func turnOff(_ bool) bool {
-	return false
+func turnOff(_ int) int {
+	return 0
 }
 
-func toggle(b bool) bool {
-	return !b
+func toggle(i int) int {
+	if i == 0 {
+		return 1
+	} else {
+		return 0
+	}
 }
