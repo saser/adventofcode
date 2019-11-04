@@ -1,6 +1,8 @@
 package year2015
 
 import (
+	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -8,6 +10,11 @@ import (
 )
 
 func TestDay01(t *testing.T) {
+	inputFile, err := os.Open("../../../inputs/2015/01")
+	require.NoError(t, err)
+	inputBytes, err := ioutil.ReadAll(inputFile)
+	require.NoError(t, err)
+	actual := string(inputBytes)
 	t.Run("part1", func(t *testing.T) {
 		for _, tt := range []struct {
 			name          string
@@ -22,6 +29,7 @@ func TestDay01(t *testing.T) {
 			{name: "example4_2", input: "))(", output: "-1"},
 			{name: "example5_1", input: ")))", output: "-3"},
 			{name: "example5_2", input: ")())())", output: "-3"},
+			{name: "actual", input: actual, output: "232"},
 		} {
 			tt := tt
 			t.Run(tt.name, func(t *testing.T) {
