@@ -12,6 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var resultString string
+var resultErr error
+
 type TestCase interface {
 	Name() string
 	Input() io.ReadSeeker
@@ -28,15 +31,19 @@ func Run(t *testing.T, tc TestCase, sol solution.Solution) {
 
 func Bench(b *testing.B, tc TestCase, sol solution.Solution) {
 	rs := tc.Input()
+	var r string
+	var e error
 	b.Run(tc.Name(), func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			sol(rs)
+			r, e = sol(rs)
 			_, err := rs.Seek(0, io.SeekStart)
 			if err != nil {
 				b.Fatal(err)
 			}
 		}
 	})
+	resultString = r
+	resultErr = e
 }
 
 type stringCase struct {
