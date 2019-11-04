@@ -1,78 +1,45 @@
 package year2015
 
 import (
-	"io"
-	"io/ioutil"
-	"os"
-	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/Saser/adventofcode/internal/testcase"
 )
 
 func TestDay01(t *testing.T) {
-	inputFile, err := os.Open("../../../inputs/2015/01")
-	require.NoError(t, err)
-	inputBytes, err := ioutil.ReadAll(inputFile)
-	require.NoError(t, err)
-	actual := string(inputBytes)
 	t.Run("part1", func(t *testing.T) {
-		for _, tt := range []struct {
-			name          string
-			input, output string
-		}{
-			{name: "example1_1", input: "(())", output: "0"},
-			{name: "example1_2", input: "()()", output: "0"},
-			{name: "example2_1", input: "(((", output: "3"},
-			{name: "example2_2", input: "(()(()(", output: "3"},
-			{name: "example3", input: "))(((((", output: "3"},
-			{name: "example4_1", input: "())", output: "-1"},
-			{name: "example4_2", input: "))(", output: "-1"},
-			{name: "example5_1", input: ")))", output: "-3"},
-			{name: "example5_2", input: ")())())", output: "-3"},
-			{name: "actual", input: actual, output: "232"},
+		for _, tc := range []testcase.TestCase{
+			testcase.FromString("example1_1", "(())", "0"),
+			testcase.FromString("example1_2", "()()", "0"),
+			testcase.FromString("example2_1", "(((", "3"),
+			testcase.FromString("example2_2", "(()(()(", "3"),
+			testcase.FromString("example3", "))(((((", "3"),
+			testcase.FromString("example4_1", "())", "-1"),
+			testcase.FromString("example4_2", "))(", "-1"),
+			testcase.FromString("example5_1", ")))", "-3"),
+			testcase.FromString("example5_2", ")())())", "-3"),
+			testcase.FromInputFile(t, 2015, 1, "232"),
 		} {
-			tt := tt
-			t.Run(tt.name, func(t *testing.T) {
-				answer, err := Day01One(strings.NewReader(tt.input))
-				require.NoError(t, err)
-				require.Equal(t, tt.output, answer)
-			})
+			testcase.Run(t, tc, Day01One)
 		}
 	})
 	t.Run("part2", func(t *testing.T) {
-		for _, tt := range []struct {
-			name          string
-			input, output string
-		}{
-			{name: "example1", input: ")", output: "1"},
-			{name: "example2", input: "()())", output: "5"},
-			{name: "actual", input: actual, output: "1783"},
+		for _, tc := range []testcase.TestCase{
+			testcase.FromString("example1", ")", "1"),
+			testcase.FromString("example2", "()())", "5"),
+			testcase.FromInputFile(t, 2015, 1, "1783"),
 		} {
-			tt := tt
-			t.Run(tt.name, func(t *testing.T) {
-				answer, err := Day01Two(strings.NewReader(tt.input))
-				require.NoError(t, err)
-				require.Equal(t, tt.output, answer)
-			})
+			testcase.Run(t, tc, Day01Two)
 		}
 	})
 }
 
 func BenchmarkDay01(b *testing.B) {
-	inputFile, err := os.Open("../../../inputs/2015/01")
-	require.NoError(b, err)
-	b.ResetTimer()
+	tc := testcase.FromInputFile(b, 2015, 1, "")
 	b.Run("part1", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			Day01One(inputFile)
-			inputFile.Seek(0, io.SeekStart)
-		}
+		testcase.Bench(b, tc, Day01One)
 	})
 	b.Run("part2", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			Day01Two(inputFile)
-			inputFile.Seek(0, io.SeekStart)
-		}
+		testcase.Bench(b, tc, Day01Two)
 	})
 }
