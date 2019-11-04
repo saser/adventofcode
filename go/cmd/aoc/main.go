@@ -24,7 +24,7 @@ type Day struct {
 
 var solutions = map[uint]map[uint]Day{
 	2015: map[uint]Day{
-		1: {One: year2015.Day01One},
+		1: {One: year2015.Day01One, Two: year2015.Day01Two},
 	},
 }
 
