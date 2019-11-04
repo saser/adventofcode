@@ -2,7 +2,6 @@ package year2015
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 )
@@ -12,15 +11,17 @@ func Day01One(r io.Reader) (string, error) {
 }
 
 func Day01Two(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
+	return solve(r, 2)
 }
 
 func solve(r io.Reader, part int) (string, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanRunes)
 	floor := 0
+	position := 0
 	for sc.Scan() {
 		tok := sc.Text()
+		position++
 		switch tok {
 		case "(":
 			floor++
@@ -30,6 +31,9 @@ func solve(r io.Reader, part int) (string, error) {
 			break
 		default:
 			return "", fmt.Errorf("year 2015, day 01, part 1: invalid token: %s", tok)
+		}
+		if part == 2 && floor == -1 {
+			return fmt.Sprint(position), nil
 		}
 	}
 	return fmt.Sprint(floor), nil
