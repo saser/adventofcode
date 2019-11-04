@@ -25,6 +25,7 @@ func TestDay05(t *testing.T) {
 			testcase.FromString("example2", "xxyxx", "1"),
 			testcase.FromString("example3", "uurcxstgmygtbstg", "0"),
 			testcase.FromString("example4", "ieodomkazucvgmuy", "0"),
+			testcase.FromInputFile(t, 2015, 5, "55"),
 		} {
 			testcase.Run(t, tc, Day05Two)
 		}
