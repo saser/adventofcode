@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/Saser/adventofcode/internal/solution"
 	"github.com/Saser/adventofcode/internal/year2015"
 )
 
@@ -16,10 +17,9 @@ var (
 	fInput = flag.String("input", "", "path to file to read input from (default: read input from stdin)")
 )
 
-type Solution func(io.Reader) (string, error)
 type Day struct {
-	One Solution
-	Two Solution
+	One solution.Solution
+	Two solution.Solution
 }
 
 var solutions = map[uint]map[uint]Day{
@@ -61,13 +61,13 @@ func imain() (exitCode int) {
 	if part != 1 && part != 2 {
 		fmt.Printf("Invalid part: %d\n", part)
 	}
-	var solution Solution
+	var sol solution.Solution
 	if part == 1 {
-		solution = perPart.One
+		sol = perPart.One
 	} else {
-		solution = perPart.Two
+		sol = perPart.Two
 	}
-	if solution == nil {
+	if sol == nil {
 		fmt.Printf("Year %d, day %d, part %d has no solution.\n", year, day, part)
 		return 1
 	}
@@ -90,7 +90,7 @@ func imain() (exitCode int) {
 			}
 		}()
 	}
-	answer, err := solution(in)
+	answer, err := sol(in)
 	if err != nil {
 		fmt.Printf("Error while running solution: %v\n", err)
 		return 3
