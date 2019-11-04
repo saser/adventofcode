@@ -8,11 +8,11 @@ import (
 	"io"
 )
 
-func Day04One(r io.Reader) (string, error) {
+func Part1(r io.Reader) (string, error) {
 	return solveDay04(r, 0x00000fff)
 }
 
-func Day04Two(r io.Reader) (string, error) {
+func Part2(r io.Reader) (string, error) {
 	return solveDay04(r, 0x000000ff)
 }
 

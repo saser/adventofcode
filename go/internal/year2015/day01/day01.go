@@ -6,11 +6,11 @@ import (
 	"io"
 )
 
-func Day01One(r io.Reader) (string, error) {
+func Part1(r io.Reader) (string, error) {
 	return solveDay01(r, 1)
 }
 
-func Day01Two(r io.Reader) (string, error) {
+func Part2(r io.Reader) (string, error) {
 	return solveDay01(r, 2)
 }
 

@@ -6,33 +6,35 @@ import (
 	"github.com/Saser/adventofcode/internal/testcase"
 )
 
+const inputFile = "../testdata/02"
+
 func TestDay02(t *testing.T) {
 	t.Run("part1", func(t *testing.T) {
 		for _, tc := range []testcase.TestCase{
 			testcase.FromString("example1", "2x3x4", "58"),
 			testcase.FromString("example2", "1x1x10", "43"),
-			testcase.FromInputFile(t, 2015, 2, "1586300"),
+			testcase.FromFile(t, inputFile, "1586300"),
 		} {
-			testcase.Run(t, tc, Day02One)
+			testcase.Run(t, tc, Part1)
 		}
 	})
 	t.Run("part2", func(t *testing.T) {
 		for _, tc := range []testcase.TestCase{
 			testcase.FromString("example1", "2x3x4", "34"),
 			testcase.FromString("example2", "1x1x10", "14"),
-			testcase.FromInputFile(t, 2015, 2, "3737498"),
+			testcase.FromFile(t, inputFile, "3737498"),
 		} {
-			testcase.Run(t, tc, Day02Two)
+			testcase.Run(t, tc, Part2)
 		}
 	})
 }
 
 func BenchmarkDay02(b *testing.B) {
-	tc := testcase.FromInputFile(b, 2015, 2, "")
+	tc := testcase.FromFile(b, inputFile, "")
 	b.Run("part1", func(b *testing.B) {
-		testcase.Bench(b, tc, Day01One)
+		testcase.Bench(b, tc, Part1)
 	})
 	b.Run("part2", func(b *testing.B) {
-		testcase.Bench(b, tc, Day01Two)
+		testcase.Bench(b, tc, Part2)
 	})
 }
