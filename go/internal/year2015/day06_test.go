@@ -12,6 +12,7 @@ func TestDay06(t *testing.T) {
 			testcase.FromString("example1", "turn on 0,0 through 999,999", "1000000"),
 			testcase.FromString("example2", "toggle 0,0 through 999,0", "1000"),
 			testcase.FromString("example3", "turn off 499,499 through 500,500", "0"),
+			testcase.FromInputFile(t, 2015, 6, "569999"),
 		} {
 			testcase.Run(t, tc, Day06One)
 		}
