@@ -1,6 +1,7 @@
 package year2015
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,6 +19,10 @@ func Day05One(r io.Reader) (string, error) {
 		noBadPairs,
 	}
 	return solveDay05(lines, conditions), nil
+}
+
+func Day05Two(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }
 
 func parseDay05(r io.Reader) ([]string, error) {
