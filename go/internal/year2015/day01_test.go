@@ -1,6 +1,7 @@
 package year2015
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -54,6 +55,24 @@ func TestDay01(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, tt.output, answer)
 			})
+		}
+	})
+}
+
+func BenchmarkDay01(b *testing.B) {
+	inputFile, err := os.Open("../../../inputs/2015/01")
+	require.NoError(b, err)
+	b.ResetTimer()
+	b.Run("part1", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			Day01One(inputFile)
+			inputFile.Seek(0, io.SeekStart)
+		}
+	})
+	b.Run("part2", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			Day01Two(inputFile)
+			inputFile.Seek(0, io.SeekStart)
 		}
 	})
 }
