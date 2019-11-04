@@ -1,7 +1,6 @@
 package year2015
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -22,7 +21,15 @@ func Day05One(r io.Reader) (string, error) {
 }
 
 func Day05Two(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
+	lines, err := parseDay05(r)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 05, part 2: %w", err)
+	}
+	conditions := []day05Condition{
+		twicePair,
+		letterTwiceSpaced,
+	}
+	return solveDay05(lines, conditions), nil
 }
 
 func parseDay05(r io.Reader) ([]string, error) {
@@ -80,4 +87,22 @@ func noBadPairs(s string) bool {
 		}
 	}
 	return true
+}
+
+func twicePair(s string) bool {
+	for i := 0; i < len(s)-2; i++ {
+		if strings.Contains(s[i+2:], s[i:i+2]) {
+			return true
+		}
+	}
+	return false
+}
+
+func letterTwiceSpaced(s string) bool {
+	for i := 0; i < len(s)-2; i++ {
+		if s[i] == s[i+2] {
+			return true
+		}
+	}
+	return false
 }
