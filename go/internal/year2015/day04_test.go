@@ -11,6 +11,7 @@ func TestDay04(t *testing.T) {
 		for _, tc := range []testcase.TestCase{
 			testcase.FromString("example1", "abcdef", "609043"),
 			testcase.FromString("example2", "pqrstuv", "1048970"),
+			testcase.FromInputFile(t, 2015, 4, "346386"),
 		} {
 			testcase.Run(t, tc, Day04One)
 		}
