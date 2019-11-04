@@ -2,6 +2,7 @@ package year2015
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -24,4 +25,8 @@ func Day01One(r io.Reader) (string, error) {
 		}
 	}
 	return fmt.Sprint(floor), nil
+}
+
+func Day01Two(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }

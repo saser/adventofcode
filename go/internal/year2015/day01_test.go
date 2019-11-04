@@ -39,4 +39,20 @@ func TestDay01(t *testing.T) {
 			})
 		}
 	})
+	t.Run("part2", func(t *testing.T) {
+		for _, tt := range []struct {
+			name          string
+			input, output string
+		}{
+			{name: "example1", input: ")", output: "1"},
+			{name: "example2", input: "()())", output: "5"},
+		} {
+			tt := tt
+			t.Run(tt.name, func(t *testing.T) {
+				answer, err := Day01Two(strings.NewReader(tt.input))
+				require.NoError(t, err)
+				require.Equal(t, tt.output, answer)
+			})
+		}
+	})
 }
