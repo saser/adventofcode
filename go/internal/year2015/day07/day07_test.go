@@ -21,6 +21,7 @@ NOT x -> h
 NOT y -> i`
 	for _, tc := range []testcase.TestCase{
 		testcase.FromString("example", example, "72"),
+		testcase.FromFile(t, "../testdata/07", "3176"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
