@@ -2,7 +2,6 @@ package day07
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -15,8 +14,15 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
 	}
-	fmt.Println(wires)
-	return "", errors.New("not yet implemented")
+	c := circuit{
+		wires:  wires,
+		values: make(map[string]uint16),
+	}
+	v, err := c.Eval("a")
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
+	}
+	return fmt.Sprint(v), nil
 }
 
 func parse(r io.Reader) (_ map[string]wire, rErr error) {
@@ -150,4 +156,54 @@ func and(v1, v2 uint16) uint16 {
 
 func or(v1, v2 uint16) uint16 {
 	return v1 | v2
+}
+
+type circuit struct {
+	wires  map[string]wire
+	values map[string]uint16
+}
+
+func (c *circuit) Eval(e string) (v uint16, err error) {
+	// Check if there already exists a memoized value for `s`.
+	if v, ok := c.values[e]; ok {
+		return v, nil
+	}
+	// Memoize values that were calculated correctly.
+	defer func() {
+		if err == nil {
+			c.values[e] = v
+		}
+	}()
+	// If we are evaluating a constant expression, simply return it.
+	if v, err := strconv.ParseUint(e, 10, 16); err == nil {
+		return uint16(v), nil
+	}
+	// We are not evaluating a constant expression, which means that we are evaluating a reference to another
+	// wire. Therefore, look up the corresponding wire.
+	wire, ok := c.wires[e]
+	if !ok {
+		return 0, fmt.Errorf("circuit value: invalid: %s", e)
+	}
+	switch w := wire.(type) {
+	case *nonary:
+		return c.Eval(w.r)
+	case *unary:
+		v, err := c.Eval(w.r)
+		if err != nil {
+			return 0, err
+		}
+		return w.op(v), nil
+	case *binary:
+		v1, err := c.Eval(w.r1)
+		if err != nil {
+			return 0, err
+		}
+		v2, err := c.Eval(w.r2)
+		if err != nil {
+			return 0, err
+		}
+		return w.op(v1, v2), nil
+	default:
+		return 0, fmt.Errorf("circuit value: unknown wire type: %T", w)
+	}
 }
