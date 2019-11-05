@@ -21,7 +21,7 @@ NOT x -> h
 NOT y -> i`
 	for _, tc := range []testcase.TestCase{
 		testcase.FromString("example", example, "72"),
-		testcase.FromFile(t, "../testdata/07", "3176"),
+		testcase.FromFile(t, inputFile, "3176"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
@@ -34,7 +34,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, "../testdata/07", "14710"),
+		testcase.FromFile(t, inputFile, "14710"),
 	} {
 		testcase.Run(t, tc, Part2)
 	}
