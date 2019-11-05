@@ -10,6 +10,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	wires, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
@@ -19,6 +27,16 @@ func Part1(r io.Reader) (string, error) {
 		values: make(map[string]uint16),
 	}
 	v, err := c.Eval("a")
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
+	}
+	s := fmt.Sprint(v)
+	if part == 1 {
+		return s, nil
+	}
+	c.wires["b"] = &nonary{r: s}
+	c.values = make(map[string]uint16)
+	v, err = c.Eval("a")
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
 	}
