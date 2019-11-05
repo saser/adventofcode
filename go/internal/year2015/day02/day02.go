@@ -9,7 +9,7 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	boxes, err := parseDay02(r)
+	boxes, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 02, part 1: %w", err)
 	}
@@ -32,7 +32,7 @@ func Part1(r io.Reader) (string, error) {
 }
 
 func Part2(r io.Reader) (string, error) {
-	boxes, err := parseDay02(r)
+	boxes, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 02, part 2: %w", err)
 	}
@@ -54,14 +54,14 @@ func Part2(r io.Reader) (string, error) {
 	return fmt.Sprint(requiredRibbon), nil
 }
 
-type day02Box struct {
+type box struct {
 	l, w, h int
 }
 
-func parseDay02(r io.Reader) ([]day02Box, error) {
+func parse(r io.Reader) ([]box, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
-	boxes := make([]day02Box, 0)
+	boxes := make([]box, 0)
 	for sc.Scan() {
 		line := sc.Text()
 		parts := strings.Split(line, "x")
@@ -77,7 +77,7 @@ func parseDay02(r io.Reader) ([]day02Box, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}
-		boxes = append(boxes, day02Box{l: l, w: w, h: h})
+		boxes = append(boxes, box{l: l, w: w, h: h})
 	}
 	return boxes, nil
 }

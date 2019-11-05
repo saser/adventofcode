@@ -7,14 +7,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	return solveDay01(r, 1)
+	return solve(r, 1)
 }
 
 func Part2(r io.Reader) (string, error) {
-	return solveDay01(r, 2)
+	return solve(r, 2)
 }
 
-func solveDay01(r io.Reader, part int) (string, error) {
+func solve(r io.Reader, part int) (string, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanRunes)
 	floor := 0

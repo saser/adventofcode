@@ -9,14 +9,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	return solveDay04(r, 0x00000fff)
+	return solve(r, 0x00000fff)
 }
 
 func Part2(r io.Reader) (string, error) {
-	return solveDay04(r, 0x000000ff)
+	return solve(r, 0x000000ff)
 }
 
-func solveDay04(r io.Reader, limit uint32) (string, error) {
+func solve(r io.Reader, limit uint32) (string, error) {
 	br := bufio.NewReader(r)
 	prefix, _, err := br.ReadLine()
 	if err != nil {
