@@ -9,14 +9,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	return solveDay03(r, 1)
+	return solve(r, 1)
 }
 
 func Part2(r io.Reader) (string, error) {
-	return solveDay03(r, 2)
+	return solve(r, 2)
 }
 
-func solveDay03(r io.Reader, part int) (string, error) {
+func solve(r io.Reader, part int) (string, error) {
 	// The part number just so happens to be the same as the numbers of travelers:
 	// In part 1, there is 1 (Santa), and in part 2, there are 2 (Santa and Robo-Santa).
 	travelers := make([]geo.Point, part)

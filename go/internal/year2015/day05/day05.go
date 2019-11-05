@@ -8,31 +8,31 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	lines, err := parseDay05(r)
+	lines, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 1: %w", err)
 	}
-	conditions := []day05Condition{
+	conditions := []condition{
 		threeVowels,
 		letterTwice,
 		noBadPairs,
 	}
-	return solveDay05(lines, conditions), nil
+	return solve(lines, conditions), nil
 }
 
 func Part2(r io.Reader) (string, error) {
-	lines, err := parseDay05(r)
+	lines, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 2: %w", err)
 	}
-	conditions := []day05Condition{
+	conditions := []condition{
 		twicePair,
 		letterTwiceSpaced,
 	}
-	return solveDay05(lines, conditions), nil
+	return solve(lines, conditions), nil
 }
 
-func parseDay05(r io.Reader) ([]string, error) {
+func parse(r io.Reader) ([]string, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
@@ -41,7 +41,7 @@ func parseDay05(r io.Reader) ([]string, error) {
 	return lines, nil
 }
 
-func solveDay05(lines []string, conditions []day05Condition) string {
+func solve(lines []string, conditions []condition) string {
 	count := 0
 outer:
 	for _, line := range lines {
@@ -55,7 +55,7 @@ outer:
 	return fmt.Sprint(count)
 }
 
-type day05Condition func(string) bool
+type condition func(string) bool
 
 func threeVowels(s string) (b bool) {
 	count := 0
