@@ -2,7 +2,6 @@ package day08
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 )
@@ -24,7 +23,7 @@ func solve(r io.Reader, part int) (string, error) {
 	case 1:
 		diff = diffMemory
 	case 2:
-		return "", errors.New("not yet implemented")
+		diff = diffEncoded
 	}
 	for sc.Scan() {
 		s += diff(sc.Text())
@@ -52,4 +51,17 @@ func diffMemory(s string) int {
 		}
 	}
 	return len(s) - memory
+}
+
+func diffEncoded(s string) int {
+	encoded := 2 // for the starting and ending quotation marks
+	for _, r := range s {
+		length := 1
+		switch r {
+		case '\\', '"':
+			length = 2
+		}
+		encoded += length
+	}
+	return encoded - len(s)
 }
