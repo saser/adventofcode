@@ -2,6 +2,7 @@ package day08
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -14,6 +15,10 @@ func Part1(r io.Reader) (string, error) {
 		s += diff(sc.Text())
 	}
 	return fmt.Sprint(s), nil
+}
+
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }
 
 func diff(s string) int {
