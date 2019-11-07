@@ -16,6 +16,7 @@ import (
 	year2015day07 "github.com/Saser/adventofcode/internal/year2015/day07"
 	year2015day08 "github.com/Saser/adventofcode/internal/year2015/day08"
 	year2015day09 "github.com/Saser/adventofcode/internal/year2015/day09"
+	year2015day10 "github.com/Saser/adventofcode/internal/year2015/day10"
 )
 
 var (
@@ -32,15 +33,16 @@ type Day struct {
 
 var solutions = map[uint]map[uint]Day{
 	2015: map[uint]Day{
-		1: {One: year2015day01.Part1, Two: year2015day01.Part2},
-		2: {One: year2015day02.Part1, Two: year2015day02.Part2},
-		3: {One: year2015day03.Part1, Two: year2015day03.Part2},
-		4: {One: year2015day04.Part1, Two: year2015day04.Part2},
-		5: {One: year2015day05.Part1, Two: year2015day05.Part2},
-		6: {One: year2015day06.Part1, Two: year2015day06.Part2},
-		7: {One: year2015day07.Part1, Two: year2015day07.Part2},
-		8: {One: year2015day08.Part1, Two: year2015day08.Part2},
-		9: {One: year2015day09.Part1, Two: year2015day09.Part2},
+		1:  {One: year2015day01.Part1, Two: year2015day01.Part2},
+		2:  {One: year2015day02.Part1, Two: year2015day02.Part2},
+		3:  {One: year2015day03.Part1, Two: year2015day03.Part2},
+		4:  {One: year2015day04.Part1, Two: year2015day04.Part2},
+		5:  {One: year2015day05.Part1, Two: year2015day05.Part2},
+		6:  {One: year2015day06.Part1, Two: year2015day06.Part2},
+		7:  {One: year2015day07.Part1, Two: year2015day07.Part2},
+		8:  {One: year2015day08.Part1, Two: year2015day08.Part2},
+		9:  {One: year2015day09.Part1, Two: year2015day09.Part2},
+		10: {One: year2015day10.Part1, Two: year2015day10.Part2},
 	},
 }
 
