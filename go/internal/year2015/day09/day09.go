@@ -10,6 +10,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	distances, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 09, part 1: %w", err)
@@ -19,12 +27,14 @@ func Part1(r io.Reader) (string, error) {
 		places = append(places, k)
 	}
 	routes := permutations(places)
-	answer := minDistance(routes, distances)
+	var answer int
+	switch part {
+	case 1:
+		answer = minDistance(routes, distances)
+	case 2:
+		return "", errors.New("not yet implemented")
+	}
 	return fmt.Sprint(answer), nil
-}
-
-func Part2(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
 }
 
 func parse(r io.Reader) (map[string]map[string]int, error) {
