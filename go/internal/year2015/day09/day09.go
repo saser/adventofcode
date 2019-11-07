@@ -2,7 +2,6 @@ package day09
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -27,13 +26,26 @@ func solve(r io.Reader, part int) (string, error) {
 		places = append(places, k)
 	}
 	routes := permutations(places)
-	var answer int
+	var compare func(int, int) int
 	switch part {
 	case 1:
-		answer = minDistance(routes, distances)
+		compare = func(a, b int) int {
+			if a < b {
+				return a
+			} else {
+				return b
+			}
+		}
 	case 2:
-		return "", errors.New("not yet implemented")
+		compare = func(a, b int) int {
+			if a > b {
+				return a
+			} else {
+				return b
+			}
+		}
 	}
+	answer := optimalDistance(routes, distances, compare)
 	return fmt.Sprint(answer), nil
 }
 
@@ -70,20 +82,22 @@ func parse(r io.Reader) (map[string]map[string]int, error) {
 	return distances, nil
 }
 
-func minDistance(routes [][]string, distances map[string]map[string]int) int {
-	minCost := -1
+func optimalDistance(routes [][]string, distances map[string]map[string]int, compare func(int, int) int) int {
+	optimal := -1
 	for _, route := range routes {
-		cost := 0
+		distance := 0
 		for i := 0; i < len(route)-1; i++ {
 			from := route[i]
 			to := route[i+1]
-			cost += distances[from][to]
+			distance += distances[from][to]
 		}
-		if minCost == -1 || cost < minCost {
-			minCost = cost
+		if optimal == -1 {
+			optimal = distance
+		} else {
+			optimal = compare(optimal, distance)
 		}
 	}
-	return minCost
+	return optimal
 }
 
 func permutations(strings []string) [][]string {
