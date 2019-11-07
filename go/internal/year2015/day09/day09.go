@@ -2,6 +2,7 @@ package day09
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -20,6 +21,10 @@ func Part1(r io.Reader) (string, error) {
 	routes := permutations(places)
 	answer := minDistance(routes, distances)
 	return fmt.Sprint(answer), nil
+}
+
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }
 
 func parse(r io.Reader) (map[string]map[string]int, error) {
