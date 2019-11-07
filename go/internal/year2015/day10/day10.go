@@ -38,24 +38,19 @@ func solve(r io.Reader, part int) (string, error) {
 func lookAndSay(s string) string {
 	current := rune(s[0])
 	count := 1
-	runes := make([]rune, 0)
-	counts := make([]int, 0)
+	var sb strings.Builder
+	sb.Grow(2 * len(s))
 	for _, r := range s[1:] {
 		if r == current {
 			count++
 		} else {
-			runes = append(runes, current)
-			counts = append(counts, count)
+			sb.WriteString(fmt.Sprint(count))
+			sb.WriteRune(current)
 			current = r
 			count = 1
 		}
 	}
-	runes = append(runes, current)
-	counts = append(counts, count)
-	var sb strings.Builder
-	for i := 0; i < len(runes); i++ {
-		sb.WriteString(fmt.Sprint(counts[i]))
-		sb.WriteRune(runes[i])
-	}
+	sb.WriteString(fmt.Sprint(count))
+	sb.WriteRune(current)
 	return sb.String()
 }
