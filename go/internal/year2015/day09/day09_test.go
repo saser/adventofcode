@@ -14,6 +14,7 @@ London to Belfast = 518
 Dublin to Belfast = 141`
 	for _, tc := range []testcase.TestCase{
 		testcase.FromString("example", example, "605"),
+		testcase.FromFile(t, inputFile, "251"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
