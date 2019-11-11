@@ -1,6 +1,7 @@
 package day11
 
 import (
+	"bufio"
 	"errors"
 	"io"
 	"strings"
@@ -9,8 +10,36 @@ import (
 const digits = "abcdefghijklmnopqrstuvwxyz"
 const base = len(digits)
 
+type requirement func(string) bool
+
 func Part1(r io.Reader) (string, error) {
-	return "", errors.New("not yet implemented")
+	sc := bufio.NewScanner(r)
+	sc.Split(bufio.ScanLines)
+	if !sc.Scan() {
+		return "", errors.New("year 2015, day 11, part 1: invalid input")
+	}
+	password := sc.Text()
+	requirements := []requirement{
+		hasIncreasing,
+		hasNoIOL,
+		hasTwoPairs,
+	}
+	return findNext(password, requirements), nil
+}
+
+func findNext(password string, requirements []requirement) string {
+	nextPassword := password
+outer:
+	for {
+		nextPassword = next(nextPassword)
+		for _, requirement := range requirements {
+			if !requirement(nextPassword) {
+				continue outer
+			}
+		}
+		break
+	}
+	return nextPassword
 }
 
 func digitsToInts(s string) []int {

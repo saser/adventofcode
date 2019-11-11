@@ -114,6 +114,7 @@ func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromString("example1", "abcdefgh", "abcdffaa"),
 		testcase.FromString("example2", "ghijklmn", "ghjaabcc"),
+		testcase.FromFile(t, inputFile, "cqjxxyzz"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
