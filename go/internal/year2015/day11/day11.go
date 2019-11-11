@@ -13,6 +13,14 @@ const base = len(digits)
 type requirement func(string) bool
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, count int) (string, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
 	if !sc.Scan() {
@@ -24,7 +32,11 @@ func Part1(r io.Reader) (string, error) {
 		hasNoIOL,
 		hasTwoPairs,
 	}
-	return findNext(password, requirements), nil
+	nextPassword := password
+	for i := 0; i < count; i++ {
+		nextPassword = findNext(nextPassword, requirements)
+	}
+	return nextPassword, nil
 }
 
 func findNext(password string, requirements []requirement) string {
