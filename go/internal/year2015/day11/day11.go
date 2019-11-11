@@ -60,6 +60,13 @@ func intsToDigits(is []int) string {
 
 func next(s string) string {
 	is := digitsToInts(s)
+	if idx := strings.IndexAny(s, "iol"); idx != -1 {
+		is[idx]++
+		for i := idx + 1; i < len(is); i++ {
+			is[i] = 0
+		}
+		return intsToDigits(is)
+	}
 	increment := true
 	for i := len(is) - 1; i >= 0; i-- {
 		if increment {
