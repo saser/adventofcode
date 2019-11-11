@@ -10,6 +10,38 @@ import (
 
 const inputFile = "../testdata/11"
 
+func Test_digitsToInts(t *testing.T) {
+	for _, tt := range []struct {
+		s  string
+		is []int
+	}{
+		{s: "a", is: []int{0}},
+		{s: "z", is: []int{25}},
+		{s: "aa", is: []int{0, 0}},
+		{s: "abc", is: []int{0, 1, 2}},
+	} {
+		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
+			require.Equal(t, tt.is, digitsToInts(tt.s))
+		})
+	}
+}
+
+func Test_intsToDigits(t *testing.T) {
+	for _, tt := range []struct {
+		is []int
+		s  string
+	}{
+		{is: []int{0}, s: "a"},
+		{is: []int{25}, s: "z"},
+		{is: []int{0, 0}, s: "aa"},
+		{is: []int{0, 1, 2}, s: "abc"},
+	} {
+		t.Run(fmt.Sprintf("is=%v", tt.is), func(t *testing.T) {
+			require.Equal(t, tt.s, intsToDigits(tt.is))
+		})
+	}
+}
+
 func Test_hasIncreasing(t *testing.T) {
 	for _, tt := range []struct {
 		s string

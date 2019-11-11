@@ -3,10 +3,29 @@ package day11
 import (
 	"errors"
 	"io"
+	"strings"
 )
+
+const digits = "abcdefghijklmnopqrstuvwxyz"
 
 func Part1(r io.Reader) (string, error) {
 	return "", errors.New("not yet implemented")
+}
+
+func digitsToInts(s string) []int {
+	is := make([]int, len(s))
+	for i, r := range s {
+		is[i] = strings.IndexRune(digits, r)
+	}
+	return is
+}
+
+func intsToDigits(is []int) string {
+	var sb strings.Builder
+	for _, i := range is {
+		sb.WriteByte(digits[i])
+	}
+	return sb.String()
 }
 
 func hasIncreasing(s string) bool {
