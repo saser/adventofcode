@@ -7,6 +7,7 @@ import (
 )
 
 const digits = "abcdefghijklmnopqrstuvwxyz"
+const base = len(digits)
 
 func Part1(r io.Reader) (string, error) {
 	return "", errors.New("not yet implemented")
@@ -26,6 +27,23 @@ func intsToDigits(is []int) string {
 		sb.WriteByte(digits[i])
 	}
 	return sb.String()
+}
+
+func next(s string) string {
+	is := digitsToInts(s)
+	increment := true
+	for i := len(is) - 1; i >= 0; i-- {
+		if increment {
+			is[i] = (is[i] + 1) % base
+			increment = is[i] == 0
+		} else {
+			break
+		}
+	}
+	if increment {
+		is = append([]int{0}, is...)
+	}
+	return intsToDigits(is)
 }
 
 func hasIncreasing(s string) bool {

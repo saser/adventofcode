@@ -42,6 +42,23 @@ func Test_intsToDigits(t *testing.T) {
 	}
 }
 
+func Test_next(t *testing.T) {
+	for _, tt := range []struct {
+		s    string
+		next string
+	}{
+		{s: "a", next: "b"},
+		{s: "z", next: "aa"},
+		{s: "aa", next: "ab"},
+		{s: "zy", next: "zz"},
+		{s: "zz", next: "aaa"},
+	} {
+		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
+			require.Equal(t, tt.next, next(tt.s))
+		})
+	}
+}
+
 func Test_hasIncreasing(t *testing.T) {
 	for _, tt := range []struct {
 		s string
