@@ -2,6 +2,7 @@ package day12
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -19,4 +20,8 @@ func Part1(r io.Reader) (string, error) {
 		}
 	}
 	return fmt.Sprint(sum), nil
+}
+
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not yet implemented")
 }
