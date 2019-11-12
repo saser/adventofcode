@@ -8,21 +8,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	decoder := json.NewDecoder(r)
-	var sum int64
-	for {
-		token, err := decoder.Token()
-		if err == io.EOF {
-			break
-		}
-		if v, ok := token.(float64); ok {
-			sum += int64(v)
-		}
-	}
-	return fmt.Sprint(sum), nil
+	return solve(r, 1)
 }
 
 func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	var j interface{}
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -31,7 +24,7 @@ func Part2(r io.Reader) (string, error) {
 	if err := json.Unmarshal(bytes, &j); err != nil {
 		return "", fmt.Errorf("year 2015, day 12, part 2: %w", err)
 	}
-	return fmt.Sprint(sumJSON(j, 2)), nil
+	return fmt.Sprint(sumJSON(j, part)), nil
 }
 
 func sumJSON(j interface{}, part int) int {
