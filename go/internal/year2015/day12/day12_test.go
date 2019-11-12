@@ -18,6 +18,7 @@ func TestPart1(t *testing.T) {
 		testcase.FromString("example3_2", `[-1,{"a":1}]`, "0"),
 		testcase.FromString("example4_1", `[]`, "0"),
 		testcase.FromString("example4_2", `{}`, "0"),
+		testcase.FromFile(t, inputFile, "111754"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
