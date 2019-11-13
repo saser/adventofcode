@@ -6,6 +6,8 @@ import (
 	"io"
 	"regexp"
 	"strconv"
+
+	"github.com/Saser/adventofcode/internal/permutations"
 )
 
 func Part1(r io.Reader) (string, error) {
@@ -25,7 +27,7 @@ func solve(r io.Reader, part int) (string, error) {
 	for k, _ := range distances {
 		places = append(places, k)
 	}
-	routes := permutations(places)
+	routes := permutations.Strings(places)
 	var compare func(int, int) int
 	switch part {
 	case 1:
@@ -98,32 +100,4 @@ func optimalDistance(routes [][]string, distances map[string]map[string]int, com
 		}
 	}
 	return optimal
-}
-
-func permutations(strings []string) [][]string {
-	n := len(strings)
-	if n == 1 {
-		return [][]string{strings}
-	}
-	perms := make([][]string, 0, factorial(n))
-	for i := 0; i < n; i++ {
-		rest := make([]string, 0, n-1)
-		rest = append(rest, strings[:i]...)
-		rest = append(rest, strings[i+1:]...)
-		for _, subperm := range permutations(rest) {
-			perm := make([]string, 1, n)
-			perm[0] = strings[i]
-			perm = append(perm, subperm...)
-			perms = append(perms, perm)
-		}
-	}
-	return perms
-}
-
-func factorial(n int) int {
-	if n == 0 {
-		return 1
-	} else {
-		return n * factorial(n-1)
-	}
 }
