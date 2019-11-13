@@ -2,11 +2,12 @@ package day13
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
 	"strconv"
+
+	"github.com/Saser/adventofcode/internal/permutations"
 )
 
 func Part1(r io.Reader) (string, error) {
@@ -14,8 +15,18 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 13, part 1: %w", err)
 	}
-	fmt.Println(m)
-	return "", errors.New("not yet implemented")
+	names := make([]string, 0, len(m))
+	for name, _ := range m {
+		names = append(names, name)
+	}
+	maxScore := 0
+	for _, seating := range permutations.Strings(names) {
+		seatingScore := score(seating, m)
+		if seatingScore > maxScore {
+			maxScore = seatingScore
+		}
+	}
+	return fmt.Sprint(maxScore), nil
 }
 
 type preference struct {
