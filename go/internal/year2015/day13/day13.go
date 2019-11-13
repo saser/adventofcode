@@ -11,6 +11,14 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	m, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 13, part 1: %w", err)
@@ -21,7 +29,7 @@ func Part1(r io.Reader) (string, error) {
 	}
 	maxScore := 0
 	for _, seating := range permutations.Strings(names) {
-		seatingScore := score(seating, m)
+		seatingScore := score(seating, m, part)
 		if seatingScore > maxScore {
 			maxScore = seatingScore
 		}
@@ -81,8 +89,10 @@ func parse(r io.Reader) (map[string]map[string]int, error) {
 	return m, nil
 }
 
-func score(names []string, m map[string]map[string]int) int {
-	names = append(names, names[0])
+func score(names []string, m map[string]map[string]int, part int) int {
+	if part == 1 {
+		names = append(names, names[0])
+	}
 	score := 0
 	for i := 0; i < len(names)-1; i++ {
 		score += m[names[i]][names[i+1]]

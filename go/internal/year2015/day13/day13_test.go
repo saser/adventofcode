@@ -82,7 +82,7 @@ func Test_score(t *testing.T) {
 	m, err := parse(file)
 	require.NoError(t, err)
 	names := []string{"Alice", "Bob", "Carol", "David"}
-	require.Equal(t, 330, score(names, m))
+	require.Equal(t, 330, score(names, m, 1))
 }
 
 func TestPart1(t *testing.T) {
@@ -97,4 +97,17 @@ func TestPart1(t *testing.T) {
 func BenchmarkPart1(b *testing.B) {
 	tc := testcase.FromFile(b, inputFile, "")
 	testcase.Bench(b, tc, Part1)
+}
+
+func TestPart2(t *testing.T) {
+	for _, tc := range []testcase.TestCase{
+		testcase.FromFile(t, inputFile, "601"),
+	} {
+		testcase.Run(t, tc, Part2)
+	}
+}
+
+func BenchmarkPart2(b *testing.B) {
+	tc := testcase.FromFile(b, inputFile, "")
+	testcase.Bench(b, tc, Part2)
 }
