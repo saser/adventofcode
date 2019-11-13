@@ -88,6 +88,7 @@ func Test_score(t *testing.T) {
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromFile(t, exampleFile, "330"),
+		testcase.FromFile(t, inputFile, "618"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
