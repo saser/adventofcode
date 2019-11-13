@@ -9,19 +9,61 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	deers, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 14, part 1: %w", err)
 	}
 	time := 2503
-	maxDistance := 0
-	for _, deer := range deers {
-		distance := deerDistanceFunc(deer)(time)
-		if distance > maxDistance {
-			maxDistance = distance
-		}
+	funcs := make([]distanceFunc, len(deers))
+	for i, deer := range deers {
+		funcs[i] = deerDistanceFunc(deer)
 	}
-	return fmt.Sprint(maxDistance), nil
+	switch part {
+	case 1:
+		var maxDistance int
+		for _, f := range funcs {
+			distance := f(time)
+			if distance > maxDistance {
+				maxDistance = distance
+			}
+		}
+		return fmt.Sprint(maxDistance), nil
+	case 2:
+		scores := make(map[string]int)
+		for second := 1; second <= time; second++ {
+			var leader string
+			var maxDistance int
+			for i, deer := range deers {
+				distance := funcs[i](second)
+				if distance > maxDistance {
+					maxDistance = distance
+					leader = deer.name
+				}
+			}
+			score, ok := scores[leader]
+			if !ok {
+				score = 0
+			}
+			scores[leader] = score + 1
+		}
+		var maxScore int
+		for _, score := range scores {
+			if score > maxScore {
+				maxScore = score
+			}
+		}
+		return fmt.Sprint(maxScore), nil
+	default:
+		return "", fmt.Errorf("year 2015, day 14: invalid part: %d", part)
+	}
 }
 
 type distanceFunc func(int) int
