@@ -76,6 +76,15 @@ func Test_parse(t *testing.T) {
 	require.Equal(t, expected, m)
 }
 
+func Test_score(t *testing.T) {
+	file, err := os.Open(exampleFile)
+	require.NoError(t, err)
+	m, err := parse(file)
+	require.NoError(t, err)
+	names := []string{"Alice", "Bob", "Carol", "David"}
+	require.Equal(t, 330, score(names, m))
+}
+
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromFile(t, exampleFile, "330"),

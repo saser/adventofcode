@@ -69,3 +69,13 @@ func parse(r io.Reader) (map[string]map[string]int, error) {
 	}
 	return m, nil
 }
+
+func score(names []string, m map[string]map[string]int) int {
+	names = append(names, names[0])
+	score := 0
+	for i := 0; i < len(names)-1; i++ {
+		score += m[names[i]][names[i+1]]
+		score += m[names[i+1]][names[i]]
+	}
+	return score
+}
