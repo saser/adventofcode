@@ -1,6 +1,7 @@
 package day13
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -9,6 +10,11 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	m, err := parse(r)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 13, part 1: %w", err)
+	}
+	fmt.Println(m)
 	return "", errors.New("not yet implemented")
 }
 
@@ -45,4 +51,21 @@ func parsePreference(s string) (preference, error) {
 		change: change,
 	}
 	return p, nil
+}
+
+func parse(r io.Reader) (map[string]map[string]int, error) {
+	sc := bufio.NewScanner(r)
+	sc.Split(bufio.ScanLines)
+	m := make(map[string]map[string]int)
+	for sc.Scan() {
+		p, err := parsePreference(sc.Text())
+		if err != nil {
+			return nil, fmt.Errorf("parse: %w", err)
+		}
+		if _, ok := m[p.from]; !ok {
+			m[p.from] = make(map[string]int)
+		}
+		m[p.from][p.to] = p.change
+	}
+	return m, nil
 }

@@ -1,13 +1,17 @@
 package day13
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
 	"github.com/stretchr/testify/require"
 )
 
-const inputFile = "../testdata/13"
+const (
+	exampleFile = "testdata/example"
+	inputFile   = "../testdata/13"
+)
 
 func Test_parsePreference(t *testing.T) {
 	for _, tt := range []struct {
@@ -42,9 +46,39 @@ func Test_parsePreference(t *testing.T) {
 	}
 }
 
+func Test_parse(t *testing.T) {
+	file, err := os.Open(exampleFile)
+	require.NoError(t, err)
+	m, err := parse(file)
+	require.NoError(t, err)
+	expected := map[string]map[string]int{
+		"Alice": map[string]int{
+			"Bob":   54,
+			"Carol": -79,
+			"David": -2,
+		},
+		"Bob": map[string]int{
+			"Alice": 83,
+			"Carol": -7,
+			"David": -63,
+		},
+		"Carol": map[string]int{
+			"Alice": -62,
+			"Bob":   60,
+			"David": 55,
+		},
+		"David": map[string]int{
+			"Alice": 46,
+			"Bob":   -7,
+			"Carol": 41,
+		},
+	}
+	require.Equal(t, expected, m)
+}
+
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, "testdata/example", "330"),
+		testcase.FromFile(t, exampleFile, "330"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
