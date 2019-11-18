@@ -9,6 +9,8 @@ import (
 	"github.com/Saser/adventofcode/internal/solution"
 )
 
+const Target = 150
+
 func Part1(target int) solution.Solution {
 	return solve(target, 1)
 }
