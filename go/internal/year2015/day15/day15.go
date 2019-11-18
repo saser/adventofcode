@@ -2,7 +2,6 @@ package day15
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -10,9 +9,17 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	ingredientMap, err := parse(r)
 	if err != nil {
-		return "", fmt.Errorf("year 2015, day 15, part 1: %w", err)
+		return "", fmt.Errorf("year 2015, day 15, part %d: %w", part, err)
 	}
 	ingredients := make([]ingredient, 0, len(ingredientMap))
 	for _, ingredient := range ingredientMap {
@@ -20,16 +27,12 @@ func Part1(r io.Reader) (string, error) {
 	}
 	maxScore := 0
 	for _, distribution := range distributions(100, len(ingredients)) {
-		s := score(distribution, ingredients)
+		s := score(distribution, ingredients, part)
 		if s > maxScore {
 			maxScore = s
 		}
 	}
 	return fmt.Sprint(maxScore), nil
-}
-
-func Part2(r io.Reader) (string, error) {
-	return "", errors.New("not implemented yet")
 }
 
 type ingredient struct {
@@ -98,17 +101,22 @@ func distributions(sum int, parts int) [][]int {
 	return ds
 }
 
-func score(distribution []int, ingredients []ingredient) int {
+func score(distribution []int, ingredients []ingredient, part int) int {
 	capacity := 0
 	durability := 0
 	flavor := 0
 	texture := 0
+	calories := 0
 	for i, part := range distribution {
 		ingredient := ingredients[i]
 		capacity += ingredient.capacity * part
 		durability += ingredient.durability * part
 		flavor += ingredient.flavor * part
 		texture += ingredient.texture * part
+		calories += ingredient.calories * part
+	}
+	if part == 2 && calories != 500 {
+		return 0
 	}
 	if capacity <= 0 || durability <= 0 || flavor <= 0 || texture <= 0 {
 		return 0
