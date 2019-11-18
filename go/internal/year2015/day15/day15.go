@@ -2,6 +2,7 @@ package day15
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -25,6 +26,10 @@ func Part1(r io.Reader) (string, error) {
 		}
 	}
 	return fmt.Sprint(maxScore), nil
+}
+
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not implemented yet")
 }
 
 type ingredient struct {
@@ -99,10 +104,11 @@ func score(distribution []int, ingredients []ingredient) int {
 	flavor := 0
 	texture := 0
 	for i, part := range distribution {
-		capacity += ingredients[i].capacity * part
-		durability += ingredients[i].durability * part
-		flavor += ingredients[i].flavor * part
-		texture += ingredients[i].texture * part
+		ingredient := ingredients[i]
+		capacity += ingredient.capacity * part
+		durability += ingredient.durability * part
+		flavor += ingredient.flavor * part
+		texture += ingredient.texture * part
 	}
 	if capacity <= 0 || durability <= 0 || flavor <= 0 || texture <= 0 {
 		return 0
