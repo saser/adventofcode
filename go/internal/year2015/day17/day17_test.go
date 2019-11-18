@@ -11,7 +11,6 @@ const (
 	exampleFile   = "testdata/example"
 	exampleTarget = 25
 	inputFile     = "../testdata/17"
-	inputTarget   = 150
 )
 
 func TestPart1(t *testing.T) {
@@ -20,7 +19,7 @@ func TestPart1(t *testing.T) {
 		sol solution.Solution
 	}{
 		{tc: testcase.FromFile(t, exampleFile, "4"), sol: Part1(exampleTarget)},
-		{tc: testcase.FromFile(t, inputFile, "1304"), sol: Part1(inputTarget)},
+		{tc: testcase.FromFile(t, inputFile, "1304"), sol: Part1(Target)},
 	} {
 		testcase.Run(t, tt.tc, tt.sol)
 	}
@@ -28,7 +27,7 @@ func TestPart1(t *testing.T) {
 
 func BenchmarkPart1(b *testing.B) {
 	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1(inputTarget))
+	testcase.Bench(b, tc, Part1(Target))
 }
 
 func TestPart2(t *testing.T) {
@@ -37,7 +36,7 @@ func TestPart2(t *testing.T) {
 		sol solution.Solution
 	}{
 		{tc: testcase.FromFile(t, exampleFile, "3"), sol: Part2(exampleTarget)},
-		{tc: testcase.FromFile(t, inputFile, "18"), sol: Part2(inputTarget)},
+		{tc: testcase.FromFile(t, inputFile, "18"), sol: Part2(Target)},
 	} {
 		testcase.Run(t, tt.tc, tt.sol)
 	}
@@ -45,5 +44,5 @@ func TestPart2(t *testing.T) {
 
 func BenchmarkPart2(b *testing.B) {
 	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2(inputTarget))
+	testcase.Bench(b, tc, Part2(Target))
 }
