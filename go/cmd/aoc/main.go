@@ -21,7 +21,7 @@ import (
 	year2015day12 "github.com/Saser/adventofcode/internal/year2015/day12"
 	year2015day13 "github.com/Saser/adventofcode/internal/year2015/day13"
 	year2015day14 "github.com/Saser/adventofcode/internal/year2015/day14"
-	year2015day15 "github.com/Saser/adventofcode/internal/year2015/day14"
+	year2015day15 "github.com/Saser/adventofcode/internal/year2015/day15"
 )
 
 var (
