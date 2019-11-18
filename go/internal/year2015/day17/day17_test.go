@@ -37,7 +37,7 @@ func TestPart2(t *testing.T) {
 		sol solution.Solution
 	}{
 		{tc: testcase.FromFile(t, exampleFile, "3"), sol: Part2(exampleTarget)},
-		{tc: testcase.FromFile(t, inputFile, ""), sol: Part2(inputTarget)},
+		{tc: testcase.FromFile(t, inputFile, "18"), sol: Part2(inputTarget)},
 	} {
 		testcase.Run(t, tt.tc, tt.sol)
 	}

@@ -2,7 +2,6 @@ package day17
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -11,19 +10,36 @@ import (
 )
 
 func Part1(target int) solution.Solution {
-	return func(r io.Reader) (string, error) {
-		parts, err := parse(r)
-		if err != nil {
-			return "", fmt.Errorf("year 2015, day 17, part 1: %w", err)
-		}
-		proper := combinations(target, parts)
-		return fmt.Sprint(len(proper)), nil
-	}
+	return solve(target, 1)
 }
 
 func Part2(target int) solution.Solution {
+	return solve(target, 2)
+}
+
+func solve(target int, part int) solution.Solution {
 	return func(r io.Reader) (string, error) {
-		return "", errors.New("not implemented yet")
+		parts, err := parse(r)
+		if err != nil {
+			return "", fmt.Errorf("year 2015, day 17, part %d: %w", part, err)
+		}
+		proper := combinations(target, parts)
+		if part == 1 {
+			return fmt.Sprint(len(proper)), nil
+		}
+		count := 0
+		minCombination := len(proper[0])
+		for _, combination := range proper {
+			n := len(combination)
+			switch {
+			case n == minCombination:
+				count++
+			case n < minCombination:
+				count = 1
+				minCombination = n
+			}
+		}
+		return fmt.Sprint(count), nil
 	}
 }
 
