@@ -16,7 +16,8 @@ func Part1(target int) solution.Solution {
 		if err != nil {
 			return "", fmt.Errorf("year 2015, day 17, part 1: %w", err)
 		}
-		return fmt.Sprint(sumCombinations(target, parts)), nil
+		proper := combinations(target, parts)
+		return fmt.Sprint(len(proper)), nil
 	}
 }
 
@@ -40,22 +41,21 @@ func parse(r io.Reader) ([]int, error) {
 	return parts, nil
 }
 
-func sumCombinations(target int, parts []int) int {
+func combinations(target int, parts []int) (proper [][]int) {
 	if target < 0 {
-		return 0
+		return [][]int{}
 	}
-	var rest []int
-	switch len(parts) {
-	case 0:
-		if target == 0 {
-			return 1
-		} else {
-			return 0
-		}
-	case 1:
-		rest = []int{}
-	default:
-		rest = parts[1:]
+	i := parts[0]
+	if i == target {
+		proper = append(proper, []int{i})
 	}
-	return sumCombinations(target-parts[0], rest) + sumCombinations(target, rest)
+	if len(parts) == 1 {
+		return
+	}
+	rest := parts[1:]
+	for _, combination := range combinations(target-i, rest) {
+		proper = append(proper, append([]int{i}, combination...))
+	}
+	proper = append(proper, combinations(target, rest)...)
+	return
 }
