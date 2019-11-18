@@ -212,16 +212,4 @@ jgz a -2\
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
     }
-
-    mod part2 {
-        use super::*;
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "put some input here";
-            let expected = "expected output";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-    }
 }

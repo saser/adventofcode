@@ -265,7 +265,7 @@ mod tests {
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/04");
+            let input = include_str!("../../../inputs/2018/04");
             let expected = "125444";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
@@ -303,7 +303,7 @@ mod tests {
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/04");
+            let input = include_str!("../../../inputs/2018/04");
             let expected = "18325";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
