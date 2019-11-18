@@ -11,9 +11,17 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	sues, err := parse(r)
 	if err != nil {
-		return "", fmt.Errorf("year 2015, day 16, part 1: %w", err)
+		return "", fmt.Errorf("year 2015, day 16, part %d: %w", part, err)
 	}
 	query := sue{
 		children:    3,
@@ -28,7 +36,7 @@ func Part1(r io.Reader) (string, error) {
 		perfumes:    1,
 	}
 	for i, s := range sues {
-		if s.matches(query) {
+		if s.matches(query, part) {
 			return fmt.Sprint(i + 1), nil
 		}
 	}
@@ -48,36 +56,49 @@ type sue struct {
 	perfumes    int
 }
 
-func (s *sue) matches(query sue) bool {
-	if s.children != -1 && s.children != query.children {
-		return false
+func (s *sue) matches(query sue, part int) bool {
+	type matcher func(int, int) bool
+	equal := func(a, b int) bool {
+		return a == b
 	}
-	if s.cats != -1 && s.cats != query.cats {
-		return false
+	greaterThan := func(a, b int) bool {
+		return a > b
 	}
-	if s.samoyeds != -1 && s.samoyeds != query.samoyeds {
-		return false
+	lessThan := func(a, b int) bool {
+		return a < b
 	}
-	if s.pomeranians != -1 && s.pomeranians != query.pomeranians {
-		return false
+	var catsMatch, treesMatch, pomeraniansMatch, goldfishMatch matcher
+	switch part {
+	case 1:
+		catsMatch = equal
+		treesMatch = equal
+		pomeraniansMatch = equal
+		goldfishMatch = equal
+	case 2:
+		catsMatch = greaterThan
+		treesMatch = greaterThan
+		pomeraniansMatch = lessThan
+		goldfishMatch = lessThan
 	}
-	if s.akitas != -1 && s.akitas != query.akitas {
-		return false
-	}
-	if s.vizslas != -1 && s.vizslas != query.vizslas {
-		return false
-	}
-	if s.goldfish != -1 && s.goldfish != query.goldfish {
-		return false
-	}
-	if s.trees != -1 && s.trees != query.trees {
-		return false
-	}
-	if s.cars != -1 && s.cars != query.cars {
-		return false
-	}
-	if s.perfumes != -1 && s.perfumes != query.perfumes {
-		return false
+	for _, tt := range []struct {
+		si    int
+		qi    int
+		match matcher
+	}{
+		{si: s.children, qi: query.children, match: equal},
+		{si: s.cats, qi: query.cats, match: catsMatch},
+		{si: s.samoyeds, qi: query.samoyeds, match: equal},
+		{si: s.pomeranians, qi: query.pomeranians, match: pomeraniansMatch},
+		{si: s.akitas, qi: query.akitas, match: equal},
+		{si: s.vizslas, qi: query.vizslas, match: equal},
+		{si: s.goldfish, qi: query.goldfish, match: goldfishMatch},
+		{si: s.trees, qi: query.trees, match: treesMatch},
+		{si: s.cars, qi: query.cars, match: equal},
+		{si: s.perfumes, qi: query.perfumes, match: equal},
+	} {
+		if tt.si != -1 && !tt.match(tt.si, tt.qi) {
+			return false
+		}
 	}
 	return true
 }
