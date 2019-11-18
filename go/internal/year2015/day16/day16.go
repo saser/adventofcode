@@ -15,8 +15,24 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 16, part 1: %w", err)
 	}
-	fmt.Println(sues)
-	return "", errors.New("not implemented yet")
+	query := sue{
+		children:    3,
+		cats:        7,
+		samoyeds:    2,
+		pomeranians: 3,
+		akitas:      0,
+		vizslas:     0,
+		goldfish:    5,
+		trees:       3,
+		cars:        2,
+		perfumes:    1,
+	}
+	for i, s := range sues {
+		if s.matches(query) {
+			return fmt.Sprint(i + 1), nil
+		}
+	}
+	return "", errors.New("no matching Sue")
 }
 
 type sue struct {
@@ -30,6 +46,40 @@ type sue struct {
 	trees       int
 	cars        int
 	perfumes    int
+}
+
+func (s *sue) matches(query sue) bool {
+	if s.children != -1 && s.children != query.children {
+		return false
+	}
+	if s.cats != -1 && s.cats != query.cats {
+		return false
+	}
+	if s.samoyeds != -1 && s.samoyeds != query.samoyeds {
+		return false
+	}
+	if s.pomeranians != -1 && s.pomeranians != query.pomeranians {
+		return false
+	}
+	if s.akitas != -1 && s.akitas != query.akitas {
+		return false
+	}
+	if s.vizslas != -1 && s.vizslas != query.vizslas {
+		return false
+	}
+	if s.goldfish != -1 && s.goldfish != query.goldfish {
+		return false
+	}
+	if s.trees != -1 && s.trees != query.trees {
+		return false
+	}
+	if s.cars != -1 && s.cars != query.cars {
+		return false
+	}
+	if s.perfumes != -1 && s.perfumes != query.perfumes {
+		return false
+	}
+	return true
 }
 
 func parse(r io.Reader) ([]sue, error) {
