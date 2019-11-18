@@ -52,7 +52,7 @@ var solutions = map[uint]map[uint]Day{
 		12: {One: year2015day12.Part1, Two: year2015day12.Part2},
 		13: {One: year2015day13.Part1, Two: year2015day13.Part2},
 		14: {One: year2015day14.Part1, Two: year2015day14.Part2},
-		15: {One: year2015day14.Part1, Two: year2015day14.Part2},
+		15: {One: year2015day15.Part1, Two: year2015day15.Part2},
 	},
 }
 
