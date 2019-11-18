@@ -28,6 +28,7 @@ func BenchmarkPart1(b *testing.B) {
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromFile(t, exampleFile, "57600000"),
+		testcase.FromFile(t, inputFile, "11171160"),
 	} {
 		testcase.Run(t, tc, Part2)
 	}
