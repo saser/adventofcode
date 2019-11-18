@@ -170,7 +170,7 @@ mod tests {
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/07");
+            let input = include_str!("../../../inputs/2018/07");
             let expected = "MNQKRSFWGXPZJCOTVYEBLAHIUD";
             assert_eq!(expected, solver.solve(Part::One, input).unwrap());
         }
@@ -198,7 +198,7 @@ Step F must be finished before step E can begin.\
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/07");
+            let input = include_str!("../../../inputs/2018/07");
             let expected = "948";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }

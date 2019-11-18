@@ -140,7 +140,7 @@ mod tests {
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/10").trim();
+            let input = include_str!("../../../inputs/2018/10").trim();
             let expected = "\
 #....#..#####...#####...#....#..#####...#####...#....#...####.
 #....#..#....#..#....#..#....#..#....#..#....#..#...#...#....#
@@ -212,7 +212,7 @@ position=<-3,  6> velocity=< 2, -1>\
         #[test]
         fn with_input() {
             let solver = get_solver();
-            let input = include_str!("../../inputs/2018/10").trim();
+            let input = include_str!("../../../inputs/2018/10").trim();
             let expected = "10355";
             assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
         }
