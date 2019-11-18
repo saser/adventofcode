@@ -2,6 +2,7 @@ package day17
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -16,6 +17,12 @@ func Part1(target int) solution.Solution {
 			return "", fmt.Errorf("year 2015, day 17, part 1: %w", err)
 		}
 		return fmt.Sprint(sumCombinations(target, parts)), nil
+	}
+}
+
+func Part2(target int) solution.Solution {
+	return func(r io.Reader) (string, error) {
+		return "", errors.New("not implemented yet")
 	}
 }
 

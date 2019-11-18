@@ -30,3 +30,20 @@ func BenchmarkPart1(b *testing.B) {
 	tc := testcase.FromFile(b, inputFile, "")
 	testcase.Bench(b, tc, Part1(inputTarget))
 }
+
+func TestPart2(t *testing.T) {
+	for _, tt := range []struct {
+		tc  testcase.TestCase
+		sol solution.Solution
+	}{
+		{tc: testcase.FromFile(t, exampleFile, "3"), sol: Part2(exampleTarget)},
+		{tc: testcase.FromFile(t, inputFile, ""), sol: Part2(inputTarget)},
+	} {
+		testcase.Run(t, tt.tc, tt.sol)
+	}
+}
+
+func BenchmarkPart2(b *testing.B) {
+	tc := testcase.FromFile(b, inputFile, "")
+	testcase.Bench(b, tc, Part2(inputTarget))
+}
