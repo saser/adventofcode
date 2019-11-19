@@ -2,7 +2,6 @@ package day18
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 
@@ -15,22 +14,24 @@ const (
 )
 
 func Part1(iterations int, gridSize int) solution.Solution {
+	return solve(iterations, gridSize, 1)
+}
+
+func Part2(iterations int, gridSize int) solution.Solution {
+	return solve(iterations, gridSize, 2)
+}
+
+func solve(iterations int, gridSize int, part int) solution.Solution {
 	return func(r io.Reader) (string, error) {
 		grid, err := parse(r, gridSize)
 		if err != nil {
 			return "", fmt.Errorf("year 2015, day 18, part 1: %w", err)
 		}
-		grid.part = 1
+		grid.part = part
 		for i := 0; i < iterations; i++ {
 			grid.step()
 		}
 		return fmt.Sprint(grid.countOn()), nil
-	}
-}
-
-func Part2(iterations int, gridSize int) solution.Solution {
-	return func(r io.Reader) (string, error) {
-		return "", errors.New("not implemented yet")
 	}
 }
 
@@ -81,10 +82,22 @@ type grid struct {
 	part int
 }
 
+func (g *grid) isCorner(row, col int) bool {
+	n := len(g.g) - 1
+	firstRow := row == 0
+	lastRow := row == n
+	firstCol := col == 0
+	lastCol := col == n
+	return (firstRow && firstCol) || (firstRow && lastCol) || (lastRow && firstCol) || (lastRow && lastCol)
+}
+
 func (g *grid) v(row, col int) bool {
-	gridSize := len(g.g)
-	if row < 0 || row >= gridSize || col < 0 || col >= gridSize {
+	n := len(g.g) - 1
+	if row < 0 || row > n || col < 0 || col > n {
 		return false
+	}
+	if g.part == 2 && g.isCorner(row, col) {
+		return true
 	}
 	return g.g[row][col]
 }
@@ -97,6 +110,9 @@ func (g *grid) step() {
 	updates := make([]update, 0)
 	for rowI, row := range g.g {
 		for colI, state := range row {
+			if g.part == 2 && g.isCorner(rowI, colI) {
+				continue
+			}
 			count := 0
 			for _, coord := range neighbors(rowI, colI) {
 				if g.v(coord[0], coord[1]) {
@@ -121,9 +137,9 @@ func (g *grid) step() {
 
 func (g *grid) countOn() int {
 	count := 0
-	for _, row := range g.g {
-		for _, state := range row {
-			if state {
+	for rowI, row := range g.g {
+		for colI, state := range row {
+			if state || (g.part == 2 && g.isCorner(rowI, colI)) {
 				count++
 			}
 		}
