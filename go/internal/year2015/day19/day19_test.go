@@ -16,7 +16,7 @@ func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromFile(t, exampleFile1, "4"),
 		testcase.FromFile(t, exampleFile2, "7"),
-		testcase.FromFile(t, inputFile, ""),
+		testcase.FromFile(t, inputFile, "518"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}

@@ -2,10 +2,10 @@ package day19
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 	"unicode"
 )
 
@@ -14,18 +14,23 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 19, part 1: %w", err)
 	}
-	fmt.Println(replacements)
-	fmt.Println(molecule)
-	return "", errors.New("not implemented yet")
+	distinct := make(map[string]struct{})
+	for i, substance := range molecule {
+		for _, replacement := range replacements[substance] {
+			replaced := replaceSubstance(molecule, i, replacement)
+			distinct[joinSubstances(replaced)] = struct{}{}
+		}
+	}
+	return fmt.Sprint(len(distinct)), nil
 }
 
-func parse(r io.Reader) (map[string][][]string, string, error) {
+func parse(r io.Reader) (map[string][][]string, []string, error) {
 	replacements, molecule, err := parseMappings(r)
 	if err != nil {
-		return nil, "", fmt.Errorf("parse: %w", err)
+		return nil, nil, fmt.Errorf("parse: %w", err)
 	}
 	refined := refineReplacements(replacements)
-	return refined, molecule, nil
+	return refined, splitMolecule(molecule), nil
 }
 
 func parseMappings(r io.Reader) (map[string][]string, string, error) {
@@ -84,4 +89,15 @@ func splitMolecule(molecule string) []string {
 		substances = append(substances, molecule[upperIndices[i]:upperIndices[i+1]])
 	}
 	return substances
+}
+
+func joinSubstances(substances []string) string {
+	return strings.Join(substances, "")
+}
+
+func replaceSubstance(molecule []string, at int, replacement []string) []string {
+	if len(molecule) == 1 {
+		return replacement
+	}
+	return append(molecule[:at], append(replacement, molecule[at+1:]...)...)
 }
