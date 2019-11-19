@@ -15,14 +15,7 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 19, part 1: %w", err)
 	}
-	distinct := make(map[string]struct{})
-	for i, substance := range molecule {
-		for _, replacement := range replacements[substance] {
-			replaced := replaceSubstance(molecule, i, replacement)
-			distinct[joinSubstances(replaced)] = struct{}{}
-		}
-	}
-	return fmt.Sprint(len(distinct)), nil
+	return fmt.Sprint(len(distinctReplacements(molecule, replacements))), nil
 }
 
 func Part2(r io.Reader) (string, error) {
@@ -105,4 +98,19 @@ func replaceSubstance(molecule []string, at int, replacement []string) []string 
 		return replacement
 	}
 	return append(molecule[:at], append(replacement, molecule[at+1:]...)...)
+}
+
+func distinctReplacements(molecule []string, replacements map[string][][]string) [][]string {
+	distinct := make(map[string]struct{})
+	for i, substance := range molecule {
+		for _, replacement := range replacements[substance] {
+			replaced := replaceSubstance(molecule, i, replacement)
+			distinct[joinSubstances(replaced)] = struct{}{}
+		}
+	}
+	distinctMolecules := make([][]string, 0, len(distinct))
+	for k, _ := range distinct {
+		distinctMolecules = append(distinctMolecules, splitMolecule(k))
+	}
+	return distinctMolecules
 }
