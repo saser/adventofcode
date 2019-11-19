@@ -2,7 +2,6 @@ package day18
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 
@@ -20,8 +19,10 @@ func Part1(iterations int, gridSize int) solution.Solution {
 		if err != nil {
 			return "", fmt.Errorf("year 2015, day 18, part 1: %w", err)
 		}
-		fmt.Println(grid)
-		return "", errors.New("not implemented yet")
+		for i := 0; i < iterations; i++ {
+			step(grid)
+		}
+		return fmt.Sprint(countOn(grid)), nil
 	}
 }
 
@@ -46,4 +47,70 @@ func parse(r io.Reader, gridSize int) ([][]bool, error) {
 		grid = append(grid, row)
 	}
 	return grid, nil
+}
+
+func v(grid [][]bool, row int, col int) bool {
+	gridSize := len(grid)
+	if row < 0 || row >= gridSize || col < 0 || col >= gridSize {
+		return false
+	}
+	return grid[row][col]
+}
+
+func countOn(grid [][]bool) int {
+	count := 0
+	for _, row := range grid {
+		for _, state := range row {
+			if state {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+func neighbors(row, col int) [8][2]int {
+	var coords [8][2]int
+	i := 0
+	for _, rowI := range []int{row - 1, row, row + 1} {
+		for _, colI := range []int{col - 1, col, col + 1} {
+			if rowI == row && colI == col {
+				continue
+			}
+			coords[i][0] = rowI
+			coords[i][1] = colI
+			i++
+		}
+	}
+	return coords
+}
+
+func step(grid [][]bool) {
+	type update struct {
+		row, col int
+		state    bool
+	}
+	updates := make([]update, 0)
+	for rowI, row := range grid {
+		for colI, state := range row {
+			count := 0
+			for _, coord := range neighbors(rowI, colI) {
+				if v(grid, coord[0], coord[1]) {
+					count++
+				}
+			}
+			if state {
+				if !(count == 2 || count == 3) {
+					updates = append(updates, update{row: rowI, col: colI, state: false})
+				}
+			} else {
+				if count == 3 {
+					updates = append(updates, update{row: rowI, col: colI, state: true})
+				}
+			}
+		}
+	}
+	for _, u := range updates {
+		grid[u.row][u.col] = u.state
+	}
 }
