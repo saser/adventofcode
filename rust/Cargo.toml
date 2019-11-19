@@ -1,4 +1,21 @@
-[workspace]
-members = [
-    "aoc",
-]
+[package]
+name = "aoc"
+version = "0.1.0"
+authors = ["Christian Persson <saser@live.se>"]
+edition = "2018"
+
+[lib]
+name = "aoc"
+path = "src/lib.rs"
+
+[[bin]]
+name = "aoc"
+path = "src/main.rs"
+
+[dependencies]
+chrono = "0.4"
+clap = "~2.29.0"
+lazy_static = "1.2.0"
+nalgebra = "0.16"
+rayon = "1.0"
+regex = "1"
