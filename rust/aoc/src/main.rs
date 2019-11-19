@@ -5,10 +5,10 @@ use std::io::{self, Read};
 use std::process;
 use std::time::{Duration, Instant};
 
-use base::{Part, Solver, YearDispatcher};
-use year2016;
-use year2017;
-use year2018;
+use aoc::base::{Part, Solver, YearDispatcher};
+use aoc::year2016;
+use aoc::year2017;
+use aoc::year2018;
 
 static APP_NAME: &'static str = "aoc";
 static APP_VERSION: &'static str = "0.1.0";
