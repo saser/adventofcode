@@ -24,6 +24,7 @@ import (
 	year2015day15 "github.com/Saser/adventofcode/internal/year2015/day15"
 	year2015day16 "github.com/Saser/adventofcode/internal/year2015/day16"
 	year2015day17 "github.com/Saser/adventofcode/internal/year2015/day17"
+	year2015day18 "github.com/Saser/adventofcode/internal/year2015/day18"
 )
 
 var (
@@ -57,6 +58,7 @@ var solutions = map[uint]map[uint]Day{
 		15: {One: year2015day15.Part1, Two: year2015day15.Part2},
 		16: {One: year2015day16.Part1, Two: year2015day16.Part2},
 		17: {One: year2015day17.Part1(year2015day17.Target), Two: year2015day17.Part2(year2015day17.Target)},
+		18: {One: year2015day18.Part1(year2015day18.Iterations, year2015day18.GridSize), Two: year2015day18.Part2(year2015day18.Iterations, year2015day18.GridSize)},
 	},
 }
 
