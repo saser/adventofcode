@@ -20,10 +20,11 @@ func Part1(iterations int, gridSize int) solution.Solution {
 		if err != nil {
 			return "", fmt.Errorf("year 2015, day 18, part 1: %w", err)
 		}
+		grid.part = 1
 		for i := 0; i < iterations; i++ {
-			step(grid)
+			grid.step()
 		}
-		return fmt.Sprint(countOn(grid)), nil
+		return fmt.Sprint(grid.countOn()), nil
 	}
 }
 
@@ -33,10 +34,10 @@ func Part2(iterations int, gridSize int) solution.Solution {
 	}
 }
 
-func parse(r io.Reader, gridSize int) ([][]bool, error) {
+func parse(r io.Reader, gridSize int) (*grid, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
-	grid := make([][]bool, 0, gridSize)
+	g := make([][]bool, 0, gridSize)
 	for sc.Scan() {
 		row := make([]bool, 0, gridSize)
 		for _, r := range sc.Text() {
@@ -47,33 +48,16 @@ func parse(r io.Reader, gridSize int) ([][]bool, error) {
 			case '#':
 				state = true
 			default:
-				return grid, fmt.Errorf("parse: invalid rune: %s", string(r))
+				return nil, fmt.Errorf("parse: invalid rune: %s", string(r))
 			}
 			row = append(row, state)
 		}
-		grid = append(grid, row)
+		g = append(g, row)
+	}
+	grid := &grid{
+		g: g,
 	}
 	return grid, nil
-}
-
-func v(grid [][]bool, row int, col int) bool {
-	gridSize := len(grid)
-	if row < 0 || row >= gridSize || col < 0 || col >= gridSize {
-		return false
-	}
-	return grid[row][col]
-}
-
-func countOn(grid [][]bool) int {
-	count := 0
-	for _, row := range grid {
-		for _, state := range row {
-			if state {
-				count++
-			}
-		}
-	}
-	return count
 }
 
 func neighbors(row, col int) [8][2]int {
@@ -92,17 +76,30 @@ func neighbors(row, col int) [8][2]int {
 	return coords
 }
 
-func step(grid [][]bool) {
+type grid struct {
+	g    [][]bool
+	part int
+}
+
+func (g *grid) v(row, col int) bool {
+	gridSize := len(g.g)
+	if row < 0 || row >= gridSize || col < 0 || col >= gridSize {
+		return false
+	}
+	return g.g[row][col]
+}
+
+func (g *grid) step() {
 	type update struct {
 		row, col int
 		state    bool
 	}
 	updates := make([]update, 0)
-	for rowI, row := range grid {
+	for rowI, row := range g.g {
 		for colI, state := range row {
 			count := 0
 			for _, coord := range neighbors(rowI, colI) {
-				if v(grid, coord[0], coord[1]) {
+				if g.v(coord[0], coord[1]) {
 					count++
 				}
 			}
@@ -118,6 +115,18 @@ func step(grid [][]bool) {
 		}
 	}
 	for _, u := range updates {
-		grid[u.row][u.col] = u.state
+		g.g[u.row][u.col] = u.state
 	}
+}
+
+func (g *grid) countOn() int {
+	count := 0
+	for _, row := range g.g {
+		for _, state := range row {
+			if state {
+				count++
+			}
+		}
+	}
+	return count
 }
