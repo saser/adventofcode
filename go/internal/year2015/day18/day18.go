@@ -2,6 +2,7 @@ package day18
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 
@@ -23,6 +24,12 @@ func Part1(iterations int, gridSize int) solution.Solution {
 			step(grid)
 		}
 		return fmt.Sprint(countOn(grid)), nil
+	}
+}
+
+func Part2(iterations int, gridSize int) solution.Solution {
+	return func(r io.Reader) (string, error) {
+		return "", errors.New("not implemented yet")
 	}
 }
 
