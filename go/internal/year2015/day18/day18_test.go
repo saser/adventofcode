@@ -20,7 +20,7 @@ func TestPart1(t *testing.T) {
 		gridSize   int
 	}{
 		{tc: testcase.FromFile(t, exampleFile, "4"), iterations: exampleIterations, gridSize: exampleGridSize},
-		{tc: testcase.FromFile(t, inputFile, ""), iterations: Iterations, gridSize: GridSize},
+		{tc: testcase.FromFile(t, inputFile, "1061"), iterations: Iterations, gridSize: GridSize},
 	} {
 		testcase.Run(t, tt.tc, Part1(tt.iterations, tt.gridSize))
 	}
