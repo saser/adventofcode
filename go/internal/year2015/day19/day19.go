@@ -2,6 +2,7 @@ package day19
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -22,6 +23,10 @@ func Part1(r io.Reader) (string, error) {
 		}
 	}
 	return fmt.Sprint(len(distinct)), nil
+}
+
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not implemented yet")
 }
 
 func parse(r io.Reader) (map[string][][]string, []string, error) {
