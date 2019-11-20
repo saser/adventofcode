@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"strconv"
 )
 
@@ -20,30 +19,24 @@ func Part1(r io.Reader) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 20, part 1: %w", err)
 	}
-	target /= 10
-	for i := 1; i <= target; i++ {
-		s := sumOfDivisors(i)
-		if s >= target {
-			return fmt.Sprint(i), nil
-		}
+	answer, ok := firstHouse(target)
+	if !ok {
+		return "", errors.New("year 2015, day 20, part 1: no solution found")
 	}
-	return "", errors.New("not implemented yet")
+	return fmt.Sprint(answer), nil
 }
 
-func sumOfDivisors(n int) int {
-	if n == 1 {
-		return 1
-	}
-	sum := 1 + n
-	limit := int(math.Sqrt(float64(n)))
-	for i := 2; i < limit; i++ {
-		if n%i == 0 {
-			sum += i
-			sum += n / i
+func firstHouse(target int) (int, bool) {
+	houses := make([]int, target+1)
+	for i := 1; i <= target/10; i++ {
+		for j := i; j <= target/10; j += i {
+			houses[j] += i * 10
 		}
 	}
-	if n%limit == 0 {
-		sum += limit
+	for i, house := range houses {
+		if house >= target {
+			return i, true
+		}
 	}
-	return sum
+	return 0, false
 }
