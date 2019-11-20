@@ -26,6 +26,10 @@ func Part1(r io.Reader) (string, error) {
 	return fmt.Sprint(answer), nil
 }
 
+func Part2(r io.Reader) (string, error) {
+	return "", errors.New("not implemented yet")
+}
+
 func firstHouse(target int) (int, bool) {
 	houses := make([]int, target+1)
 	for i := 1; i <= target/10; i++ {
