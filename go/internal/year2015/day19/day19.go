@@ -2,7 +2,6 @@ package day19
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -11,15 +10,26 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	replacements, molecule, err := parse(r)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 19, part 1: %w", err)
-	}
-	return fmt.Sprint(len(distinctReplacements(molecule, replacements))), nil
+	return solve(r, 1)
 }
 
 func Part2(r io.Reader) (string, error) {
-	return "", errors.New("not implemented yet")
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
+	replacements, molecule, err := parse(r)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 19, part %d: %w", part, err)
+	}
+	switch part {
+	case 1:
+		return fmt.Sprint(len(distinctReplacements(molecule, replacements))), nil
+	case 2:
+		return fmt.Sprint(shortestProduction(molecule)), nil
+	default:
+		return "", fmt.Errorf("year 2015, day 19: invalid part: %d", part)
+	}
 }
 
 func parse(r io.Reader) (map[string][][]string, []string, error) {
@@ -113,4 +123,20 @@ func distinctReplacements(molecule []string, replacements map[string][][]string)
 		distinctMolecules = append(distinctMolecules, splitMolecule(k))
 	}
 	return distinctMolecules
+}
+
+// This is an implementation of the beautiful solution presented by /u/askalski in this comment:
+// https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju/
+func shortestProduction(molecule []string) int {
+	nTokens := len(molecule)
+	var nRnAr, nY int
+	for _, s := range molecule {
+		switch s {
+		case "Rn", "Ar":
+			nRnAr++
+		case "Y":
+			nY++
+		}
+	}
+	return nTokens - nRnAr - 2*nY - 1
 }

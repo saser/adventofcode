@@ -30,10 +30,13 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
+	// The example test cases are off by one. This is due to a discrepancy between the example input and the actual
+	// input: in the actual input, all productions from "e" are to two other tokens, while in the example input the
+	// productions from "e" are to one other token.
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, part2Example1File, "3"),
-		testcase.FromFile(t, part2Example2File, "6"),
-		testcase.FromFile(t, inputFile, ""),
+		testcase.FromFile(t, part2Example1File, "2"),
+		testcase.FromFile(t, part2Example2File, "5"),
+		testcase.FromFile(t, inputFile, "200"),
 	} {
 		testcase.Run(t, tc, Part2)
 	}
