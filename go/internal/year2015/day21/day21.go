@@ -1,16 +1,48 @@
 package day21
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
+	"strings"
 )
 
 func Part1(r io.Reader) (string, error) {
 	for _, loadout := range possibleLoadouts(shopInventory) {
 		fmt.Println(loadout)
 	}
+	boss, err := parse(r)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 21, part 1: %w", err)
+	}
+	fmt.Println(boss)
 	return "", errors.New("not implemented yet")
+}
+
+func parse(r io.Reader) (character, error) {
+	sc := bufio.NewScanner(r)
+	sc.Split(bufio.ScanLines)
+	lines := make([]string, 0)
+	for sc.Scan() {
+		lines = append(lines, sc.Text())
+	}
+	values := make([]int, 0, len(lines))
+	for _, line := range lines {
+		parts := strings.Split(line, ": ")
+		value, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return character{}, fmt.Errorf("parse: %w", err)
+		}
+		values = append(values, value)
+	}
+	boss := character{
+		hitpoints: values[0],
+		damage:    values[1],
+		armor:     values[2],
+	}
+	return boss, nil
 }
 
 type character struct {
