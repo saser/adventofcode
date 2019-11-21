@@ -2,7 +2,6 @@ package day21
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -10,15 +9,23 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	for _, loadout := range possibleLoadouts(shopInventory) {
-		fmt.Println(loadout)
-	}
 	boss, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 21, part 1: %w", err)
 	}
-	fmt.Println(boss)
-	return "", errors.New("not implemented yet")
+	player := character{hitpoints: 100}
+	minCost := -1
+	for _, loadout := range possibleLoadouts(shopInventory) {
+		p := player
+		for _, item := range loadout {
+			p.apply(item)
+		}
+		cost := loadoutCost(loadout)
+		if playerWins(p, boss) && (minCost == -1 || cost < minCost) {
+			minCost = cost
+		}
+	}
+	return fmt.Sprint(minCost), nil
 }
 
 func parse(r io.Reader) (character, error) {
