@@ -9,23 +9,45 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
+	return solve(r, 1)
+}
+
+func Part2(r io.Reader) (string, error) {
+	return solve(r, 2)
+}
+
+func solve(r io.Reader, part int) (string, error) {
 	boss, err := parse(r)
 	if err != nil {
-		return "", fmt.Errorf("year 2015, day 21, part 1: %w", err)
+		return "", fmt.Errorf("year 2015, day 21, part %d: %w", part, err)
 	}
 	player := character{hitpoints: 100}
 	minCost := -1
+	maxCost := -1
 	for _, loadout := range possibleLoadouts(shopInventory) {
 		p := player
 		for _, item := range loadout {
 			p.apply(item)
 		}
 		cost := loadoutCost(loadout)
-		if playerWins(p, boss) && (minCost == -1 || cost < minCost) {
-			minCost = cost
+		if playerWins(p, boss) {
+			if minCost == -1 || cost < minCost {
+				minCost = cost
+			}
+		} else {
+			if maxCost == -1 || cost > maxCost {
+				maxCost = cost
+			}
 		}
 	}
-	return fmt.Sprint(minCost), nil
+	var answer int
+	switch part {
+	case 1:
+		answer = minCost
+	case 2:
+		answer = maxCost
+	}
+	return fmt.Sprint(answer), nil
 }
 
 func parse(r io.Reader) (character, error) {
