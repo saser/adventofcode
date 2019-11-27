@@ -1,0 +1,5 @@
+cc_library(
+    name = "adventofcode",
+    hdrs = ["adventofcode.h"],
+    srcs = ["adventofcode.cc"],
+)
