@@ -12,4 +12,8 @@ namespace day01 {
     }
     return adventofcode::ok(std::to_string(sum));
   }
+
+  adventofcode::answer_t part2(std::istream& is) {
+    return adventofcode::err("not implemented yet");
+  }
 }
