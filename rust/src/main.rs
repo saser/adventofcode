@@ -44,9 +44,9 @@ fn imain() -> i32 {
         );
     // Parse arguments and convert them to proper values.
     let matches = app.get_matches();
-    let _year = clap::value_t!(matches.value_of("year"), i32).unwrap();
-    let _day = clap::value_t!(matches.value_of("day"), i32).unwrap();
-    let _part = clap::value_t!(matches.value_of("part"), i32).unwrap();
+    let year = clap::value_t!(matches.value_of("year"), i32).unwrap();
+    let day = clap::value_t!(matches.value_of("day"), i32).unwrap();
+    let part = clap::value_t!(matches.value_of("part"), i32).unwrap();
     let mut r: Box<dyn io::Read> = match matches.value_of("input") {
         None => Box::new(io::stdin()),
         Some(path) => match fs::File::open(path) {
@@ -58,7 +58,16 @@ fn imain() -> i32 {
         },
     };
     // Choose solution function based on arguments.
-    let solution: Result<aoc::Solution, String> = Err("no solutions yet".to_string());
+    let solution: Result<aoc::Solution, String> = match year {
+        2016 => match day {
+            1 => match part {
+                1 => Ok(aoc::year2016::day01::part1),
+                _ => Err(format!("no solution for year 2016 day 1 part {}", part)),
+            },
+            _ => Err(format!("no solutions for year 2016 day {}", day)),
+        },
+        _ => Err(format!("no solutions for year {}", year)),
+    };
     if let Err(e) = solution {
         eprintln!("error finding solution: {}", e);
         return 1;
