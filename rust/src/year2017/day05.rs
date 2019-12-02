@@ -1,20 +1,24 @@
-use crate::base::{Part, Solver};
+use std::io;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day05)
+use crate::base::Part;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day05;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day05 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let instructions = parse_input(input);
-        let next_value = match part {
-            Part::One => increase_by_one,
-            Part::Two => decrement_if_three_or_more,
-        };
-        Ok(steps_until_escape(&mut instructions.clone(), next_value).to_string())
-    }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let instructions = parse_input(&input);
+    let next_value = match part {
+        Part::One => increase_by_one,
+        Part::Two => decrement_if_three_or_more,
+    };
+    Ok(steps_until_escape(&mut instructions.clone(), next_value).to_string())
 }
 
 fn parse_input(input: &str) -> Vec<i64> {
@@ -52,40 +56,29 @@ fn steps_until_escape(instructions: &mut [i64], next_value: fn(i64) -> i64) -> u
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0
-3
-0
-1
--3\
-            ";
-            let expected = "5";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day05/ex"), "5", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/05"),
+            "358131",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0
-3
-0
-1
--3\
-            ";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day05/ex"), "10", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/05"),
+            "25558839",
+            part2
+        );
     }
 }
