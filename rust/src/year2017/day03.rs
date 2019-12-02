@@ -1,22 +1,24 @@
 use std::collections::HashMap;
+use std::io;
 
 use crate::base::grid::*;
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day03)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day03;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day03 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        // We need to trim the input, in case it contains a '\n' at the end.
-        let number = parse_input(input.trim());
-        match part {
-            Part::One => Ok(distance_to_center(number).to_string()),
-            Part::Two => Ok(first_after_number_by_summing(number).to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let number = parse_input(input.trim());
+    match part {
+        Part::One => Ok(distance_to_center(number).to_string()),
+        Part::Two => Ok(first_after_number_by_summing(number).to_string()),
     }
 }
 
@@ -138,40 +140,31 @@ fn distance_to_center(target_number: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "1";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "1", "0", part1);
+        test!(example2, "12", "3", part1);
+        test!(example3, "23", "2", part1);
+        test!(example4, "1024", "31", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/03"),
+            "371",
+            part1
+        );
+    }
 
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "12";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+    mod part2 {
+        use super::*;
 
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "23";
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "1024";
-            let expected = "31";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/03"),
+            "369601",
+            part2
+        );
     }
 }
