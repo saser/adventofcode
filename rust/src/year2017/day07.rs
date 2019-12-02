@@ -2,29 +2,32 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 use std::collections::HashMap;
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day07)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day07;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day07 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let programs = parse_input(input);
-        let tower = construct_tower(&programs);
-        let bottom_program = find_bottom_program(&tower);
-        if part == Part::One {
-            Ok(bottom_program.name.clone())
-        } else {
-            let tower_weights = calculate_tower_weights(&tower, &bottom_program);
-            Ok(find_correct_weight(&tower, &tower_weights, &bottom_program)
-                .unwrap()
-                .to_string())
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let programs = parse_input(&input);
+    let tower = construct_tower(&programs);
+    let bottom_program = find_bottom_program(&tower);
+    if part == Part::One {
+        Ok(bottom_program.name.clone())
+    } else {
+        let tower_weights = calculate_tower_weights(&tower, &bottom_program);
+        Ok(find_correct_weight(&tower, &tower_weights, &bottom_program)
+            .unwrap()
+            .to_string())
     }
 }
 
@@ -161,6 +164,7 @@ fn find_correct_weight(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod parse_tests {
         use super::*;
@@ -186,52 +190,24 @@ mod tests {
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-pbga (66)
-xhth (57)
-ebii (61)
-havc (66)
-ktlj (57)
-fwft (72) -> ktlj, cntj, xhth
-qoyq (66)
-padx (45) -> pbga, havc, qoyq
-tknk (41) -> ugml, padx, fwft
-jptl (61)
-ugml (68) -> gyxo, ebii, jptl
-gyxo (61)
-cntj (57)\
-            ";
-            let expected = "tknk";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day07/ex"), "tknk", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/07"),
+            "bpvhwhh",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-pbga (66)
-xhth (57)
-ebii (61)
-havc (66)
-ktlj (57)
-fwft (72) -> ktlj, cntj, xhth
-qoyq (66)
-padx (45) -> pbga, havc, qoyq
-tknk (41) -> ugml, padx, fwft
-jptl (61)
-ugml (68) -> gyxo, ebii, jptl
-gyxo (61)
-cntj (57)\
-            ";
-            let expected = "60";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day07/ex"), "60", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/07"),
+            "256",
+            part2
+        );
     }
 }
