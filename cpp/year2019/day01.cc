@@ -6,6 +6,10 @@
 
 namespace day01 {
   adventofcode::answer_t part1(std::istream& is) {
-    return adventofcode::err("not implemented yet");
+    int sum = 0;
+    for (int i; is >> i;) {
+      sum += i / 3 - 2;
+    }
+    return adventofcode::ok(std::to_string(sum));
   }
 }
