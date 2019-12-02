@@ -3,26 +3,29 @@ use regex::Regex;
 
 use std::cmp;
 use std::collections::HashMap;
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day08)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day08;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day08 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let instructions = parse_input(input);
-        let registers = initialize_registers(&instructions);
-        let (final_registers, highest_value) = perform_instructions(&registers, &instructions);
-        let max_register = final_registers.values().max().unwrap();
-        match part {
-            Part::One => Ok(max_register.to_string()),
-            Part::Two => Ok(highest_value.to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let instructions = parse_input(&input);
+    let registers = initialize_registers(&instructions);
+    let (final_registers, highest_value) = perform_instructions(&registers, &instructions);
+    let max_register = final_registers.values().max().unwrap();
+    match part {
+        Part::One => Ok(max_register.to_string()),
+        Part::Two => Ok(highest_value.to_string()),
     }
 }
 
@@ -193,38 +196,29 @@ impl FromStr for Instruction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-b inc 5 if a > 1
-a inc 1 if b < 5
-c dec -10 if a >= 1
-c inc -20 if c == 10\
-            ";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day08/ex"), "1", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/08"),
+            "6012",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-b inc 5 if a > 1
-a inc 1 if b < 5
-c dec -10 if a >= 1
-c inc -20 if c == 10\
-            ";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day08/ex"), "10", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/08"),
+            "6369",
+            part2
+        );
     }
 }
