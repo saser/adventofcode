@@ -1,25 +1,28 @@
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day10)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day10;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day10 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let mut vector = initialize_vector();
-        match part {
-            Part::One => {
-                let lengths = parse_input_as_lengths(input);
-                Ok(hash_and_multiply(&mut vector, &lengths).to_string())
-            }
-            Part::Two => {
-                let lengths = parse_input_as_bytes(input);
-                Ok(full_hash(&mut vector, &lengths))
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let mut vector = initialize_vector();
+    match part {
+        Part::One => {
+            let lengths = parse_input_as_lengths(input.trim());
+            Ok(hash_and_multiply(&mut vector, &lengths).to_string())
+        }
+        Part::Two => {
+            let lengths = parse_input_as_bytes(input.trim());
+            Ok(full_hash(&mut vector, &lengths))
         }
     }
 }
@@ -136,6 +139,7 @@ pub fn full_hash_str(input: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
@@ -151,41 +155,32 @@ mod tests {
 
             assert_eq!(12, product);
         }
+
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/10"),
+            "1980",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "";
-            let expected = "a2582a3a0e66e6e86e3812dcb672a272";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "AoC 2017";
-            let expected = "33efeb34ea91902bb2f59c9920caa6cd";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "1,2,3";
-            let expected = "3efbe78a8d82f29979031a4aa0b16a9d";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "1,2,4";
-            let expected = "63960835bcdc130f0b66d7ff4f6a5a8e";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, "", "a2582a3a0e66e6e86e3812dcb672a272", part2);
+        test!(
+            example2,
+            "AoC 2017",
+            "33efeb34ea91902bb2f59c9920caa6cd",
+            part2
+        );
+        test!(example3, "1,2,3", "3efbe78a8d82f29979031a4aa0b16a9d", part2);
+        test!(example4, "1,2,4", "63960835bcdc130f0b66d7ff4f6a5a8e", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/10"),
+            "899124dac21012ebc32e2f4d11eaec55",
+            part2
+        );
     }
 }
