@@ -1,23 +1,26 @@
 use std::collections::HashMap;
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day06)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day06;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day06 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let banks = parse_input(input);
-        let (redistributions, loop_size) = count_redistributions(&banks);
-        let answer = match part {
-            Part::One => redistributions,
-            Part::Two => loop_size,
-        };
-        Ok(answer.to_string())
-    }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let banks = parse_input(&input);
+    let (redistributions, loop_size) = count_redistributions(&banks);
+    let answer = match part {
+        Part::One => redistributions,
+        Part::Two => loop_size,
+    };
+    Ok(answer.to_string())
 }
 
 fn parse_input(input: &str) -> Vec<u64> {
@@ -81,28 +84,29 @@ fn find_max_index<T: Ord + Copy>(banks: &[T]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "0 2 7 0";
-            let expected = "5";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, "0 2 7 0", "5", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/06"),
+            "5042",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "0 2 7 0";
-            let expected = "4";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, "0 2 7 0", "4", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/06"),
+            "1086",
+            part2
+        );
     }
 }
