@@ -1,20 +1,24 @@
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day01)
+use std::io;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day01;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day01 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let digits = parse_input(input);
-        let offset = match part {
-            Part::One => 1,
-            Part::Two => digits.len() / 2,
-        };
-        Ok(sum_matching(&digits, offset).to_string())
-    }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let digits = parse_input(input.trim());
+    let offset = match part {
+        Part::One => 1,
+        Part::Two => digits.len() / 2,
+    };
+    Ok(sum_matching(&digits, offset).to_string())
 }
 
 fn parse_input(input: &str) -> Vec<u32> {
@@ -38,76 +42,36 @@ fn sum_matching(digits: &[u32], offset: usize) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
-    #[test]
-    fn part_one_1() {
-        let solver = get_solver();
-        let input = "1122";
-        let expected = "3".to_string();
-        assert_eq!(expected, solver.solve(Part::One, input).unwrap());
+    mod part1 {
+        use super::*;
+
+        test!(example1, "1122", "3", part1);
+        test!(example2, "1111", "4", part1);
+        test!(example3, "1234", "0", part1);
+        test!(example4, "91212129", "9", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/01"),
+            "1044",
+            part1
+        );
     }
 
-    #[test]
-    fn part_one_2() {
-        let solver = get_solver();
-        let input = "1111";
-        let expected = "4".to_string();
-        assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-    }
+    mod part2 {
+        use super::*;
 
-    #[test]
-    fn part_one_3() {
-        let solver = get_solver();
-        let input = "1234";
-        let expected = "0".to_string();
-        assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-    }
-
-    #[test]
-    fn part_one_4() {
-        let solver = get_solver();
-        let input = "91212129";
-        let expected = "9".to_string();
-        assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-    }
-
-    #[test]
-    fn part_two_1() {
-        let solver = get_solver();
-        let input = "1212";
-        let expected = "6".to_string();
-        assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-    }
-
-    #[test]
-    fn part_two_2() {
-        let solver = get_solver();
-        let input = "1221";
-        let expected = "0".to_string();
-        assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-    }
-
-    #[test]
-    fn part_two_3() {
-        let solver = get_solver();
-        let input = "123425";
-        let expected = "4".to_string();
-        assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-    }
-
-    #[test]
-    fn part_two_4() {
-        let solver = get_solver();
-        let input = "123123";
-        let expected = "12".to_string();
-        assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-    }
-
-    #[test]
-    fn part_two_5() {
-        let solver = get_solver();
-        let input = "12131415";
-        let expected = "4".to_string();
-        assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
+        test!(example1, "1212", "6", part2);
+        test!(example2, "1221", "0", part2);
+        test!(example3, "123425", "4", part2);
+        test!(example4, "123123", "12", part2);
+        test!(example5, "12131415", "4", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/01"),
+            "1054",
+            part2
+        );
     }
 }
