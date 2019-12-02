@@ -1,32 +1,35 @@
-use crate::base::{Part, Solver};
+use crate::base::Part;
+use std::io;
 use std::ops::Add;
 use std::str::FromStr;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day11)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day11;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day11 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let directions = parse_input(input);
-        let (final_position, furthest) = directions
-            .as_slice()
-            .iter()
-            .map(|hex_dir| hex_dir.as_point())
-            .fold((Point3D::origin(), 0), |(point, furthest), dir| {
-                let new_point = point + dir;
-                let new_furthest = std::cmp::max(furthest, new_point.manhattan_distance() / 2);
-                (new_point, new_furthest)
-            });
-        match part {
-            Part::One => {
-                let distance = final_position.manhattan_distance() / 2;
-                Ok(distance.to_string())
-            }
-            Part::Two => Ok(furthest.to_string()),
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let directions = parse_input(input.trim());
+    let (final_position, furthest) = directions
+        .as_slice()
+        .iter()
+        .map(|hex_dir| hex_dir.as_point())
+        .fold((Point3D::origin(), 0), |(point, furthest), dir| {
+            let new_point = point + dir;
+            let new_furthest = std::cmp::max(furthest, new_point.manhattan_distance() / 2);
+            (new_point, new_furthest)
+        });
+    match part {
+        Part::One => {
+            let distance = final_position.manhattan_distance() / 2;
+            Ok(distance.to_string())
         }
+        Part::Two => Ok(furthest.to_string()),
     }
 }
 
@@ -114,40 +117,31 @@ impl FromStr for HexDirection {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "ne,ne,ne";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "ne,ne,ne", "3", part1);
+        test!(example2, "ne,ne,sw,sw", "0", part1);
+        test!(example3, "ne,ne,s,s", "2", part1);
+        test!(example4, "se,sw,se,sw,sw", "3", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/11"),
+            "761",
+            part1
+        );
+    }
 
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "ne,ne,sw,sw";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+    mod part2 {
+        use super::*;
 
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "ne,ne,s,s";
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "se,sw,se,sw,sw";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/11"),
+            "1542",
+            part2
+        );
     }
 }
