@@ -11,6 +11,12 @@ git_repository(
 )
 
 git_repository(
+    name = "googlebenchmark",
+    remote = "https://github.com/google/benchmark",
+    tag = "v1.5.0",
+)
+
+git_repository(
     name = "abseil",
     remote = "https://github.com/abseil/abseil-cpp",
     # `commit` and `shallow_since` was given by first specifying:

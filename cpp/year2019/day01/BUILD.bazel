@@ -14,3 +14,13 @@ cc_test(
     ],
     data = ["//year2019:testdata/01"],
 )
+
+cc_binary(
+    name = "day01_benchmark",
+    srcs = ["day01_benchmark.cc"],
+    deps = [
+        ":day01",
+        "@googlebenchmark//:benchmark_main",
+    ],
+    data = ["//year2019:testdata/01"],
+)
