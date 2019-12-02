@@ -1,22 +1,25 @@
 use std::collections::HashSet;
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day04)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day04;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day04 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let passphrases = parse_input(input);
-        let validator = match part {
-            Part::One => contains_unique_passwords,
-            Part::Two => contains_no_anagrams,
-        };
-        Ok(count_valid(validator, &passphrases).to_string())
-    }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let passphrases = parse_input(&input);
+    let validator = match part {
+        Part::One => contains_unique_passwords,
+        Part::Two => contains_no_anagrams,
+    };
+    Ok(count_valid(validator, &passphrases).to_string())
 }
 
 fn parse_input(input: &str) -> Vec<Vec<String>> {
@@ -55,76 +58,35 @@ fn contains_no_anagrams(passphrase: &[String]) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "aa bb cc dd ee";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "aa bb cc dd aa";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "aa bb cc dd aaa";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "aa bb cc dd ee", "1", part1);
+        test!(example2, "aa bb cc dd aa", "0", part1);
+        test!(example3, "aa bb cc dd aaa", "1", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/04"),
+            "337",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "abcde fghij";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "abcde xyz ecdab";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "a ab abc abd abf abj";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "iiii oiii ooii oooi oooo";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "oiii ioii iioi iiio";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, "abcde fghij", "1", part2);
+        test!(example2, "abcde xyz ecdab", "0", part2);
+        test!(example3, "a ab abc abd abf abj", "1", part2);
+        test!(example4, "iiii oiii ooii oooi oooo", "1", part2);
+        test!(example5, "oiii ioii iioi iiio", "0", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/04"),
+            "231",
+            part2
+        );
     }
 }
