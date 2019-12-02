@@ -1,25 +1,18 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use std::io;
 use std::str::FromStr;
 
 use crate::base::grid::*;
-use crate::base::{Part, Solver};
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day01)
-}
-
-struct Day01;
-
-impl Solver for Day01 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let instrs = parse_input(input);
-        match part {
-            Part::One => Ok(final_position(&instrs).manhattan_distance().to_string()),
-            Part::Two => Err("part two not implemented yet".to_string()),
-        }
-    }
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let instructions = parse_input(&input);
+    Ok(final_position(&instructions)
+        .manhattan_distance()
+        .to_string())
 }
 
 fn perform_instructions(instrs: &[(Turn, u64)]) -> Vec<Traveler> {
@@ -55,56 +48,19 @@ fn parse_input(input: &str) -> Vec<(Turn, u64)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "R2, L3";
-            let parsed = parse_input(input);
-            assert_eq!(
-                vec![(Turn::Clockwise, 2), (Turn::CounterClockwise, 3)],
-                parsed
-            );
-            let expected = "5";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "R2, R2, R2";
-            let parsed = parse_input(input);
-            assert_eq!(
-                vec![
-                    (Turn::Clockwise, 2),
-                    (Turn::Clockwise, 2),
-                    (Turn::Clockwise, 2)
-                ],
-                parsed
-            );
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "R5, L5, R5, R3";
-            let parsed = parse_input(input);
-            assert_eq!(
-                vec![
-                    (Turn::Clockwise, 5),
-                    (Turn::CounterClockwise, 5),
-                    (Turn::Clockwise, 5),
-                    (Turn::Clockwise, 3)
-                ],
-                parsed
-            );
-            let expected = "12";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "R2, L3", "5", part1);
+        test!(example2, "R2, R2, R2", "2", part1);
+        test!(example3, "R5, L5, R5, R3", "12", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2016/01"),
+            "243",
+            part1
+        );
     }
 }
