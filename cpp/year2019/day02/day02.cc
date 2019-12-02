@@ -34,5 +34,14 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     program[2] = 2;
     return adventofcode::ok(std::to_string(day02::run(program)));
   }
-  return adventofcode::err("not implemented yet");
+  for (int noun = 0; noun <= 99; noun++) {
+    for (int verb = 0; verb <= 99; verb++) {
+      program[1] = noun;
+      program[2] = verb;
+      if (day02::run(program) == 19690720) {
+        return adventofcode::ok(std::to_string(100 * noun + verb));
+      }
+    }
+  }
+  return adventofcode::err("no solution found");
 }
