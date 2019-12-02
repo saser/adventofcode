@@ -1,19 +1,23 @@
-use crate::base::{Part, Solver};
+use std::io;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day09)
+use crate::base::Part;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day09;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day09 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let tokens = parse_tokens(input)?;
-        let (score, removed_garbage) = process_tokens(&tokens);
-        match part {
-            Part::One => Ok(score.to_string()),
-            Part::Two => Ok(removed_garbage.to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let tokens = parse_tokens(input.trim())?;
+    let (score, removed_garbage) = process_tokens(&tokens);
+    match part {
+        Part::One => Ok(score.to_string()),
+        Part::Two => Ok(removed_garbage.to_string()),
     }
 }
 
@@ -88,132 +92,42 @@ fn process_tokens(tokens: &[Token]) -> (u64, u64) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "{}";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "{{{}}}";
-            let expected = "6";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "{{},{}}";
-            let expected = "5";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "{{{},{},{{}}}}";
-            let expected = "16";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "{<a>,<a>,<a>,<a>}";
-            let expected = "1";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_6() {
-            let solver = get_solver();
-            let input = "{{<ab>},{<ab>},{<ab>},{<ab>}}";
-            let expected = "9";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_7() {
-            let solver = get_solver();
-            let input = "{{<!!>},{<!!>},{<!!>},{<!!>}}";
-            let expected = "9";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_8() {
-            let solver = get_solver();
-            let input = "{{<a!>},{<a!>},{<a!>},{<ab>}}";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "{}", "1", part1);
+        test!(example2, "{{{}}}", "6", part1);
+        test!(example3, "{{},{}}", "5", part1);
+        test!(example4, "{{{},{},{{}}}}", "16", part1);
+        test!(example5, "{<a>,<a>,<a>,<a>}", "1", part1);
+        test!(example6, "{{<ab>},{<ab>},{<ab>},{<ab>}}", "9", part1);
+        test!(example7, "{{<!!>},{<!!>},{<!!>},{<!!>}}", "9", part1);
+        test!(example8, "{{<a!>},{<a!>},{<a!>},{<ab>}}", "3", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/09"),
+            "21037",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "<>";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "<random characters>";
-            let expected = "17";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "<<<<>";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "<{!>}>";
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "<!!>";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_6() {
-            let solver = get_solver();
-            let input = "<!!!>>";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_7() {
-            let solver = get_solver();
-            let input = "<{o\"i!a,<{i<a>";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, "<>", "0", part2);
+        test!(example2, "<random characters>", "17", part2);
+        test!(example3, "<<<<>", "3", part2);
+        test!(example4, "<{!>}>", "2", part2);
+        test!(example5, "<!!>", "0", part2);
+        test!(example6, "<!!!>>", "0", part2);
+        test!(example7, "<{o\"i!a,<{i<a>", "10", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/09"),
+            "9495",
+            part2
+        );
     }
 }
