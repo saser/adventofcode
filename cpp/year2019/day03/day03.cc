@@ -73,6 +73,10 @@ namespace day03 {
     }
     return adventofcode::ok(std::to_string(shortest_distance));
   }
+
+  adventofcode::answer_t part2(std::istream& is) {
+    return adventofcode::err("not implemented yet");
+  }
 }
 
 std::vector<instruction> parse(const std::string line) {
