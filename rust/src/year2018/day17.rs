@@ -1,33 +1,36 @@
+use std::collections::BTreeSet;
+use std::io;
+use std::iter;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use std::collections::BTreeSet;
-use std::iter;
-
 use crate::base::grid::Grid as BaseGrid;
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day17)
-}
-
-struct Day17;
+use crate::base::Part;
 
 type Grid = BaseGrid<char>;
 
-impl Solver for Day17 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (mut grid, adjusted_spring, spring_offset) = parse_input(input);
-        flow(adjusted_spring.down(), &mut grid);
-        match part {
-            Part::One => {
-                let count = grid.iter().filter(|&&c| water(c)).count() - spring_offset;
-                Ok(count.to_string())
-            }
-            Part::Two => {
-                let count = grid.iter().filter(|&&c| c == '~').count();
-                Ok(count.to_string())
-            }
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
+}
+
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
+
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (mut grid, adjusted_spring, spring_offset) = parse_input(&input);
+    flow(adjusted_spring.down(), &mut grid);
+    match part {
+        Part::One => {
+            let count = grid.iter().filter(|&&c| water(c)).count() - spring_offset;
+            Ok(count.to_string())
+        }
+        Part::Two => {
+            let count = grid.iter().filter(|&&c| c == '~').count();
+            Ok(count.to_string())
         }
     }
 }
@@ -231,62 +234,29 @@ fn free(c: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/17").trim();
-            let expected = "31471";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-x=495, y=2..7
-y=7, x=495..501
-x=501, y=3..7
-x=498, y=2..4
-x=506, y=1..2
-x=498, y=10..13
-x=504, y=10..13
-y=13, x=498..504\
-                ";
-            let expected = "57";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day17/ex"), "57", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/17"),
+            "31471",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/17").trim();
-            let expected = "24169";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-x=495, y=2..7
-y=7, x=495..501
-x=501, y=3..7
-x=498, y=2..4
-x=506, y=1..2
-x=498, y=10..13
-x=504, y=10..13
-y=13, x=498..504\
-                ";
-            let expected = "29";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day17/ex"), "29", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/17"),
+            "24169",
+            part2
+        );
     }
 }
