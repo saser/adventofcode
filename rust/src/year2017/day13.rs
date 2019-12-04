@@ -1,27 +1,30 @@
 use std::collections::HashMap;
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day13)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day13;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day13 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let layers = parse_input(input);
-        match part {
-            Part::One => {
-                let total_severity: u64 = layers
-                    .iter()
-                    .map(|(&layer, &depth)| severity(layer, depth, 0))
-                    .sum();
-                Ok(total_severity.to_string())
-            }
-            Part::Two => Ok(find_min_delay(&layers).to_string()),
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let layers = parse_input(&input);
+    match part {
+        Part::One => {
+            let total_severity: u64 = layers
+                .iter()
+                .map(|(&layer, &depth)| severity(layer, depth, 0))
+                .sum();
+            Ok(total_severity.to_string())
         }
+        Part::Two => Ok(find_min_delay(&layers).to_string()),
     }
 }
 
@@ -63,38 +66,29 @@ fn find_min_delay(layers: &HashMap<u64, u64>) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0: 3
-1: 2
-4: 4
-6: 4\
-            ";
-            let expected = "24";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day13/ex"), "24", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/13"),
+            "2508",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0: 3
-1: 2
-4: 4
-6: 4\
-            ";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day13/ex"), "10", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/13"),
+            "3913186",
+            part2
+        );
     }
 }
