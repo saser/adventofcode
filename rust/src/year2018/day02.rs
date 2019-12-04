@@ -1,39 +1,42 @@
 use std::collections::HashMap;
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day02)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day02;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day02 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let ids = input.lines();
-        match part {
-            Part::One => {
-                let box_id_character_counts = ids.map(character_counts);
-                let contains_tuples =
-                    box_id_character_counts.map(|counts| contains_any_two_three(&counts));
-                let (total_twos, total_threes) = contains_tuples
-                    .fold((0, 0), |(acc_x, acc_y), (t_x, t_y)| {
-                        (acc_x + t_x, acc_y + t_y)
-                    });
-                Ok((total_twos * total_threes).to_string())
-            }
-            Part::Two => {
-                let ids = ids.collect::<Vec<&str>>();
-                for (i, id1) in ids.iter().enumerate() {
-                    for id2 in &ids[i..] {
-                        let (same_chars, count) = remove_differing_characters(id1, id2);
-                        if count == 1 {
-                            return Ok(same_chars);
-                        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let ids = input.lines();
+    match part {
+        Part::One => {
+            let box_id_character_counts = ids.map(character_counts);
+            let contains_tuples =
+                box_id_character_counts.map(|counts| contains_any_two_three(&counts));
+            let (total_twos, total_threes) = contains_tuples
+                .fold((0, 0), |(acc_x, acc_y), (t_x, t_y)| {
+                    (acc_x + t_x, acc_y + t_y)
+                });
+            Ok((total_twos * total_threes).to_string())
+        }
+        Part::Two => {
+            let ids = ids.collect::<Vec<&str>>();
+            for (i, id1) in ids.iter().enumerate() {
+                for id2 in &ids[i..] {
+                    let (same_chars, count) = remove_differing_characters(id1, id2);
+                    if count == 1 {
+                        return Ok(same_chars);
                     }
                 }
-                unreachable!()
             }
+            unreachable!()
         }
     }
 }
@@ -80,60 +83,29 @@ fn remove_differing_characters(id1: &str, id2: &str) -> (String, u64) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/02");
-            let expected = "5880";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-abcdef
-bababc
-abbcde
-abcccd
-aabcdd
-abcdee
-ababab\
-            ";
-            let expected = "12";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day02/p1ex"), "12", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/02"),
+            "5880",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/02");
-            let expected = "tiwcdpbseqhxryfmgkvjujvza";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-abcde
-fghij
-klmno
-pqrst
-fguij
-axcye
-wvxyz\
-            ";
-            let expected = "fgij";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day02/p2ex"), "fgij", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/02"),
+            "tiwcdpbseqhxryfmgkvjujvza",
+            part2
+        );
     }
 }
