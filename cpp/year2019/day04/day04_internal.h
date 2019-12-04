@@ -4,6 +4,7 @@
 #include <vector>
 
 namespace day04 {
+  std::vector<int> digits(int password);
   bool has_double(const std::vector<int>& digits);
   bool non_decreasing(const std::vector<int>& digits);
 }
