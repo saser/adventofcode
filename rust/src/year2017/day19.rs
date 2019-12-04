@@ -1,21 +1,25 @@
-use crate::base::grid::*;
-use crate::base::{Part, Solver};
+use std::io;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day19)
+use crate::base::grid::*;
+use crate::base::Part;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day19;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day19 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let grid = parse_input(input);
-        let traveler = TileTraveler::from(&grid);
-        let (count, letters) = travel(&traveler);
-        match part {
-            Part::One => Ok(letters),
-            Part::Two => Ok(count.to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let grid = parse_input(&input);
+    let traveler = TileTraveler::from(&grid);
+    let (count, letters) = travel(&traveler);
+    match part {
+        Part::One => Ok(letters),
+        Part::Two => Ok(count.to_string()),
     }
 }
 
@@ -139,34 +143,29 @@ impl From<char> for Tile {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            // Yes, the input string should look like this. That is because the leading and
-            // trailing whitespaces are significant, and would be stripped if usual multiline
-            // string literas were used.
-            let input = "     |          \n     |  +--+    \n     A  |  C    \n F---|----E|--+ \n     |  |  |  D \n     +B-+  +--+ ";
-            let expected = "ABCDEF";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day19/ex"), "ABCDEF", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/19"),
+            "LIWQYKMRP",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            // Yes, the input string should look like this. That is because the leading and
-            // trailing whitespaces are significant, and would be stripped if usual multiline
-            // string literas were used.
-            let input = "     |          \n     |  +--+    \n     A  |  C    \n F---|----E|--+ \n     |  |  |  D \n     +B-+  +--+ ";
-            let expected = "38";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day19/ex"), "38", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/19"),
+            "16764",
+            part2
+        );
     }
 }
