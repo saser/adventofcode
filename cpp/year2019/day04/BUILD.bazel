@@ -5,13 +5,13 @@ cc_library(
     deps = [
         "@abseil//absl/strings:strings",
         "//:adventofcode",
-        ":day04_internal",
+        ":internal",
     ],
 )
 
 cc_test(
-    name = "day04_test",
-    srcs = ["day04_test.cc"],
+    name = "test",
+    srcs = ["test.cc"],
     deps = [
         ":day04",
         "@googletest//:gtest_main",
@@ -20,22 +20,22 @@ cc_test(
 )
 
 cc_library(
-    name = "day04_internal",
-    hdrs = ["day04_internal.h"],
-    srcs = ["day04_internal.cc"],
+    name = "internal",
+    hdrs = ["internal.h"],
+    srcs = ["internal.cc"],
 )
 
 cc_test(
-    name = "day04_internal_test",
-    srcs = ["day04_internal_test.cc"],
+    name = "internal_test",
+    srcs = ["internal_test.cc"],
     deps = [
-        ":day04_internal",
+        ":internal",
         "@googletest//:gtest_main",
     ],
 )
 cc_binary(
-    name = "day04_benchmark",
-    srcs = ["day04_benchmark.cc"],
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
     deps = [
         ":day04",
         "@googlebenchmark//:benchmark_main",
