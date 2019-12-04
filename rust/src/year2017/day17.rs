@@ -1,23 +1,26 @@
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day17)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day17;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day17 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let length = parse_input(input);
-        match part {
-            Part::One => {
-                let (vec, final_position) = build_ring_buffer(2017, length);
-                Ok(vec[final_position + 1].to_string())
-            }
-            Part::Two => Ok(value_after_zero(50_000_000, length).to_string()),
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let length = parse_input(input.trim());
+    match part {
+        Part::One => {
+            let (vec, final_position) = build_ring_buffer(2017, length);
+            Ok(vec[final_position + 1].to_string())
         }
+        Part::Two => Ok(value_after_zero(50_000_000, length).to_string()),
     }
 }
 
@@ -56,16 +59,28 @@ fn value_after_zero(final_value: usize, length: usize) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "3";
-            let expected = "638";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, "3", "638", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/17"),
+            "1311",
+            part1
+        );
+    }
+
+    mod part2 {
+        use super::*;
+
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/17"),
+            "39170601",
+            part2
+        );
     }
 }
