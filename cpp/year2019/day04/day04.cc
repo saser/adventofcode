@@ -18,7 +18,7 @@ namespace day04 {
     int count = 0;
     for (int password = start; password <= end; password++) {
       auto digits = day04::digits(password);
-      if (day04::has_double(digits) && day04::non_decreasing(digits)) {
+      if (day04::has_double(digits, false) && day04::non_decreasing(digits)) {
         count++;
       }
     }

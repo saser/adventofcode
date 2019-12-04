@@ -24,18 +24,36 @@ TEST(Year2019Day04Internal, DigitsExample3) {
 
 TEST(Year2019Day04Internal, Part1Example1) {
   std::vector<int> digits = {1, 1, 1, 1, 1, 1};
-  EXPECT_TRUE(day04::has_double(digits));
+  EXPECT_TRUE(day04::has_double(digits, false));
   EXPECT_TRUE(day04::non_decreasing(digits));
 }
 
 TEST(Year2019Day04Internal, Part1Example2) {
   std::vector<int> digits = {2, 2, 3, 4, 5, 0};
-  EXPECT_TRUE(day04::has_double(digits));
+  EXPECT_TRUE(day04::has_double(digits, false));
   EXPECT_FALSE(day04::non_decreasing(digits));
 }
 
 TEST(Year2019Day04Internal, Part1Example3) {
   std::vector<int> digits = {1, 2, 3, 7, 8, 9};
-  EXPECT_FALSE(day04::has_double(digits));
+  EXPECT_FALSE(day04::has_double(digits, false));
+  EXPECT_TRUE(day04::non_decreasing(digits));
+}
+
+TEST(Year2019Day04Internal, Part2Example1) {
+  std::vector<int> digits = {1, 1, 2, 2, 3, 3};
+  EXPECT_TRUE(day04::has_double(digits, true));
+  EXPECT_TRUE(day04::non_decreasing(digits));
+}
+
+TEST(Year2019Day04Internal, Part2Example2) {
+  std::vector<int> digits = {1, 2, 3, 4, 4, 4};
+  EXPECT_FALSE(day04::has_double(digits, true));
+  EXPECT_TRUE(day04::non_decreasing(digits));
+}
+
+TEST(Year2019Day04Internal, Part2Example3) {
+  std::vector<int> digits = {1, 1, 1, 1, 2, 2};
+  EXPECT_TRUE(day04::has_double(digits, true));
   EXPECT_TRUE(day04::non_decreasing(digits));
 }
