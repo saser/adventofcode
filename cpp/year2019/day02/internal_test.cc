@@ -1,4 +1,4 @@
-#include "year2019/day02/day02_internal.h"
+#include "year2019/day02/internal.h"
 
 #include <fstream>
 #include <sstream>

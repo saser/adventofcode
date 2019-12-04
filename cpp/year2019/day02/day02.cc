@@ -7,7 +7,7 @@
 #include "absl/strings/str_split.h"
 
 #include "adventofcode.h"
-#include "year2019/day02/day02_internal.h"
+#include "year2019/day02/internal.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
