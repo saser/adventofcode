@@ -1,33 +1,37 @@
+use std::io;
+
 use nalgebra::DMatrix;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
 type PowerGrid = DMatrix<i64>;
 type RowSumGrid = DMatrix<i64>;
 type ColSumGrid = DMatrix<i64>;
 type StencilGrid = DMatrix<(usize, i64)>;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day11)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day11;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day11 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let serial = input.parse::<i64>().unwrap();
-        let power_grid = PowerGrid::from_fn(300, 300, power_level(serial));
-        match part {
-            Part::One => {
-                let stencil_grid = stencil_grid(&power_grid, 3);
-                let (x, y, (_size, _value)) = max_stencil_xy(&stencil_grid);
-                Ok(format!("{},{}", x, y))
-            }
-            Part::Two => {
-                let max_stencil_grid = max_stencil_grid(&power_grid);
-                let (x, y, (size, _value)) = max_stencil_xy(&max_stencil_grid);
-                Ok(format!("{},{},{}", x, y, size))
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let serial = input.trim().parse::<i64>().unwrap();
+    let power_grid = PowerGrid::from_fn(300, 300, power_level(serial));
+    match part {
+        Part::One => {
+            let stencil_grid = stencil_grid(&power_grid, 3);
+            let (x, y, (_size, _value)) = max_stencil_xy(&stencil_grid);
+            Ok(format!("{},{}", x, y))
+        }
+        Part::Two => {
+            let max_stencil_grid = max_stencil_grid(&power_grid);
+            let (x, y, (size, _value)) = max_stencil_xy(&max_stencil_grid);
+            Ok(format!("{},{},{}", x, y, size))
         }
     }
 }
@@ -64,8 +68,6 @@ fn sum_grid(power_grid: &PowerGrid) -> (RowSumGrid, ColSumGrid) {
             let value = power_grid[(i, j)];
             let below = (i + 1).min(nrows - 1);
             let right = (j + 1).min(ncols - 1);
-            // println!("below: {}", below);
-            // println!("right: {}", right);
             let below_sum = col_sum_grid[(below, j)];
             let right_sum = row_sum_grid[(i, right)];
             col_sum_grid[(i, j)] = value + below_sum;
@@ -111,7 +113,6 @@ fn max_stencil_up_to(
     (i, j): (usize, usize),
     max_size: usize,
 ) -> (usize, i64) {
-    // let (row_sum_grid, col_sum_grid) = sum_grid(power_grid);
     all_stencils_up_to(power_grid, &row_sum_grid, &col_sum_grid, (i, j), max_size)
         .into_iter()
         .max_by_key(|&(_size, value)| value)
@@ -168,60 +169,31 @@ fn max_stencil_xy(stencil_grid: &StencilGrid) -> (usize, usize, (usize, i64)) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/11").trim();
-            let expected = "233,36";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "18";
-            let expected = "33,45";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "42";
-            let expected = "21,61";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "18", "33,45", part1);
+        test!(example2, "42", "21,61", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/11"),
+            "233,36",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/11").trim();
-            let expected = "231,107,14";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "18";
-            let expected = "90,269,16";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "42";
-            let expected = "232,251,12";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, "18", "90,269,16", part2);
+        test!(example2, "42", "232,251,12", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/11"),
+            "231,107,14",
+            part2
+        );
     }
 }
