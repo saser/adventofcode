@@ -57,31 +57,21 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(example1, include_str!("testdata/day01/p1ex1"), "3", part1);
-        test!(example2, include_str!("testdata/day01/p1ex2"), "3", part1);
-        test!(example3, include_str!("testdata/day01/p1ex3"), "0", part1);
-        test!(example4, include_str!("testdata/day01/p1ex4"), "-6", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/01"),
-            "416",
-            part1
-        );
+        test!(example1, file "testdata/day01/p1ex1", "3", part1);
+        test!(example2, file "testdata/day01/p1ex2", "3", part1);
+        test!(example3, file "testdata/day01/p1ex3", "0", part1);
+        test!(example4, file "testdata/day01/p1ex4", "-6", part1);
+        test!(actual, file "../../../inputs/2018/01", "416", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(example1, include_str!("testdata/day01/p2ex1"), "2", part2);
-        test!(example2, include_str!("testdata/day01/p2ex2"), "0", part2);
-        test!(example3, include_str!("testdata/day01/p2ex3"), "10", part2);
-        test!(example4, include_str!("testdata/day01/p2ex4"), "5", part2);
-        test!(example5, include_str!("testdata/day01/p2ex5"), "14", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/01"),
-            "56752",
-            part2
-        );
+        test!(example1, file "testdata/day01/p2ex1", "2", part2);
+        test!(example2, file "testdata/day01/p2ex2", "0", part2);
+        test!(example3, file "testdata/day01/p2ex3", "10", part2);
+        test!(example4, file "testdata/day01/p2ex4", "5", part2);
+        test!(example5, file "testdata/day01/p2ex5", "14", part2);
+        test!(actual, file "../../../inputs/2018/01", "56752", part2);
     }
 }

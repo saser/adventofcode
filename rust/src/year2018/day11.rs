@@ -176,12 +176,7 @@ mod tests {
 
         test!(example1, "18", "33,45", part1);
         test!(example2, "42", "21,61", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/11"),
-            "233,36",
-            part1
-        );
+        test!(actual, file "../../../inputs/2018/11", "233,36", part1);
     }
 
     mod part2 {
@@ -189,11 +184,6 @@ mod tests {
 
         test!(example1, "18", "90,269,16", part2);
         test!(example2, "42", "232,251,12", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/11"),
-            "231,107,14",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/11", "231,107,14", part2);
     }
 }

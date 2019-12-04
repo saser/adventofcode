@@ -21,7 +21,7 @@ pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
 fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
     let mut input = String::new();
     r.read_to_string(&mut input).map_err(|e| e.to_string())?;
-    let coordinates = parse_input(&input);
+    let coordinates = parse_input(input.trim());
     let bb = BoundingBox::from_points(
         coordinates
             .values()
@@ -175,28 +175,13 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(
-            example,
-            include_str!("./testdata/day06/ex").trim(),
-            "17",
-            part1
-        );
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/06").trim(),
-            "3687",
-            part1
-        );
+        test!(example, file "./testdata/day06/ex", "17", part1);
+        test!(actual, file "../../../inputs/2018/06", "3687", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/06").trim(),
-            "40134",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/06", "40134", part2);
     }
 }

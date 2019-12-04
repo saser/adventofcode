@@ -66,12 +66,7 @@ mod tests {
         test!(example1, "aa bb cc dd ee", "1", part1);
         test!(example2, "aa bb cc dd aa", "0", part1);
         test!(example3, "aa bb cc dd aaa", "1", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/04"),
-            "337",
-            part1
-        );
+        test!(actual, file "../../../inputs/2017/04", "337", part1);
     }
 
     mod part2 {
@@ -82,11 +77,6 @@ mod tests {
         test!(example3, "a ab abc abd abf abj", "1", part2);
         test!(example4, "iiii oiii ooii oooi oooo", "1", part2);
         test!(example5, "oiii ioii iioi iiio", "0", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/04"),
-            "231",
-            part2
-        );
+        test!(actual, file "../../../inputs/2017/04", "231", part2);
     }
 }

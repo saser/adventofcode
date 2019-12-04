@@ -303,22 +303,12 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/16"),
-            "596",
-            part1
-        );
+        test!(actual, file "../../../inputs/2018/16", "596", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/16"),
-            "554",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/16", "554", part2);
     }
 }

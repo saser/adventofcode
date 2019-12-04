@@ -18,7 +18,7 @@ pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
 fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
     let mut input = String::new();
     r.read_to_string(&mut input).map_err(|e| e.to_string())?;
-    let (players, last_marble) = parse_input(&input);
+    let (players, last_marble) = parse_input(input.trim());
     match part {
         Part::One => {
             let scores = play_game(players, last_marble);
@@ -89,22 +89,12 @@ mod tests {
         test!(example4, &make_input(17, 1104), "2764", part1);
         test!(example5, &make_input(21, 6111), "54718", part1);
         test!(example6, &make_input(30, 5807), "37305", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/09").trim(),
-            "436720",
-            part1
-        );
+        test!(actual, file "../../../inputs/2018/09", "436720", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/09").trim(),
-            "3527845091",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/09", "3527845091", part2);
     }
 }
