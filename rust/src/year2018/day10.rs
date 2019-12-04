@@ -1,27 +1,30 @@
-use lazy_static::lazy_static;
-use regex::Regex;
-
 use std::fmt::Write;
+use std::io;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-use crate::base::grid::{Grid, Point};
-use crate::base::{Part, Solver};
+use lazy_static::lazy_static;
+use regex::Regex;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day10)
+use crate::base::grid::{Grid, Point};
+use crate::base::Part;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day10;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day10 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let mut stars = parse_input(input);
-        let (seconds, output) = run_until_aligned(&mut stars);
-        match part {
-            Part::One => Ok(output),
-            Part::Two => Ok(seconds.to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let mut stars = parse_input(&input);
+    let (seconds, output) = run_until_aligned(&mut stars);
+    match part {
+        Part::One => Ok(output),
+        Part::Two => Ok(seconds.to_string()),
     }
 }
 
@@ -79,7 +82,6 @@ fn print_stars(stars: &[Star]) -> String {
         .max()
         .unwrap();
     let mut output = String::with_capacity(rows * cols);
-    output.push('\n');
     let mut grid = Grid::with(rows as usize, cols as usize, &'.');
     for &position in &adjusted_positions {
         let transposed = Point {
@@ -133,128 +135,34 @@ fn distances(p: &Point, ps: &[Point]) -> Vec<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/10").trim();
-            let expected = "\
-#....#..#####...#####...#....#..#####...#####...#....#...####.
-#....#..#....#..#....#..#....#..#....#..#....#..#...#...#....#
-#....#..#....#..#....#..#....#..#....#..#....#..#..#....#.....
-#....#..#....#..#....#..#....#..#....#..#....#..#.#.....#.....
-######..#####...#####...######..#####...#####...##......#.....
-#....#..#..#....#.......#....#..#....#..#..#....##......#..###
-#....#..#...#...#.......#....#..#....#..#...#...#.#.....#....#
-#....#..#...#...#.......#....#..#....#..#...#...#..#....#....#
-#....#..#....#..#.......#....#..#....#..#....#..#...#...#...##
-#....#..#....#..#.......#....#..#####...#....#..#....#...###.#\
-            ";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap().trim());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-position=< 9,  1> velocity=< 0,  2>
-position=< 7,  0> velocity=<-1,  0>
-position=< 3, -2> velocity=<-1,  1>
-position=< 6, 10> velocity=<-2, -1>
-position=< 2, -4> velocity=< 2,  2>
-position=<-6, 10> velocity=< 2, -2>
-position=< 1,  8> velocity=< 1, -1>
-position=< 1,  7> velocity=< 1,  0>
-position=<-3, 11> velocity=< 1, -2>
-position=< 7,  6> velocity=<-1, -1>
-position=<-2,  3> velocity=< 1,  0>
-position=<-4,  3> velocity=< 2,  0>
-position=<10, -3> velocity=<-1,  1>
-position=< 5, 11> velocity=< 1, -2>
-position=< 4,  7> velocity=< 0, -1>
-position=< 8, -2> velocity=< 0,  1>
-position=<15,  0> velocity=<-2,  0>
-position=< 1,  6> velocity=< 1,  0>
-position=< 8,  9> velocity=< 0, -1>
-position=< 3,  3> velocity=<-1,  1>
-position=< 0,  5> velocity=< 0, -1>
-position=<-2,  2> velocity=< 2,  0>
-position=< 5, -2> velocity=< 1,  2>
-position=< 1,  4> velocity=< 2,  1>
-position=<-2,  7> velocity=< 2, -2>
-position=< 3,  6> velocity=<-1, -1>
-position=< 5,  0> velocity=< 1,  0>
-position=<-6,  0> velocity=< 2,  0>
-position=< 5,  9> velocity=< 1, -2>
-position=<14,  7> velocity=<-2,  0>
-position=<-3,  6> velocity=< 2, -1>\
-            ";
-            let expected = "\
-#...#..###
-#...#...#.
-#...#...#.
-#####...#.
-#...#...#.
-#...#...#.
-#...#...#.
-#...#..###\
-            ";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap().trim());
-        }
+        test!(
+            example,
+            include_str!("testdata/day10/ex.in"),
+            include_str!("testdata/day10/ex.out"),
+            part1
+        );
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/10"),
+            include_str!("testdata/day10/actual.out"),
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/10").trim();
-            let expected = "10355";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-position=< 9,  1> velocity=< 0,  2>
-position=< 7,  0> velocity=<-1,  0>
-position=< 3, -2> velocity=<-1,  1>
-position=< 6, 10> velocity=<-2, -1>
-position=< 2, -4> velocity=< 2,  2>
-position=<-6, 10> velocity=< 2, -2>
-position=< 1,  8> velocity=< 1, -1>
-position=< 1,  7> velocity=< 1,  0>
-position=<-3, 11> velocity=< 1, -2>
-position=< 7,  6> velocity=<-1, -1>
-position=<-2,  3> velocity=< 1,  0>
-position=<-4,  3> velocity=< 2,  0>
-position=<10, -3> velocity=<-1,  1>
-position=< 5, 11> velocity=< 1, -2>
-position=< 4,  7> velocity=< 0, -1>
-position=< 8, -2> velocity=< 0,  1>
-position=<15,  0> velocity=<-2,  0>
-position=< 1,  6> velocity=< 1,  0>
-position=< 8,  9> velocity=< 0, -1>
-position=< 3,  3> velocity=<-1,  1>
-position=< 0,  5> velocity=< 0, -1>
-position=<-2,  2> velocity=< 2,  0>
-position=< 5, -2> velocity=< 1,  2>
-position=< 1,  4> velocity=< 2,  1>
-position=<-2,  7> velocity=< 2, -2>
-position=< 3,  6> velocity=<-1, -1>
-position=< 5,  0> velocity=< 1,  0>
-position=<-6,  0> velocity=< 2,  0>
-position=< 5,  9> velocity=< 1, -2>
-position=<14,  7> velocity=<-2,  0>
-position=<-3,  6> velocity=< 2, -1>\
-            ";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day10/ex.in"), "3", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/10"),
+            "10355",
+            part2
+        );
     }
 }
