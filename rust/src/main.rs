@@ -185,6 +185,11 @@ fn imain() -> i32 {
                 2 => Ok(aoc::year2018::day04::part2),
                 _ => unreachable!(),
             },
+            5 => match part {
+                1 => Ok(aoc::year2018::day05::part1),
+                2 => Ok(aoc::year2018::day05::part2),
+                _ => unreachable!(),
+            },
             _ => Err(format!("no solution for year 2018 day {}", day)),
         },
         _ => Err(format!("no solutions for year {}", year)),
