@@ -1,31 +1,34 @@
+use std::collections::VecDeque;
+use std::io;
+use std::str::FromStr;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use std::collections::VecDeque;
-use std::str::FromStr;
+use crate::base::Part;
 
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day09)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day09;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day09 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (players, last_marble) = parse_input(input);
-        match part {
-            Part::One => {
-                let scores = play_game(players, last_marble);
-                let winner = scores.iter().max().unwrap();
-                Ok(winner.to_string())
-            }
-            Part::Two => {
-                let scores = play_game(players, last_marble * 100);
-                let winner = scores.iter().max().unwrap();
-                Ok(winner.to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (players, last_marble) = parse_input(&input);
+    match part {
+        Part::One => {
+            let scores = play_game(players, last_marble);
+            let winner = scores.iter().max().unwrap();
+            Ok(winner.to_string())
+        }
+        Part::Two => {
+            let scores = play_game(players, last_marble * 100);
+            let winner = scores.iter().max().unwrap();
+            Ok(winner.to_string())
         }
     }
 }
@@ -68,76 +71,40 @@ fn play_game(players: usize, last_marble: usize) -> Vec<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
+
+    fn make_input(players: i32, points: i32) -> String {
+        format!(
+            "{} players; last marble is worth {} points",
+            players, points
+        )
+    }
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/09").trim();
-            let expected = "436720";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "9 players; last marble is worth 25 points";
-            let expected = "32";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "10 players; last marble is worth 1618 points";
-            let expected = "8317";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "13 players; last marble is worth 7999 points";
-            let expected = "146373";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "17 players; last marble is worth 1104 points";
-            let expected = "2764";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "21 players; last marble is worth 6111 points";
-            let expected = "54718";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_6() {
-            let solver = get_solver();
-            let input = "30 players; last marble is worth 5807 points";
-            let expected = "37305";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, &make_input(9, 25), "32", part1);
+        test!(example2, &make_input(10, 1618), "8317", part1);
+        test!(example3, &make_input(13, 7999), "146373", part1);
+        test!(example4, &make_input(17, 1104), "2764", part1);
+        test!(example5, &make_input(21, 6111), "54718", part1);
+        test!(example6, &make_input(30, 5807), "37305", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/09").trim(),
+            "436720",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/09").trim();
-            let expected = "3527845091";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/09").trim(),
+            "3527845091",
+            part2
+        );
     }
 }
