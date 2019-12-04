@@ -1,26 +1,29 @@
+use std::collections::HashMap;
+use std::io;
+use std::str::FromStr;
+
 use chrono::{NaiveDateTime, Timelike};
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use std::collections::HashMap;
-use std::str::FromStr;
+use crate::base::Part;
 
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day04)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day04;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day04 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let mut sorted_events = parse_input(input);
-        sorted_events.sort();
-        match part {
-            Part::One => Ok(strategy_1(&sorted_events).to_string()),
-            Part::Two => Ok(strategy_2(&sorted_events).to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let mut sorted_events = parse_input(&input);
+    sorted_events.sort();
+    match part {
+        Part::One => Ok(strategy_1(&sorted_events).to_string()),
+        Part::Two => Ok(strategy_2(&sorted_events).to_string()),
     }
 }
 
@@ -175,6 +178,7 @@ impl FromStr for EventType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
     use chrono::NaiveDate;
 
     mod parsing {
@@ -262,76 +266,24 @@ mod tests {
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/04");
-            let expected = "125444";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-[1518-11-01 00:00] Guard #10 begins shift
-[1518-11-01 00:05] falls asleep
-[1518-11-01 00:25] wakes up
-[1518-11-01 00:30] falls asleep
-[1518-11-01 00:55] wakes up
-[1518-11-01 23:58] Guard #99 begins shift
-[1518-11-02 00:40] falls asleep
-[1518-11-02 00:50] wakes up
-[1518-11-03 00:05] Guard #10 begins shift
-[1518-11-03 00:24] falls asleep
-[1518-11-03 00:29] wakes up
-[1518-11-04 00:02] Guard #99 begins shift
-[1518-11-04 00:36] falls asleep
-[1518-11-04 00:46] wakes up
-[1518-11-05 00:03] Guard #99 begins shift
-[1518-11-05 00:45] falls asleep
-[1518-11-05 00:55] wakes up\
-            ";
-            let expected = "240";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day04/ex"), "240", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/04"),
+            "125444",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/04");
-            let expected = "18325";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-[1518-11-01 00:00] Guard #10 begins shift
-[1518-11-01 00:05] falls asleep
-[1518-11-01 00:25] wakes up
-[1518-11-01 00:30] falls asleep
-[1518-11-01 00:55] wakes up
-[1518-11-01 23:58] Guard #99 begins shift
-[1518-11-02 00:40] falls asleep
-[1518-11-02 00:50] wakes up
-[1518-11-03 00:05] Guard #10 begins shift
-[1518-11-03 00:24] falls asleep
-[1518-11-03 00:29] wakes up
-[1518-11-04 00:02] Guard #99 begins shift
-[1518-11-04 00:36] falls asleep
-[1518-11-04 00:46] wakes up
-[1518-11-05 00:03] Guard #99 begins shift
-[1518-11-05 00:45] falls asleep
-[1518-11-05 00:55] wakes up\
-            ";
-            let expected = "4455";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day04/ex"), "4455", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/04"),
+            "18325",
+            part2
+        );
     }
 }
