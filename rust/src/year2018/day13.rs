@@ -1,42 +1,44 @@
 use std::collections::BTreeSet;
+use std::io;
 
 use crate::base::grid::Grid;
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day13)
-}
-
-struct Day13;
+use crate::base::Part;
 
 type Tiles = Grid<Tile>;
 type Carts = BTreeSet<Cart>;
 
-impl Solver for Day13 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (tiles, carts) = parse_input(input);
-        match part {
-            Part::One => {
-                let (mut remaining_carts, mut collision_positions) = tick(&tiles, &carts);
-                while collision_positions.is_empty() {
-                    let (new_remaining_carts, new_collision_positions) =
-                        tick(&tiles, &remaining_carts);
-                    remaining_carts = new_remaining_carts;
-                    collision_positions = new_collision_positions;
-                }
-                let (x, y) = rowcol_to_xy(collision_positions[0]);
-                Ok(format!("{},{}", x, y))
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
+}
+
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
+
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (tiles, carts) = parse_input(&input);
+    match part {
+        Part::One => {
+            let (mut remaining_carts, mut collision_positions) = tick(&tiles, &carts);
+            while collision_positions.is_empty() {
+                let (new_remaining_carts, new_collision_positions) = tick(&tiles, &remaining_carts);
+                remaining_carts = new_remaining_carts;
+                collision_positions = new_collision_positions;
             }
-            Part::Two => {
-                let mut remaining_carts = carts.clone();
-                while remaining_carts.len() > 1 {
-                    remaining_carts = tick(&tiles, &remaining_carts).0;
-                }
-                println!("remaining carts: {:?}", remaining_carts);
-                let remaining_cart = remaining_carts.iter().next().unwrap();
-                let (x, y) = rowcol_to_xy((remaining_cart.row, remaining_cart.col));
-                Ok(format!("{},{}", x, y))
+            let (x, y) = rowcol_to_xy(collision_positions[0]);
+            Ok(format!("{},{}", x, y))
+        }
+        Part::Two => {
+            let mut remaining_carts = carts.clone();
+            while remaining_carts.len() > 1 {
+                remaining_carts = tick(&tiles, &remaining_carts).0;
             }
+            println!("remaining carts: {:?}", remaining_carts);
+            let remaining_cart = remaining_carts.iter().next().unwrap();
+            let (x, y) = rowcol_to_xy((remaining_cart.row, remaining_cart.col));
+            Ok(format!("{},{}", x, y))
         }
     }
 }
@@ -272,44 +274,29 @@ fn step_cart(tiles: &Tiles, cart: &Cart) -> Cart {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/13").trim();
-            let expected = "16,45";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/13_example1").trim();
-            let expected = "7,3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day13/ex1"), "7,3", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/13"),
+            "16,45",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/13").trim_end();
-            let expected = "21,91";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/13_example2").trim();
-            let expected = "6,4";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day13/ex2"), "6,4", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/13"),
+            "21,91",
+            part2
+        );
     }
 }
