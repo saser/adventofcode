@@ -18,6 +18,20 @@ cc_test(
     data = ["//year2019:testdata/04"],
 )
 
+cc_library(
+    name = "day04_internal",
+    hdrs = ["day04_internal.h"],
+    srcs = ["day04_internal.cc"],
+)
+
+cc_test(
+    name = "day04_internal_test",
+    srcs = ["day04_internal_test.cc"],
+    deps = [
+        ":day04_internal",
+        "@googletest//:gtest_main",
+    ],
+)
 cc_binary(
     name = "day04_benchmark",
     srcs = ["day04_benchmark.cc"],
