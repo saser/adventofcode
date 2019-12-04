@@ -1,4 +1,4 @@
-#include "year2019/day02/day02_internal.h"
+#include "year2019/day02/internal.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace day02 {
       int operand1 = memory[memory[position + 1]];
       int operand2 = memory[memory[position + 2]];
       int destination = memory[position + 3];
-      int value;
+      int value = 0;
       switch (opcode) {
       case 1:
         value = operand1 + operand2;
