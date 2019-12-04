@@ -1,56 +1,54 @@
 use std::cmp::Ordering;
+use std::io;
+
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap};
 
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day15)
-}
-
-struct Day15;
-
+use crate::base::Part;
 type Path = Vec<Position>;
 type Cavern = BTreeMap<Position, Tile>;
 type Units = BTreeMap<Position, Unit>;
 
-impl Solver for Day15 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (cavern, units) = parse_input(input);
-        match part {
-            Part::One => {
-                let (full_rounds, _cavern_after_combat, units_after_combat) =
-                    combat(&cavern, &units);
-                let hitpoints_sum = units_after_combat
-                    .values()
-                    .map(|unit| unit.hitpoints as usize)
-                    .sum::<usize>();
-                let outcome = full_rounds * hitpoints_sum;
-                Ok(outcome.to_string())
-            }
-            Part::Two => {
-                let (full_rounds, units_after_combat) = (3..)
-                    .filter_map(|power| {
-                        let (
-                            full_rounds,
-                            all_elves_alive,
-                            _cavern_after_combat,
-                            units_after_combat,
-                        ) = combat_until_elf_dies(power, &cavern, &units);
-                        if all_elves_alive {
-                            Some((full_rounds, units_after_combat))
-                        } else {
-                            None
-                        }
-                    })
-                    .next()
-                    .unwrap();
-                let hitpoints_sum = units_after_combat
-                    .values()
-                    .map(|unit| unit.hitpoints as usize)
-                    .sum::<usize>();
-                let outcome = full_rounds * hitpoints_sum;
-                Ok(outcome.to_string())
-            }
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
+}
+
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
+
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (cavern, units) = parse_input(&input);
+    match part {
+        Part::One => {
+            let (full_rounds, _cavern_after_combat, units_after_combat) = combat(&cavern, &units);
+            let hitpoints_sum = units_after_combat
+                .values()
+                .map(|unit| unit.hitpoints as usize)
+                .sum::<usize>();
+            let outcome = full_rounds * hitpoints_sum;
+            Ok(outcome.to_string())
+        }
+        Part::Two => {
+            let (full_rounds, units_after_combat) = (3..)
+                .filter_map(|power| {
+                    let (full_rounds, all_elves_alive, _cavern_after_combat, units_after_combat) =
+                        combat_until_elf_dies(power, &cavern, &units);
+                    if all_elves_alive {
+                        Some((full_rounds, units_after_combat))
+                    } else {
+                        None
+                    }
+                })
+                .next()
+                .unwrap();
+            let hitpoints_sum = units_after_combat
+                .values()
+                .map(|unit| unit.hitpoints as usize)
+                .sum::<usize>();
+            let outcome = full_rounds * hitpoints_sum;
+            Ok(outcome.to_string())
         }
     }
 }
@@ -468,208 +466,38 @@ fn in_range_entries(position: Position, base_path: &Path, cavern: &Cavern) -> Ve
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/15").trim();
-            let expected = "201638";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "\
-#######
-#.G...#
-#...EG#
-#.#.#G#
-#..G#E#
-#.....#
-#######\
-            ";
-            let expected = "27730";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "\
-#######
-#G..#E#
-#E#E.E#
-#G.##.#
-#...#E#
-#...E.#
-#######\
-            ";
-            let expected = "36334";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "\
-#######
-#E..EG#
-#.#G.E#
-#E.##E#
-#G..#.#
-#..E#.#
-#######\
-            ";
-            let expected = "39514";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "\
-#######
-#E.G#.#
-#.#G..#
-#G.#.G#
-#G..#.#
-#...E.#
-#######\
-            ";
-            let expected = "27755";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "\
-#######
-#.E...#
-#.#..G#
-#.###.#
-#E#G#G#
-#...#G#
-#######\
-            ";
-            let expected = "28944";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_6() {
-            let solver = get_solver();
-            let input = "\
-#########
-#G......#
-#.E.#...#
-#..##..G#
-#...##..#
-#...#...#
-#.G...G.#
-#.....G.#
-#########\
-            ";
-            let expected = "18740";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, include_str!("testdata/day15/ex1"), "27730", part1);
+        test!(example2, include_str!("testdata/day15/ex2"), "36334", part1);
+        test!(example3, include_str!("testdata/day15/ex3"), "39514", part1);
+        test!(example4, include_str!("testdata/day15/ex4"), "27755", part1);
+        test!(example5, include_str!("testdata/day15/ex5"), "28944", part1);
+        test!(example6, include_str!("testdata/day15/ex6"), "18740", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/15"),
+            "201638",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/15").trim();
-            let expected = "95764";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "\
-#######
-#.G...#
-#...EG#
-#.#.#G#
-#..G#E#
-#.....#
-#######\
-            ";
-            let expected = "4988";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "\
-#######
-#E..EG#
-#.#G.E#
-#E.##E#
-#G..#.#
-#..E#.#
-#######\
-            ";
-            let expected = "31284";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "\
-#######
-#E.G#.#
-#.#G..#
-#G.#.G#
-#G..#.#
-#...E.#
-#######\
-            ";
-            let expected = "3478";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "\
-#######
-#.E...#
-#.#..G#
-#.###.#
-#E#G#G#
-#...#G#
-#######\
-            ";
-            let expected = "6474";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "\
-#########
-#G......#
-#.E.#...#
-#..##..G#
-#...##..#
-#...#...#
-#.G...G.#
-#.....G.#
-#########\
-            ";
-            let expected = "1140";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, include_str!("testdata/day15/ex1"), "4988", part2);
+        test!(example3, include_str!("testdata/day15/ex3"), "31284", part2);
+        test!(example4, include_str!("testdata/day15/ex4"), "3478", part2);
+        test!(example5, include_str!("testdata/day15/ex5"), "6474", part2);
+        test!(example6, include_str!("testdata/day15/ex6"), "1140", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/15"),
+            "95764",
+            part2
+        );
     }
 }
