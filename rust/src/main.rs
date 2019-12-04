@@ -164,6 +164,14 @@ fn imain() -> i32 {
             },
             _ => Err(format!("no solution for year 2017 day {}", day)),
         },
+        2018 => match day {
+            1 => match part {
+                1 => Ok(aoc::year2018::day01::part1),
+                2 => Ok(aoc::year2018::day01::part2),
+                _ => unreachable!(),
+            },
+            _ => Err(format!("no solution for year 2018 day {}", day)),
+        },
         _ => Err(format!("no solutions for year {}", year)),
     };
     if let Err(e) = solution {

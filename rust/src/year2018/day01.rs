@@ -1,21 +1,24 @@
 use std::collections::HashSet;
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day01)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day01;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day01 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let changes = parse_input(input);
-        match part {
-            Part::One => Ok(final_frequency(&changes).to_string()),
-            Part::Two => Ok(first_duplicate_frequency(&changes).to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let changes = parse_input(&input);
+    match part {
+        Part::One => Ok(final_frequency(&changes).to_string()),
+        Part::Two => Ok(first_duplicate_frequency(&changes).to_string()),
     }
 }
 
@@ -49,143 +52,36 @@ fn first_duplicate_frequency(changes: &[i64]) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/01");
-            let expected = "416";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "\
-+1
--2
-+3
-+1\
-            ";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "\
-+1
-+1
-+1\
-            ";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "\
-+1
-+1
--2\
-            ";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "\
--1
--2
--3\
-            ";
-            let expected = "-6";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, include_str!("testdata/day01/p1ex1"), "3", part1);
+        test!(example2, include_str!("testdata/day01/p1ex2"), "3", part1);
+        test!(example3, include_str!("testdata/day01/p1ex3"), "0", part1);
+        test!(example4, include_str!("testdata/day01/p1ex4"), "-6", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/01"),
+            "416",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/01");
-            let expected = "56752";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "\
-+1
--2
-+3
-+1\
-            ";
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "\
-+1
--1\
-            ";
-            let expected = "0";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "\
-+3
-+3
-+4
--2
--4\
-            ";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "\
--6
-+3
-+8
-+5
--6\
-            ";
-            let expected = "5";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "\
-+7
-+7
--2
--7
--4\
-            ";
-            let expected = "14";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example1, include_str!("testdata/day01/p2ex1"), "2", part2);
+        test!(example2, include_str!("testdata/day01/p2ex2"), "0", part2);
+        test!(example3, include_str!("testdata/day01/p2ex3"), "10", part2);
+        test!(example4, include_str!("testdata/day01/p2ex4"), "5", part2);
+        test!(example5, include_str!("testdata/day01/p2ex5"), "14", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/01"),
+            "56752",
+            part2
+        );
     }
 }
