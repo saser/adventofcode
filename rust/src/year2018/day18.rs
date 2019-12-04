@@ -2,30 +2,33 @@ use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
+use std::io;
 
 use crate::base::grid::Grid;
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day18)
-}
-
-struct Day18;
+use crate::base::Part;
 
 type Tiles = Grid<Tile>;
 
-impl Solver for Day18 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let tiles = parse_input(input);
-        let iterations = match part {
-            Part::One => 10,
-            Part::Two => 1_000_000_000,
-        };
-        let final_tiles = run_iterations(iterations, &tiles);
-        let counts = count(final_tiles.iter());
-        let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
-        Ok(resource_value.to_string())
-    }
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
+}
+
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
+
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let tiles = parse_input(&input);
+    let iterations = match part {
+        Part::One => 10,
+        Part::Two => 1_000_000_000,
+    };
+    let final_tiles = run_iterations(iterations, &tiles);
+    let counts = count(final_tiles.iter());
+    let resource_value = counts[&Tile::Tree] * counts[&Tile::Lumberyard];
+    Ok(resource_value.to_string())
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -165,47 +168,28 @@ fn run_iterations(iterations: usize, tiles: &Tiles) -> Tiles {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/18").trim();
-            let expected = "545600";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-.#.#...|#.
-.....#|##|
-.|..|...#.
-..|#.....#
-#.#|||#|#|
-...#.||...
-.|....|...
-||...#|.#|
-|.||||..|.
-...#.|..|.\
-            ";
-            let expected = "1147";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day18/ex"), "1147", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/18"),
+            "545600",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/18").trim();
-            let expected = "202272";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/18"),
+            "202272",
+            part2
+        );
     }
 }
