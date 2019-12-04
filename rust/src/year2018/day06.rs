@@ -1,66 +1,67 @@
-use rayon::prelude::*;
-
 use std::collections::{HashMap, HashSet};
+use std::io;
 use std::str::FromStr;
 
+use rayon::prelude::*;
+
 use crate::base::grid::Point;
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
 type Coordinates = HashMap<char, Point>;
 type Distances = HashMap<char, u64>;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day06)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day06;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day06 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let coordinates = parse_input(input);
-        let bb = BoundingBox::from_points(
-            coordinates
-                .values()
-                .cloned()
-                .collect::<Vec<Point>>()
-                .as_slice(),
-        );
-        let distances = bounding_box_distances(&bb, &coordinates);
-        match part {
-            Part::One => {
-                let minimal_distances = all_minimal_distances(&distances);
-                let edge_points = bb.edge_points();
-                let mut infinite_coordinates = HashSet::new();
-                let mut closest_points = HashMap::new();
-                for (point, coordinates) in minimal_distances.iter() {
-                    if coordinates.len() == 1 {
-                        let c = coordinates[0];
-                        closest_points.entry(c).or_insert_with(Vec::new).push(point);
-                        if edge_points.contains(point) {
-                            infinite_coordinates.insert(c);
-                        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let coordinates = parse_input(&input);
+    let bb = BoundingBox::from_points(
+        coordinates
+            .values()
+            .cloned()
+            .collect::<Vec<Point>>()
+            .as_slice(),
+    );
+    let distances = bounding_box_distances(&bb, &coordinates);
+    match part {
+        Part::One => {
+            let minimal_distances = all_minimal_distances(&distances);
+            let edge_points = bb.edge_points();
+            let mut infinite_coordinates = HashSet::new();
+            let mut closest_points = HashMap::new();
+            for (point, coordinates) in minimal_distances.iter() {
+                if coordinates.len() == 1 {
+                    let c = coordinates[0];
+                    closest_points.entry(c).or_insert_with(Vec::new).push(point);
+                    if edge_points.contains(point) {
+                        infinite_coordinates.insert(c);
                     }
                 }
-                let max_area = closest_points
-                    .par_iter()
-                    .filter(|(c, _points)| !infinite_coordinates.contains(c))
-                    .map(|(_c, points)| points.len())
-                    .max()
-                    .unwrap();
-                Ok(max_area.to_string())
             }
-            Part::Two => {
-                let limit = 10_000;
-                let count = distances
-                    .par_iter()
-                    .map(|(_point, distance_map)| {
-                        distance_map.values().cloned().collect::<Vec<u64>>()
-                    })
-                    .map(|ds| ds.iter().sum::<u64>())
-                    .filter(|&sum| sum < limit)
-                    .count();
-                Ok(count.to_string())
-            }
+            let max_area = closest_points
+                .par_iter()
+                .filter(|(c, _points)| !infinite_coordinates.contains(c))
+                .map(|(_c, points)| points.len())
+                .max()
+                .unwrap();
+            Ok(max_area.to_string())
+        }
+        Part::Two => {
+            let limit = 10_000;
+            let count = distances
+                .par_iter()
+                .map(|(_point, distance_map)| distance_map.values().cloned().collect::<Vec<u64>>())
+                .map(|ds| ds.iter().sum::<u64>())
+                .filter(|&sum| sum < limit)
+                .count();
+            Ok(count.to_string())
         }
     }
 }
@@ -119,7 +120,6 @@ impl BoundingBox {
     }
 
     fn edge_points(&self) -> HashSet<Point> {
-        // fn edge_points(&self) -> Vec<Point> {
         let mut points = Vec::with_capacity(2 * (self.width() + self.height()) as usize - 4);
         for x in self.x_min..self.x_max {
             points.push(Point { x, y: self.y_min });
@@ -132,8 +132,6 @@ impl BoundingBox {
         let mut set = HashSet::with_capacity(points.len());
         set.extend(points);
         set
-
-        // points
     }
 }
 
@@ -172,43 +170,33 @@ fn all_minimal_distances(map: &HashMap<Point, Distances>) -> HashMap<Point, Vec<
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/06").trim();
-            let expected = "3687";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-1, 1
-1, 6
-8, 3
-3, 4
-5, 5
-8, 9\
-            ";
-            let expected = "17";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(
+            example,
+            include_str!("./testdata/day06/ex").trim(),
+            "17",
+            part1
+        );
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/06").trim(),
+            "3687",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/06").trim();
-            let expected = "40134";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/06").trim(),
+            "40134",
+            part2
+        );
     }
 }
