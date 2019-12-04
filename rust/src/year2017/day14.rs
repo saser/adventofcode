@@ -1,23 +1,26 @@
 use std::collections::{HashSet, VecDeque};
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 use crate::year2017::day10;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day14)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day14;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day14 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let strings = strings_to_hash(input);
-        match part {
-            Part::One => Ok(total_bits(&hash_all(&strings)).to_string()),
-            Part::Two => {
-                //let hashes = hash_all(&strings);
-                Ok(count_groups(&hashes_to_binary(&hash_all(&strings))).to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let strings = strings_to_hash(input.trim());
+    match part {
+        Part::One => Ok(total_bits(&hash_all(&strings)).to_string()),
+        Part::Two => {
+            //let hashes = hash_all(&strings);
+            Ok(count_groups(&hashes_to_binary(&hash_all(&strings))).to_string())
         }
     }
 }
@@ -127,28 +130,29 @@ fn count_groups(set: &HashSet<(usize, usize)>) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "flqrgnkx";
-            let expected = "8108";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, "flqrgnkx", "8108", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/14"),
+            "8214",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "flqrgnkx";
-            let expected = "1242";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, "flqrgnkx", "1242", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/14"),
+            "1093",
+            part2
+        );
     }
 }
