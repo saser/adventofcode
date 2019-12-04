@@ -9,8 +9,8 @@ cc_library(
 )
 
 cc_test(
-    name = "day03_test",
-    srcs = ["day03_test.cc"],
+    name = "test",
+    srcs = ["test.cc"],
     deps = [
         ":day03",
         "@googletest//:gtest_main",
@@ -19,8 +19,8 @@ cc_test(
 )
 
 cc_binary(
-    name = "day03_benchmark",
-    srcs = ["day03_benchmark.cc"],
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
     deps = [
         ":day03",
         "@googlebenchmark//:benchmark_main",
