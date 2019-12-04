@@ -1,21 +1,24 @@
 use std::collections::{HashMap, VecDeque};
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day12)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day12;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day12 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let connections = parse_input(input);
-        match part {
-            Part::One => Ok(find_group(&connections, 0).len().to_string()),
-            Part::Two => Ok(find_all_groups(&connections).len().to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let connections = parse_input(&input);
+    match part {
+        Part::One => Ok(find_group(&connections, 0).len().to_string()),
+        Part::Two => Ok(find_all_groups(&connections).len().to_string()),
     }
 }
 
@@ -77,44 +80,29 @@ fn find_group(connections: &HashMap<u64, Vec<u64>>, included_program: u64) -> Ve
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0 <-> 2
-1 <-> 1
-2 <-> 0, 3, 4
-3 <-> 2, 4
-4 <-> 2, 3, 6
-5 <-> 6
-6 <-> 4, 5\
-            ";
-            let expected = "6";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day12/ex"), "6", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/12"),
+            "141",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-0 <-> 2
-1 <-> 1
-2 <-> 0, 3, 4
-3 <-> 2, 4
-4 <-> 2, 3, 6
-5 <-> 6
-6 <-> 4, 5\
-            ";
-            let expected = "2";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day12/ex"), "2", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/12"),
+            "171",
+            part2
+        );
     }
 }
