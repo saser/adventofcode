@@ -1,26 +1,31 @@
-use crate::base::{Part, Solver};
-use lazy_static::lazy_static;
-use regex::Regex;
 use std::collections::VecDeque;
+use std::io;
 use std::str::FromStr;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day16)
+use lazy_static::lazy_static;
+use regex::Regex;
+
+use crate::base::Part;
+
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day16;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day16 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let mut programs = generate_programs(16);
-        let iterations = match part {
-            Part::One => 1,
-            Part::Two => 1_000_000_000,
-        };
-        let moves = parse_input(input);
-        let final_configuration = perform_moves_n(&mut programs, &moves, iterations);
-        Ok(final_configuration)
-    }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let mut programs = generate_programs(16);
+    let iterations = match part {
+        Part::One => 1,
+        Part::Two => 1_000_000_000,
+    };
+    let moves = parse_input(&input);
+    let final_configuration = perform_moves_n(&mut programs, &moves, iterations);
+    Ok(final_configuration)
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -129,6 +134,7 @@ fn perform_moves_n(programs: &mut VecDeque<char>, moves: &[Move], iterations: us
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
@@ -142,5 +148,23 @@ mod tests {
             let expected = "baedc";
             assert_eq!(expected, programs_to_string(&programs));
         }
+
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/16"),
+            "kgdchlfniambejop",
+            part1
+        );
+    }
+
+    mod part2 {
+        use super::*;
+
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/16"),
+            "fjpmholcibdgeakn",
+            part2
+        );
     }
 }
