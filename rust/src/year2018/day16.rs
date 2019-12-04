@@ -1,33 +1,36 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day16)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day16;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day16 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (samples, program) = parse_input(input);
-        match part {
-            Part::One => {
-                let count = samples
-                    .iter()
-                    .filter(|sample| sample.candidates().len() >= 3)
-                    .count();
-                Ok(count.to_string())
-            }
-            Part::Two => {
-                let opcode_map = determine_opcodes(&samples);
-                let final_registers = program.iter().fold(vec![0; 4], |registers, &instruction| {
-                    let opcode = opcode_map[&instruction.opcode];
-                    opcode.apply(instruction, &registers)
-                });
-                Ok(final_registers[0].to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (samples, program) = parse_input(&input);
+    match part {
+        Part::One => {
+            let count = samples
+                .iter()
+                .filter(|sample| sample.candidates().len() >= 3)
+                .count();
+            Ok(count.to_string())
+        }
+        Part::Two => {
+            let opcode_map = determine_opcodes(&samples);
+            let final_registers = program.iter().fold(vec![0; 4], |registers, &instruction| {
+                let opcode = opcode_map[&instruction.opcode];
+                opcode.apply(instruction, &registers)
+            });
+            Ok(final_registers[0].to_string())
         }
     }
 }
@@ -295,28 +298,27 @@ fn parse_instruction(line: &str) -> Instruction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/16").trim();
-            let expected = "596";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/16"),
+            "596",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/16").trim();
-            let expected = "554";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/16"),
+            "554",
+            part2
+        );
     }
 }
