@@ -173,23 +173,13 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(example, include_str!("testdata/day18/ex"), "1147", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/18"),
-            "545600",
-            part1
-        );
+        test!(example, file "testdata/day18/ex", "1147", part1);
+        test!(actual, file "../../../inputs/2018/18", "545600", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/18"),
-            "202272",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/18", "202272", part2);
     }
 }

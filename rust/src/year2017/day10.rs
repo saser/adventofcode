@@ -156,12 +156,7 @@ mod tests {
             assert_eq!(12, product);
         }
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/10"),
-            "1980",
-            part1
-        );
+        test!(actual, file "../../../inputs/2017/10", "1980", part1);
     }
 
     mod part2 {
@@ -176,11 +171,6 @@ mod tests {
         );
         test!(example3, "1,2,3", "3efbe78a8d82f29979031a4aa0b16a9d", part2);
         test!(example4, "1,2,4", "63960835bcdc130f0b66d7ff4f6a5a8e", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/10"),
-            "899124dac21012ebc32e2f4d11eaec55",
-            part2
-        );
+        test!(actual, file "../../../inputs/2017/10", "899124dac21012ebc32e2f4d11eaec55", part2);
     }
 }

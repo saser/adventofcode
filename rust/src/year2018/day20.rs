@@ -268,22 +268,12 @@ mod tests {
             "31",
             part1
         );
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/20"),
-            "4214",
-            part1
-        );
+        test!(actual, file "../../../inputs/2018/20", "4214", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/20"),
-            "8492",
-            part2
-        );
+        test!(actual, file "../../../inputs/2018/20", "8492", part2);
     }
 }

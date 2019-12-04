@@ -190,24 +190,14 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(example, include_str!("testdata/day07/ex"), "tknk", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/07"),
-            "bpvhwhh",
-            part1
-        );
+        test!(example, file "testdata/day07/ex", "tknk", part1);
+        test!(actual, file "../../../inputs/2017/07", "bpvhwhh", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(example, include_str!("testdata/day07/ex"), "60", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/07"),
-            "256",
-            part2
-        );
+        test!(example, file "testdata/day07/ex", "60", part2);
+        test!(actual, file "../../../inputs/2017/07", "256", part2);
     }
 }

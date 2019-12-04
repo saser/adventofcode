@@ -171,13 +171,8 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(example, include_str!("testdata/day07/ex"), "CABDFE", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/07"),
-            "MNQKRSFWGXPZJCOTVYEBLAHIUD",
-            part1
-        );
+        test!(example, file "testdata/day07/ex", "CABDFE", part1);
+        test!(actual, file "../../../inputs/2018/07", "MNQKRSFWGXPZJCOTVYEBLAHIUD", part1);
     }
 
     mod part2 {
@@ -187,12 +182,7 @@ mod tests {
         // workers. The example given in the description of the problem used
         // durations equal to the order in the alphabet (so 'A' = 1 s, 'B' = 2
         // s, ...) and used two workers. In that case, the answer should be 15.
-        test!(example, include_str!("testdata/day07/ex"), "253", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2018/07"),
-            "948",
-            part2
-        );
+        test!(example, file "testdata/day07/ex", "253", part2);
+        test!(actual, file "../../../inputs/2018/07", "948", part2);
     }
 }

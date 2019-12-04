@@ -105,12 +105,7 @@ mod tests {
         test!(example6, "{{<ab>},{<ab>},{<ab>},{<ab>}}", "9", part1);
         test!(example7, "{{<!!>},{<!!>},{<!!>},{<!!>}}", "9", part1);
         test!(example8, "{{<a!>},{<a!>},{<a!>},{<ab>}}", "3", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/09"),
-            "21037",
-            part1
-        );
+        test!(actual, file "../../../inputs/2017/09", "21037", part1);
     }
 
     mod part2 {
@@ -123,11 +118,6 @@ mod tests {
         test!(example5, "<!!>", "0", part2);
         test!(example6, "<!!!>>", "0", part2);
         test!(example7, "<{o\"i!a,<{i<a>", "10", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/09"),
-            "9495",
-            part2
-        );
+        test!(actual, file "../../../inputs/2017/09", "9495", part2);
     }
 }

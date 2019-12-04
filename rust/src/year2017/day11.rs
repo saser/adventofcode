@@ -126,22 +126,12 @@ mod tests {
         test!(example2, "ne,ne,sw,sw", "0", part1);
         test!(example3, "ne,ne,s,s", "2", part1);
         test!(example4, "se,sw,se,sw,sw", "3", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/11"),
-            "761",
-            part1
-        );
+        test!(actual, file "../../../inputs/2017/11", "761", part1);
     }
 
     mod part2 {
         use super::*;
 
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/11"),
-            "1542",
-            part2
-        );
+        test!(actual, file "../../../inputs/2017/11", "1542", part2);
     }
 }

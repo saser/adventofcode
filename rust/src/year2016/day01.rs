@@ -56,11 +56,6 @@ mod tests {
         test!(example1, "R2, L3", "5", part1);
         test!(example2, "R2, R2, R2", "2", part1);
         test!(example3, "R5, L5, R5, R3", "12", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2016/01"),
-            "243",
-            part1
-        );
+        test!(actual, file "../../../inputs/2016/01", "243", part1);
     }
 }

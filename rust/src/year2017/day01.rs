@@ -51,12 +51,7 @@ mod tests {
         test!(example2, "1111", "4", part1);
         test!(example3, "1234", "0", part1);
         test!(example4, "91212129", "9", part1);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/01"),
-            "1044",
-            part1
-        );
+        test!(actual, file "../../../inputs/2017/01", "1044", part1);
     }
 
     mod part2 {
@@ -67,11 +62,6 @@ mod tests {
         test!(example3, "123425", "4", part2);
         test!(example4, "123123", "12", part2);
         test!(example5, "12131415", "4", part2);
-        test!(
-            actual,
-            include_str!("../../../inputs/2017/01"),
-            "1054",
-            part2
-        );
+        test!(actual, file "../../../inputs/2017/01", "1054", part2);
     }
 }
