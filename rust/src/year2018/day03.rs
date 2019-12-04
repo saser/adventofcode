@@ -1,48 +1,51 @@
+use std::collections::HashMap;
+use std::io;
+use std::str::FromStr;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use std::collections::HashMap;
-use std::str::FromStr;
+use crate::base::Part;
 
-use crate::base::{Part, Solver};
-
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day03)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day03;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day03 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let claims = input
-            .lines()
-            .map(Claim::from_str)
-            .map(Result::unwrap)
-            .collect::<Vec<Claim>>();
-        let map = build_map(&claims);
-        match part {
-            Part::One => {
-                let count = map
-                    .values()
-                    .filter(|point_claims| point_claims.len() > 1)
-                    .count();
-                Ok(count.to_string())
-            }
-            Part::Two => {
-                let mut candidate_claims = map
-                    .values()
-                    .filter(|point_claims| point_claims.len() == 1)
-                    .map(|point_claims| point_claims[0]);
-                let lonely_claim = candidate_claims
-                    .find(|&claim| {
-                        claim.covered_points().iter().all(|point| {
-                            let point_claims = &map[point];
-                            point_claims.len() == 1 && point_claims[0] == claim
-                        })
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let claims = input
+        .lines()
+        .map(Claim::from_str)
+        .map(Result::unwrap)
+        .collect::<Vec<Claim>>();
+    let map = build_map(&claims);
+    match part {
+        Part::One => {
+            let count = map
+                .values()
+                .filter(|point_claims| point_claims.len() > 1)
+                .count();
+            Ok(count.to_string())
+        }
+        Part::Two => {
+            let mut candidate_claims = map
+                .values()
+                .filter(|point_claims| point_claims.len() == 1)
+                .map(|point_claims| point_claims[0]);
+            let lonely_claim = candidate_claims
+                .find(|&claim| {
+                    claim.covered_points().iter().all(|point| {
+                        let point_claims = &map[point];
+                        point_claims.len() == 1 && point_claims[0] == claim
                     })
-                    .unwrap();
-                Ok(lonely_claim.id.to_string())
-            }
+                })
+                .unwrap();
+            Ok(lonely_claim.id.to_string())
         }
     }
 }
@@ -103,6 +106,7 @@ fn build_map(claims: &[Claim]) -> HashMap<(usize, usize), Vec<&Claim>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod parsing {
         use super::*;
@@ -137,48 +141,24 @@ mod tests {
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/03");
-            let expected = "113716";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-#1 @ 1,3: 4x4
-#2 @ 3,1: 4x4
-#3 @ 5,5: 2x2\
-            ";
-            let expected = "4";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day03/ex"), "4", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/03"),
+            "113716",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/03");
-            let expected = "742";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-#1 @ 1,3: 4x4
-#2 @ 3,1: 4x4
-#3 @ 5,5: 2x2\
-            ";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day03/ex"), "3", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/03"),
+            "742",
+            part2
+        );
     }
 }
