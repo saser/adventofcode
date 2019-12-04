@@ -1,4 +1,4 @@
-#include "year2019/day04/day04_internal.h"
+#include "year2019/day04/internal.h"
 
 #include <vector>
 
