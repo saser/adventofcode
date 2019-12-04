@@ -1,27 +1,30 @@
 use std::collections::{HashMap, HashSet, VecDeque};
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day20)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day20;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day20 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let regex = parse(input);
-        let graph = construct(&regex);
-        match part {
-            Part::One => Ok(furthest(&graph).to_string()),
-            Part::Two => {
-                let distances = distances(&graph);
-                let count = distances
-                    .values()
-                    .filter(|&&distance| distance >= 1000)
-                    .count();
-                Ok(count.to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let regex = parse(input.trim());
+    let graph = construct(&regex);
+    match part {
+        Part::One => Ok(furthest(&graph).to_string()),
+        Part::Two => {
+            let distances = distances(&graph);
+            let count = distances
+                .values()
+                .filter(|&&distance| distance >= 1000)
+                .count();
+            Ok(count.to_string())
         }
     }
 }
@@ -240,68 +243,47 @@ fn furthest(graph: &Graph) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/20").trim();
-            let expected = "4214";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_1() {
-            let solver = get_solver();
-            let input = "^WNE$";
-            let expected = "3";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_2() {
-            let solver = get_solver();
-            let input = "^ENWWW(NEEE|SSE(EE|N))$";
-            let expected = "10";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_3() {
-            let solver = get_solver();
-            let input = "^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$";
-            let expected = "18";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_4() {
-            let solver = get_solver();
-            let input = "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$";
-            let expected = "23";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example_5() {
-            let solver = get_solver();
-            let input = "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$";
-            let expected = "31";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example1, "^WNE$", "3", part1);
+        test!(example2, "^ENWWW(NEEE|SSE(EE|N))$", "10", part1);
+        test!(
+            example3,
+            "^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$",
+            "18",
+            part1
+        );
+        test!(
+            example4,
+            "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$",
+            "23",
+            part1
+        );
+        test!(
+            example5,
+            "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$",
+            "31",
+            part1
+        );
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/20"),
+            "4214",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/20").trim();
-            let expected = "8492";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/20"),
+            "8492",
+            part2
+        );
     }
 }
