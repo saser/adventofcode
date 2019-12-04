@@ -1,26 +1,29 @@
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day08)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day08;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day08 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let numbers = parse_input(input);
-        let root = parse_tree(&numbers);
-        match part {
-            Part::One => {
-                let sum = root.metadata_sum();
-                Ok(sum.to_string())
-            }
-            Part::Two => {
-                let sum = root.value_sum();
-                Ok(sum.to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let numbers = parse_input(input.trim());
+    let root = parse_tree(&numbers);
+    match part {
+        Part::One => {
+            let sum = root.metadata_sum();
+            Ok(sum.to_string())
+        }
+        Part::Two => {
+            let sum = root.value_sum();
+            Ok(sum.to_string())
         }
     }
 }
@@ -85,44 +88,29 @@ fn parse_tree_aux(numbers: &[u64]) -> (Node, &[u64]) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/08").trim();
-            let expected = "40908";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
-            let expected = "138";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2", "138", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/08"),
+            "40908",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/08").trim();
-            let expected = "25910";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
-            let expected = "66";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(example, "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2", "66", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/08"),
+            "25910",
+            part2
+        );
     }
 }
