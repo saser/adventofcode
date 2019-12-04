@@ -1,27 +1,30 @@
 use std::collections::HashMap;
+use std::io;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day12)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day12;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day12 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (pots, map) = parse_input(input);
-        match part {
-            Part::One => {
-                let n = 20;
-                let sum = sum_after_n_generations(n, &pots, &map);
-                Ok(sum.to_string())
-            }
-            Part::Two => {
-                let n = 50_000_000_000;
-                let sum = sum_after_n_generations(n, &pots, &map);
-                Ok(sum.to_string())
-            }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (pots, map) = parse_input(&input);
+    match part {
+        Part::One => {
+            let n = 20;
+            let sum = sum_after_n_generations(n, &pots, &map);
+            Ok(sum.to_string())
+        }
+        Part::Two => {
+            let n = 50_000_000_000;
+            let sum = sum_after_n_generations(n, &pots, &map);
+            Ok(sum.to_string())
         }
     }
 }
@@ -158,53 +161,28 @@ fn sum_after_n_generations(n: usize, pots: &Vec<usize>, map: &[usize]) -> isize 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/12").trim();
-            let expected = "3221";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-initial state: #..#.#..##......###...###
-
-...## => #
-..#.. => #
-.#... => #
-.#.#. => #
-.#.## => #
-.##.. => #
-.#### => #
-#.#.# => #
-#.### => #
-##.#. => #
-##.## => #
-###.. => #
-###.# => #
-####. => #\
-            ";
-            let expected = "325";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/12"),
+            "3221",
+            part1
+        );
+        test!(example, include_str!("testdata/day12/ex"), "325", part1);
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/12").trim();
-            let expected = "2600000001872";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/12"),
+            "2600000001872",
+            part2
+        );
     }
 }
