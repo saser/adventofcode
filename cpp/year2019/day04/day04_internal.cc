@@ -15,12 +15,21 @@ namespace day04 {
   }
 
   bool has_double(const std::vector<int>& digits, bool strict) {
-    for (size_t i = 0; i < digits.size() - 1; i++) {
-      if (digits[i] == digits[i + 1]) {
-        return true;
+    int current = digits[0];
+    int count = 0;
+    for (auto it = digits.begin(); it != digits.end(); it++) {
+      int digit = *it;
+      if (digit == current) {
+        count++;
+      } else {
+        if (strict ? count == 2 : count >= 2) {
+          return true;
+        }
+        current = digit;
+        count = 1;
       }
     }
-    return false;
+    return strict ? count == 2 : count >= 2;
   }
 
   bool non_decreasing(const std::vector<int>& digits) {
