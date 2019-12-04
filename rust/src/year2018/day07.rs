@@ -1,10 +1,11 @@
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::io;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap, HashSet};
-
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
 type Dependencies = HashMap<char, HashSet<char>>;
 type Dependants = HashMap<char, HashSet<char>>;
@@ -28,20 +29,22 @@ impl Ord for RevChar {
     }
 }
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day07)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day07;
+pub fn part2(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::Two)
+}
 
-impl Solver for Day07 {
-    fn solve(&self, part: Part, input: &str) -> Result<String, String> {
-        let (dependencies, dependants) = parse_input(input);
-        let workers = 5;
-        match part {
-            Part::One => Ok(determine_order(&dependencies, &dependants)),
-            Part::Two => Ok(seconds_with_workers(workers, &dependencies, &dependants).to_string()),
-        }
+fn solve(r: &mut dyn io::Read, part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let (dependencies, dependants) = parse_input(&input);
+    let workers = 5;
+    match part {
+        Part::One => Ok(determine_order(&dependencies, &dependants)),
+        Part::Two => Ok(seconds_with_workers(workers, &dependencies, &dependants).to_string()),
     }
 }
 
@@ -163,64 +166,33 @@ fn is_available(c: char, dependencies: &Dependencies, done: &HashSet<char>) -> b
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/07");
-            let expected = "MNQKRSFWGXPZJCOTVYEBLAHIUD";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-Step C must be finished before step A can begin.
-Step C must be finished before step F can begin.
-Step A must be finished before step B can begin.
-Step A must be finished before step D can begin.
-Step B must be finished before step E can begin.
-Step D must be finished before step E can begin.
-Step F must be finished before step E can begin.\
-                ";
-            let expected = "CABDFE";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day07/ex"), "CABDFE", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/07"),
+            "MNQKRSFWGXPZJCOTVYEBLAHIUD",
+            part1
+        );
     }
 
     mod part2 {
         use super::*;
 
-        #[test]
-        fn with_input() {
-            let solver = get_solver();
-            let input = include_str!("../../../inputs/2018/07");
-            let expected = "948";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
-
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-Step C must be finished before step A can begin.
-Step C must be finished before step F can begin.
-Step A must be finished before step B can begin.
-Step A must be finished before step D can begin.
-Step B must be finished before step E can begin.
-Step D must be finished before step E can begin.
-Step F must be finished before step E can begin.\
-                ";
-            // This expected answer is with the 60+ second duration rule, and 5 workers. The
-            // example given in the description of the problem used durations equal to the order in
-            // the alphabet (so 'A' = 1 s, 'B' = 2 s, ...) and used two workers. In that case,
-            // the answer should be 15.
-            let expected = "253";
-            assert_eq!(expected, solver.solve(Part::Two, input).unwrap());
-        }
+        // This expected answer is with the 60+ second duration rule, and 5
+        // workers. The example given in the description of the problem used
+        // durations equal to the order in the alphabet (so 'A' = 1 s, 'B' = 2
+        // s, ...) and used two workers. In that case, the answer should be 15.
+        test!(example, include_str!("testdata/day07/ex"), "253", part2);
+        test!(
+            actual,
+            include_str!("../../../inputs/2018/07"),
+            "948",
+            part2
+        );
     }
 }
