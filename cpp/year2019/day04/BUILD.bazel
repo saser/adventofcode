@@ -5,6 +5,7 @@ cc_library(
     deps = [
         "@abseil//absl/strings:strings",
         "//:adventofcode",
+        ":day04_internal",
     ],
 )
 
