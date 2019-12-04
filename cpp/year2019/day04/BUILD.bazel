@@ -1,0 +1,29 @@
+cc_library(
+    name = "day04",
+    hdrs = ["day04.h"],
+    srcs = ["day04.cc"],
+    deps = [
+        "@abseil//absl/strings:strings",
+        "//:adventofcode",
+    ],
+)
+
+cc_test(
+    name = "day04_test",
+    srcs = ["day04_test.cc"],
+    deps = [
+        ":day04",
+        "@googletest//:gtest_main",
+    ],
+    data = ["//year2019:testdata/04"],
+)
+
+cc_binary(
+    name = "day04_benchmark",
+    srcs = ["day04_benchmark.cc"],
+    deps = [
+        ":day04",
+        "@googlebenchmark//:benchmark_main",
+    ],
+    data = ["//year2019:testdata/04"],
+)
