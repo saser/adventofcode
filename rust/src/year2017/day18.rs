@@ -1,24 +1,23 @@
 use std::collections::HashMap;
+use std::io;
 use std::str::FromStr;
 
-use crate::base::{Part, Solver};
+use crate::base::Part;
 
-pub fn get_solver() -> Box<dyn Solver> {
-    Box::new(Day18)
+pub fn part1(r: &mut dyn io::Read) -> Result<String, String> {
+    solve(r, Part::One)
 }
 
-struct Day18;
-
-impl Solver for Day18 {
-    fn solve(&self, _part: Part, input: &str) -> Result<String, String> {
-        let instructions = parse_input(input);
-        let mut processor = Processor::from_instructions(&instructions);
-        while processor.recovered_frequency.is_none() {
-            processor.perform_instruction();
-        }
-        let recovered_frequency = processor.recovered_frequency.unwrap();
-        Ok(recovered_frequency.to_string())
+fn solve(r: &mut dyn io::Read, _part: Part) -> Result<String, String> {
+    let mut input = String::new();
+    r.read_to_string(&mut input).map_err(|e| e.to_string())?;
+    let instructions = parse_input(&input);
+    let mut processor = Processor::from_instructions(&instructions);
+    while processor.recovered_frequency.is_none() {
+        processor.perform_instruction();
     }
+    let recovered_frequency = processor.recovered_frequency.unwrap();
+    Ok(recovered_frequency.to_string())
 }
 
 fn parse_input(input: &str) -> Vec<Instruction> {
@@ -189,27 +188,17 @@ fn initialize_registers(instructions: &[Instruction]) -> HashMap<char, i64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test;
 
     mod part1 {
         use super::*;
 
-        #[test]
-        fn example() {
-            let solver = get_solver();
-            let input = "\
-set a 1
-add a 2
-mul a a
-mod a 5
-snd a
-set a 0
-rcv a
-jgz a -1
-set a 1
-jgz a -2\
-            ";
-            let expected = "4";
-            assert_eq!(expected, solver.solve(Part::One, input).unwrap());
-        }
+        test!(example, include_str!("testdata/day18/ex"), "4", part1);
+        test!(
+            actual,
+            include_str!("../../../inputs/2017/18"),
+            "3188",
+            part1
+        );
     }
 }
