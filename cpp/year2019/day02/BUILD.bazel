@@ -5,7 +5,7 @@ cc_library(
     deps = [
         "@abseil//absl/strings:strings",
         "//:adventofcode",
-        ":internal",
+        "//year2019/intcode:intcode",
     ],
 )
 
@@ -17,22 +17,6 @@ cc_test(
         "@googletest//:gtest_main",
     ],
     data = ["//year2019:testdata/02"],
-)
-
-cc_library(
-    name = "internal",
-    hdrs = ["internal.h"],
-    srcs = ["internal.cc"],
-    visibility = [":__pkg__"],
-)
-
-cc_test(
-    name = "internal_test",
-    srcs = ["internal_test.cc"],
-    deps = [
-        ":internal",
-        "@googletest//:gtest_main",
-    ],
 )
 
 cc_binary(

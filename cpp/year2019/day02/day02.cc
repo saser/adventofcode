@@ -2,12 +2,9 @@
 
 #include <istream>
 #include <string>
-#include <vector>
-
-#include "absl/strings/str_split.h"
 
 #include "adventofcode.h"
-#include "year2019/day02/internal.h"
+#include "year2019/intcode/intcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
@@ -24,21 +21,19 @@ namespace day02 {
 adventofcode::answer_t solve(std::istream& is, int part) {
   std::string line;
   std::getline(is, line);
-  std::vector<std::string> parts = absl::StrSplit(line, ",");
-  std::vector<int> program;
-  for (auto part : parts) {
-    program.push_back(std::stoi(part));
-  }
+  intcode::memory program = intcode::parse(line);
   if (part == 1) {
     program[1] = 12;
     program[2] = 2;
-    return adventofcode::ok(std::to_string(day02::run(program)));
+    auto result = intcode::run(program, {});
+    return adventofcode::ok(std::to_string(result.first[0]));
   }
   for (int noun = 0; noun <= 99; noun++) {
     for (int verb = 0; verb <= 99; verb++) {
       program[1] = noun;
       program[2] = verb;
-      if (day02::run(program) == 19690720) {
+      auto result = intcode::run(program, {});
+      if (result.first[0] == 19690720) {
         return adventofcode::ok(std::to_string(100 * noun + verb));
       }
     }
