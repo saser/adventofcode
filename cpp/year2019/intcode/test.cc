@@ -54,3 +54,17 @@ TEST(Intcode, ImmediateMode) {
     EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 3));
   }
 }
+
+TEST(Intcode, NParams) {
+  const std::vector<std::pair<int, size_t>> pairs {
+    {1, 3}, // addition
+    {2, 3}, // multiplication
+    {3, 1}, // read input
+    {4, 1}, // produce output
+    {99, 0}, // halt
+  };
+  for (auto it = pairs.begin(); it != pairs.end(); it++) {
+    auto pair = *it;
+    EXPECT_EQ(pair.second, intcode::n_params(pair.first));
+  }
+}

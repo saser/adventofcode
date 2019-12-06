@@ -16,6 +16,8 @@ namespace intcode {
   // Determine whether parameter number `n` is in immediate mode.
   bool immediate_mode(int instruction, int n);
   bool position_mode(int instruction, int n);
+  // Return the number of parameters for the given opcode.
+  size_t n_params(int opcode);
 }
 
 #endif
