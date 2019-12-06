@@ -1,0 +1,15 @@
+cc_library(
+    name = "intcode",
+    hdrs = ["intcode.h"],
+    srcs = ["intcode.cc"],
+    visibility = ["//visibility:public"]
+)
+
+cc_test(
+    name = "test",
+    srcs = ["test.cc"],
+    deps = [
+        ":intcode",
+        "@googletest//:gtest_main",
+    ],
+)
