@@ -1,5 +1,6 @@
 #include "year2019/intcode/intcode.h"
 
+#include <string>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -66,6 +67,17 @@ TEST(Intcode, NParams) {
   for (auto it = pairs.begin(); it != pairs.end(); it++) {
     auto pair = *it;
     EXPECT_EQ(pair.second, intcode::n_params(pair.first));
+  }
+}
+
+TEST(Intcode, Parse) {
+  std::vector<std::pair<std::string, intcode::memory>> cases {
+    {"1,0,0,0,99", {1, 0, 0, 0, 99}},
+    {"2,3,0,3,99", {2, 3, 0, 3, 99}},
+    {"2,-1,0,3,99", {2, -1, 0, 3, 99}},
+  };
+  for (auto c : cases) {
+    EXPECT_EQ(c.second, intcode::parse(c.first));
   }
 }
 
