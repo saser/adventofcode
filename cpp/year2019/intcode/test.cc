@@ -25,3 +25,32 @@ TEST(Intcode, Opcode) {
     EXPECT_EQ(opcode, intcode::opcode(opcode + 100 + 1000 + 10000));
   }
 }
+
+TEST(Intcode, ImmediateMode) {
+  for (auto it = intcode::OPCODES.begin(); it != intcode::OPCODES.end(); it++) {
+    int opcode = *it;
+    // All parameters in position mode.
+    for (int n = 1; n <= 3; n++) {
+      EXPECT_FALSE(intcode::immediate_mode(opcode, n));
+    }
+    // First parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100, 1));
+    // Second parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000, 2));
+    // Third parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 10000, 3));
+    // First and second parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000, 1));
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000, 2));
+    // First and third parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 10000, 1));
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 10000, 3));
+    // Second and third parameter in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000 + 10000, 2));
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000 + 10000, 3));
+    // All parameters in immediate mode.
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 1));
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 2));
+    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 3));
+  }
+}
