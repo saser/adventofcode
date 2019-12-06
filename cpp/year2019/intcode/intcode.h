@@ -13,6 +13,9 @@ namespace intcode {
   };
   // Determine the opcode for a given memory value.
   int opcode(int instruction);
+  // Determine whether parameter number `n` is in immediate mode.
+  bool immediate_mode(int instruction, int n);
+  bool position_mode(int instruction, int n);
 }
 
 #endif
