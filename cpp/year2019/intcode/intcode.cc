@@ -1,6 +1,10 @@
 #include "year2019/intcode/intcode.h"
 
+#include <string>
 #include <utility>
+#include <vector>
+
+#include "absl/strings/str_split.h"
 
 namespace intcode {
   int opcode(int instruction) {
@@ -15,6 +19,15 @@ namespace intcode {
   }
   bool position_mode(int instruction, int n) {
     return !immediate_mode(instruction, n);
+  }
+  memory parse(const std::string& s) {
+    std::vector<std::string> parts = absl::StrSplit(s, ",");
+    memory m;
+    m.reserve(parts.size());
+    for (auto part : parts) {
+      m.push_back(std::stoi(part));
+    }
+    return m;
   }
   size_t n_params(int opcode) {
     size_t n;
