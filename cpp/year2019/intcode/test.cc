@@ -68,3 +68,69 @@ TEST(Intcode, NParams) {
     EXPECT_EQ(pair.second, intcode::n_params(pair.first));
   }
 }
+
+// Simple addition; from example in day 2.
+TEST(IntcodeRun, SimpleAddition) {
+  const intcode::memory program = {1, 0, 0, 0, 99};
+  const intcode::memory end_state = {2, 0, 0, 0, 99};
+  const intcode::input input = {};
+  const intcode::output output = {};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
+
+// Simple multiplication; from example in day 2.
+TEST(IntcodeRun, SimpleMultiplication1) {
+  const intcode::memory program = {2, 3, 0, 3, 99};
+  const intcode::memory end_state = {2, 3, 0, 6, 99};
+  const intcode::input input = {};
+  const intcode::output output = {};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
+
+// Another multiplication; from example in day 2.
+TEST(IntcodeRun, SimpleMultiplication2) {
+  const intcode::memory program = {2, 4, 4, 5, 99, 0};
+  const intcode::memory end_state = {2, 4, 4, 5, 99, 9801};
+  const intcode::input input = {};
+  const intcode::output output = {};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
+
+// Addition and multiplication; from example in day 2.
+TEST(IntcodeRun, AdditionAndMultiplication1) {
+  const intcode::memory program = {1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50};
+  const intcode::memory end_state = {3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50};
+  const intcode::input input = {};
+  const intcode::output output = {};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
+
+// Addition and multiplication; from example in day 2.
+TEST(IntcodeRun, AdditionAndMultiplication2) {
+  const intcode::memory program = {1, 1, 1, 4, 99, 5, 6, 0, 99};
+  const intcode::memory end_state = {30, 1, 1, 4, 2, 5, 6, 0, 99};
+  const intcode::input input = {};
+  const intcode::output output = {};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
+
+// An "echo" program; outputs whatever it reads as input. From example in day 5.
+TEST(IntcodeRun, Echo) {
+  const intcode::input input = {123};
+  const intcode::output output = {123};
+  const intcode::memory program = {3, 0, 4, 0, 99};
+  const intcode::memory end_state = {123, 0, 4, 0, 99};
+  auto p = intcode::run(program, input);
+  EXPECT_EQ(end_state, p.first);
+  EXPECT_EQ(output, p.second);
+}
