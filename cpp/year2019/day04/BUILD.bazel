@@ -33,6 +33,7 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
 cc_binary(
     name = "benchmark",
     srcs = ["benchmark.cc"],
