@@ -2,7 +2,10 @@ cc_library(
     name = "day06",
     hdrs = ["day06.h"],
     srcs = ["day06.cc"],
-    deps = ["//:adventofcode"],
+    deps = [
+        "@abseil//absl/strings:strings",
+        "//:adventofcode",
+    ],
 )
 
 cc_test(
