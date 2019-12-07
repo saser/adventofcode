@@ -10,6 +10,18 @@ namespace intcode {
   int opcode(int instruction) {
     return instruction % 100;
   }
+  bool write_param(int opcode, int n) {
+    bool b = false;
+    switch (opcode) {
+    case 1:
+    case 2:
+      b = n == 3;
+      break;
+    case 3:
+      b = n == 1;
+    }
+    return b;
+  }
   bool immediate_mode(int instruction, int n) {
     int mask = 10;
     for (int i = 1; i <= n; i++) {
@@ -59,38 +71,42 @@ namespace intcode {
       if (op == 99) {
         break;
       }
+      int n = n_params(op);
+      std::vector<int> params;
+      params.reserve(n);
+      for (int param = 1; param <= n; param++) {
+        int value = memory[position + param];
+        if (position_mode(instruction, param) && !write_param(op, param)) {
+          value = memory[value];
+        }
+        params.push_back(value);
+      }
       int operand1, operand2, destination, value;
+      std::string operation;
       switch (op) {
       // addition, multiplication
       case 1:
       case 2:
-        operand1 = memory[position + 1];
-        if (position_mode(instruction, 1)) {
-          operand1 = memory[operand1];
-        }
-        operand2 = memory[position + 2];
-        if (position_mode(instruction, 2)) {
-          operand2 = memory[operand2];
-        }
-        destination = memory[position + 3];
+        operand1 = params[0];
+        operand2 = params[1];
+        destination = params[2];
         if (op == 1) {
           value = operand1 + operand2;
+          operation = "+";
         } else {
           value = operand1 * operand2;
+          operation = "*";
         }
         memory[destination] = value;
         break;
       case 3:
         value = *input_it;
         input_it++;
-        destination = memory[position + 1];
+        destination = params[0];
         memory[destination] = value;
         break;
       case 4:
-        value = memory[position + 1];
-        if (position_mode(instruction, 1)) {
-          value = memory[value];
-        }
+        value = params[0];
         output.push_back(value);
         break;
       }
