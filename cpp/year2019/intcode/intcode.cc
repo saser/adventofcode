@@ -15,6 +15,8 @@ namespace intcode {
     switch (opcode) {
     case 1:
     case 2:
+    case 7:
+    case 8:
       b = n == 3;
       break;
     case 3:
@@ -44,15 +46,22 @@ namespace intcode {
   size_t n_params(int opcode) {
     size_t n;
     switch (opcode) {
-    // addition, multiplication
+    // addition, multiplication, less than, equals
     case 1:
     case 2:
+    case 7:
+    case 8:
       n = 3;
       break;
     // read input, produce output
     case 3:
     case 4:
       n = 1;
+      break;
+    // jump-if-true, jump-if-false
+    case 5:
+    case 6:
+      n = 2;
       break;
     default:
       n = 0;
@@ -82,6 +91,7 @@ namespace intcode {
         params.push_back(value);
       }
       int operand1, operand2, destination, value;
+      int new_position = position + n + 1;
       std::string operation;
       switch (op) {
       // addition, multiplication
@@ -109,8 +119,27 @@ namespace intcode {
         value = params[0];
         output.push_back(value);
         break;
+      case 5:
+      case 6:
+        operand1 = params[0];
+        value = params[1];
+        if (op == 5 ? operand1 != 0 : operand1 == 0) {
+          new_position = value;
+        }
+        break;
+      case 7:
+      case 8:
+        operand1 = params[0];
+        operand2 = params[1];
+        destination = params[2];
+        if (op == 7 ? operand1 < operand2 : operand1 == operand2) {
+          memory[destination] = 1;
+        } else {
+          memory[destination] = 0;
+        }
+        break;
       }
-      position += n_params(op) + 1;
+      position = new_position;
     }
     return {memory, output};
   }
