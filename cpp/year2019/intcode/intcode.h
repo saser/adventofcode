@@ -11,6 +11,10 @@ namespace intcode {
     2, // multiplication
     3, // read input
     4, // produce output
+    5, // jump-if-true
+    6, // jump-if-false
+    7, // less than
+    8, // equals
     99, // halt
   };
   // Determine the opcode for a given memory value.
