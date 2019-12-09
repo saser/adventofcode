@@ -146,3 +146,27 @@ TEST(IntcodeRun, Echo) {
   EXPECT_EQ(end_state, p.first);
   EXPECT_EQ(output, p.second);
 }
+
+// A program that outputs itself. From example in day 9.
+TEST(IntcodeRun, Quine) {
+  const intcode::memory program = {109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99};
+  const intcode::output output = {109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99};
+  auto p = intcode::run(program, {});
+  EXPECT_EQ(output, p.second);
+}
+
+// A program that outputs a 16-digit number. From example in day 9.
+TEST(IntcodeRun, LargeNumber1) {
+  const intcode::memory program = {1102, 34915192, 34915192, 7, 4, 7, 99, 0};
+  const intcode::output output = {1219070632396864};
+  auto p = intcode::run(program, {});
+  EXPECT_EQ(output, p.second);
+}
+
+// A program that outputs the large number in the middle. From example in day 9.
+TEST(IntcodeRun, LargeNumber2) {
+  const intcode::memory program = {104, 1125899906842624, 99};
+  const intcode::output output = {1125899906842624};
+  auto p = intcode::run(program, {});
+  EXPECT_EQ(output, p.second);
+}
