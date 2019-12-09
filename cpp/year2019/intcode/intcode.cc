@@ -10,6 +10,7 @@ namespace intcode {
   int opcode(int instruction) {
     return instruction % 100;
   }
+
   bool write_param(int opcode, int n) {
     bool b = false;
     switch (opcode) {
@@ -24,6 +25,7 @@ namespace intcode {
     }
     return b;
   }
+
   bool immediate_mode(int instruction, int n) {
     int mask = 10;
     for (int i = 1; i <= n; i++) {
@@ -31,9 +33,11 @@ namespace intcode {
     }
     return (instruction % (mask * 10)) / mask == 1;
   }
+
   bool position_mode(int instruction, int n) {
     return !immediate_mode(instruction, n);
   }
+
   memory parse(const std::string& s) {
     std::vector<std::string> parts = absl::StrSplit(s, ",");
     memory m;
@@ -43,6 +47,7 @@ namespace intcode {
     }
     return m;
   }
+
   size_t n_params(int opcode) {
     size_t n;
     switch (opcode) {
@@ -69,6 +74,7 @@ namespace intcode {
     }
     return n;
   }
+
   std::pair<memory, output> run(const memory& initial, const input& input) {
     intcode::memory memory = initial;
     size_t position = 0;
