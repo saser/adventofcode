@@ -26,7 +26,7 @@ namespace intcode {
     return e.m;
   }
 
-  void write(execution& e, const int& i) {
+  void write(execution& e, const int64_t& i) {
     e.in.push_back(i);
   }
 
@@ -34,7 +34,7 @@ namespace intcode {
     e.in.insert(e.in.end(), i.begin(), i.end());
   }
 
-  int read(execution& e) {
+  int64_t read(execution& e) {
     auto v = e.out.front();
     e.out.pop_front();
     return v;
@@ -54,7 +54,7 @@ namespace intcode {
       return;
     }
     auto n = n_params(op);
-    std::vector<int> params;
+    std::vector<int64_t> params;
     params.reserve(n);
     for (int param = 1; param <= n; param++) {
       auto value = e.m[e.position + param];
@@ -63,7 +63,7 @@ namespace intcode {
       }
       params.push_back(value);
     }
-    int operand1, operand2, destination, value;
+    int64_t operand1, operand2, destination, value;
     auto new_position = e.position + n + 1;
     switch (op) {
     // addition, multiplication
@@ -129,11 +129,11 @@ namespace intcode {
     } while (state == execution_state::running);
   }
 
-  int opcode(int instruction) {
+  int opcode(int64_t instruction) {
     return instruction % 100;
   }
 
-  bool immediate_mode(int instruction, int n) {
+  bool immediate_mode(int64_t instruction, int n) {
     int mask = 10;
     for (int i = 1; i <= n; i++) {
       mask *= 10;
@@ -141,7 +141,7 @@ namespace intcode {
     return (instruction % (mask * 10)) / mask == 1;
   }
 
-  bool position_mode(int instruction, int n) {
+  bool position_mode(int64_t instruction, int n) {
     return !immediate_mode(instruction, n);
   }
 

@@ -20,13 +20,13 @@ namespace intcode {
   };
 
   // Memory is represented as a vector of ints.
-  typedef std::vector<int> memory;
+  typedef std::vector<int64_t> memory;
 
   // Inputs to and outputs from the program are represented as double-ended
   // queues, to simulate that they can both be produced and consumed in no
   // particular order.
-  typedef std::deque<int> input;
-  typedef std::deque<int> output;
+  typedef std::deque<int64_t> input;
+  typedef std::deque<int64_t> output;
 
   enum execution_state {
     initialized,
@@ -50,14 +50,14 @@ namespace intcode {
   memory mem(const execution& e);
 
   // Write an input value to the input of the execution.
-  void write(execution& e, const int& i);
+  void write(execution& e, const int64_t& i);
 
   // Write all input values to the input of the execution.
   void write_all(execution& e, const input& i);
 
   // Read an output value produced by the execution. The value is consumed by
   // reading it. Reading when no output is available is undefiend behavior.
-  int read(execution& e);
+  int64_t read(execution& e);
 
   // Read all output produced by the execution. All output values are
   // consumed.
@@ -74,13 +74,13 @@ namespace intcode {
   void run(execution& e);
 
   // Determine the opcode for a given memory value.
-  int opcode(int instruction);
+  int opcode(int64_t instruction);
 
   // Determine whether parameter number `n` is in immediate mode.
-  bool immediate_mode(int instruction, int n);
+  bool immediate_mode(int64_t instruction, int n);
 
   // Determine whether parameter number `n` is in position mode.
-  bool position_mode(int instruction, int n);
+  bool position_mode(int64_t instruction, int n);
 
   // Return the number of parameters for the given opcode.
   int n_params(int opcode);
