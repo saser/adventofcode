@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	fYear = flag.Uint("year", 0, "specifies year")
-	fDay  = flag.Uint("day", 0, "specifies day")
+	fYear    = flag.Uint("year", 0, "specifies year")
+	fDay     = flag.Uint("day", 0, "specifies day")
+	fBasedir = flag.String("basedir", "", "base directory of C++ solutions")
 )
 
 type templateData struct {
@@ -42,6 +43,12 @@ func imain() int {
 		return 1
 	}
 
+	basedir := *fBasedir
+	if basedir == "" {
+		fmt.Printf("a base directory for C++ solutions must be specified with the -basedir flag\n")
+		return 1
+	}
+
 	data := templateData{
 		Year:      year,
 		FullYear:  fmt.Sprintf("year%d", year),
@@ -50,6 +57,7 @@ func imain() int {
 		FullDay:   fmt.Sprintf("day%02d", day),
 	}
 	fmt.Printf("template data: %+v\n", data)
+	fmt.Printf("basedir: %s\n", basedir)
 
 	return 0
 }
