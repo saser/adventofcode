@@ -1,7 +1,8 @@
 #include "year2019/day07/day07.h"
 
+#include <algorithm>
 #include <istream>
-#include <limits>
+#include <optional>
 #include <string>
 
 #include "adventofcode.h"
@@ -26,16 +27,16 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::getline(is, line);
   intcode::memory program = intcode::parse(line);
   std::vector<int> phase_settings {0, 1, 2, 3, 4};
-  int max_signal = std::numeric_limits<int>::min();
+  std::optional<int> max_signal;
   for (auto permutation : permutations(phase_settings)) {
     int signal = 0;
     for (auto phase_setting : permutation) {
-      auto pair = intcode::run(program, {phase_setting, signal});
-      signal = pair.second[0];
+      auto [ _, output ] = intcode::run(program, {phase_setting, signal});
+      signal = output[0];
     }
-    max_signal = std::max(max_signal, signal);
+    max_signal = std::max(max_signal.value_or(signal), signal);
   }
-  return adventofcode::ok(std::to_string(max_signal));
+  return adventofcode::ok(std::to_string(*max_signal));
 }
 
 template<class T>
