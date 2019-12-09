@@ -1,6 +1,7 @@
 #ifndef ADVENTOFCODE_YEAR2019_INTCODE_INTCODE_H
 #define ADVENTOFCODE_YEAR2019_INTCODE_INTCODE_H
 
+#include <deque>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,9 +22,56 @@ namespace intcode {
   // Memory is represented as a vector of ints.
   typedef std::vector<int> memory;
 
-  // As are input and output of the program.
-  typedef std::vector<int> input;
-  typedef std::vector<int> output;
+  // Inputs to and outputs from the program are represented as double-ended
+  // queues, to simulate that they can both be produced and consumed in no
+  // particular order.
+  typedef std::deque<int> input;
+  typedef std::deque<int> output;
+
+  enum execution_state {
+    initialized,
+    running,
+    waiting,
+    halted,
+  };
+
+  struct execution {
+    memory m;
+    input in;
+    output out;
+
+    size_t position = 0;
+    execution_state state = execution_state::initialized;
+
+    execution(const memory& _m) : m(_m) {}
+  };
+
+  // Return a copy of the current execution memory.
+  memory mem(const execution& e);
+
+  // Write an input value to the input of the execution.
+  void write(execution& e, const int& i);
+
+  // Write all input values to the input of the execution.
+  void write_all(execution& e, const input& i);
+
+  // Read an output value produced by the execution. The value is consumed by
+  // reading it. Reading when no output is available is undefiend behavior.
+  int read(execution& e);
+
+  // Read all output produced by the execution. All output values are
+  // consumed.
+  output read_all(execution& e);
+
+  // Runs the instruction at the current position in memory. Returns the next
+  // execution state. Running an instruction might cause the execution to
+  // enter the `halted` state, from which it will never transition to another
+  // state. If the current instruction is to read input, and no input is
+  // available, nothing happens, and the returned state will be `waiting`.
+  void run_instruction(execution& e);
+
+  // Runs instructions until the execution halts or waits for input.
+  void run(execution& e);
 
   // Determine the opcode for a given memory value.
   int opcode(int instruction);
