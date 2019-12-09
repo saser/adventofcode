@@ -87,6 +87,7 @@ func imain() int {
 		{name: "BUILD.bazel"},
 		{name: "dayXX.h", output: fmt.Sprintf("%s.h", fullDay)},
 		{name: "dayXX.cc", output: fmt.Sprintf("%s.cc", fullDay)},
+		{name: "test.cc"},
 	} {
 		templatePath := path.Join(templatedir, tt.name)
 		tmpl, err := template.ParseFiles(templatePath)
