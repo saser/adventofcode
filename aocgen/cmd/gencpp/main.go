@@ -67,12 +67,8 @@ func imain() int {
 		PaddedDay: fmt.Sprintf("%02d", day),
 		FullDay:   fullDay,
 	}
-	fmt.Printf("template data: %+v\n", data)
-	fmt.Printf("basedir: %s\n", basedir)
-	fmt.Printf("templatedir: %s\n", templatedir)
 
 	outputdir := path.Join(basedir, fullYear, fullDay)
-	fmt.Printf("outputdir: %s\n", outputdir)
 	if _, err := os.Stat(outputdir); os.IsNotExist(err) {
 		if err := os.MkdirAll(outputdir, os.ModePerm); err != nil {
 			fmt.Printf("error creating output directory %s: %+v\n", outputdir, err)
