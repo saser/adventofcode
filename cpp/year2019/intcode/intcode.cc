@@ -63,6 +63,9 @@ namespace intcode {
         case parameter_mode::position:
           value = e.m[value];
           break;
+        case parameter_mode::relative:
+          value = e.m[e.relative_base + value];
+          break;
         default:
           break;
         }
@@ -121,6 +124,11 @@ namespace intcode {
       } else {
         e.m[destination] = 0;
       }
+      break;
+    // adjust relative base
+    case 9:
+      value = params[0];
+      e.relative_base += value;
       break;
     }
     e.position = new_position;
@@ -182,9 +190,10 @@ namespace intcode {
     case 8:
       n = 3;
       break;
-    // read input, produce output
+    // read input, produce output, adjust relative base
     case 3:
     case 4:
+    case 9:
       n = 1;
       break;
     // jump-if-true, jump-if-false

@@ -16,6 +16,7 @@ namespace intcode {
     6, // jump-if-false
     7, // less than
     8, // equals
+    9, // adjust relative base
     99, // halt
   };
 
@@ -47,6 +48,7 @@ namespace intcode {
     output out;
 
     size_t position = 0;
+    size_t relative_base = 0;
     execution_state state = execution_state::initialized;
 
     execution(const memory& _m) : m(_m) {}
