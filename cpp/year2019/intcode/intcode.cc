@@ -58,8 +58,14 @@ namespace intcode {
     params.reserve(n);
     for (int param = 1; param <= n; param++) {
       auto value = e.m[e.position + param];
-      if (position_mode(instruction, param) && !write_param(op, param)) {
-        value = e.m[value];
+      if (!write_param(op, param)) {
+        switch (mode(instruction, param)) {
+        case parameter_mode::position:
+          value = e.m[value];
+          break;
+        default:
+          break;
+        }
       }
       params.push_back(value);
     }
@@ -133,16 +139,27 @@ namespace intcode {
     return instruction % 100;
   }
 
-  bool immediate_mode(int64_t instruction, int n) {
-    int mask = 10;
-    for (int i = 1; i <= n; i++) {
+  parameter_mode mode(int64_t instruction, int n) {
+    auto mask = 10;
+    for (auto i = 1; i <= n; i++) {
       mask *= 10;
     }
-    return (instruction % (mask * 10)) / mask == 1;
-  }
-
-  bool position_mode(int64_t instruction, int n) {
-    return !immediate_mode(instruction, n);
+    auto mode_num = (instruction % (mask * 10)) / mask;
+    // Just some default value, to silence the warnings of `m` being used
+    // possible uninitialized.
+    parameter_mode m = parameter_mode::position;
+    switch (mode_num) {
+    case 0:
+      m = parameter_mode::position;
+      break;
+    case 1:
+      m = parameter_mode::immediate;
+      break;
+    case 2:
+      m = parameter_mode::relative;
+      break;
+    }
+    return m;
   }
 
   memory parse(const std::string& s) {
