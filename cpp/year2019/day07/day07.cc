@@ -1,8 +1,11 @@
 #include "year2019/day07/day07.h"
 
 #include <istream>
+#include <limits>
+#include <string>
 
 #include "adventofcode.h"
+#include "year2019/intcode/intcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 template<class T>
@@ -19,7 +22,20 @@ namespace day07 {
 }
 
 adventofcode::answer_t solve(std::istream& is, int part) {
-  return adventofcode::err("not implemented yet");
+  std::string line;
+  std::getline(is, line);
+  intcode::memory program = intcode::parse(line);
+  std::vector<int> phase_settings {0, 1, 2, 3, 4};
+  int max_signal = std::numeric_limits<int>::min();
+  for (auto permutation : permutations(phase_settings)) {
+    int signal = 0;
+    for (auto phase_setting : permutation) {
+      auto pair = intcode::run(program, {phase_setting, signal});
+      signal = pair.second[0];
+    }
+    max_signal = std::max(max_signal, signal);
+  }
+  return adventofcode::ok(std::to_string(max_signal));
 }
 
 template<class T>
