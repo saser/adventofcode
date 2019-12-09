@@ -155,8 +155,8 @@ namespace intcode {
     return m;
   }
 
-  size_t n_params(int opcode) {
-    size_t n;
+  int n_params(int opcode) {
+    int n;
     switch (opcode) {
     // addition, multiplication, less than, equals
     case 1:
