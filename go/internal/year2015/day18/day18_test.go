@@ -39,7 +39,7 @@ func TestPart2(t *testing.T) {
 		gridSize   int
 	}{
 		{tc: testcase.FromFile(t, exampleFile, "17"), iterations: exampleIterationsPart2, gridSize: exampleGridSize},
-		{tc: testcase.FromFile(t, inputFile, ""), iterations: Iterations, gridSize: GridSize},
+		{tc: testcase.FromFile(t, inputFile, "1006"), iterations: Iterations, gridSize: GridSize},
 	} {
 		testcase.Run(t, tt.tc, Part2(tt.iterations, tt.gridSize))
 	}
