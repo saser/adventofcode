@@ -43,19 +43,29 @@ TEST(Year2019Day07, Part1Actual) {
   input.close();
 }
 
-// TEST(Year2019Day07, Part2Example1) {
-//   std::istringstream input("some input here");
-//   std::string output = "some output here";
-//   adventofcode::answer_t a = day07::part2(input);
-//   EXPECT_EQ("", a.error);
-//   EXPECT_EQ(output, a.answer);
-// }
+TEST(Year2019Day07, Part2Example1) {
+  std::ifstream input("year2019/day07/testdata/p2ex1");
+  std::string output = "139629729";
+  adventofcode::answer_t a = day07::part2(input);
+  EXPECT_EQ("", a.error);
+  EXPECT_EQ(output, a.answer);
+  input.close();
+}
 
-// TEST(Year2019Day07, Part2Actual) {
-//   std::ifstream input("year2019/testdata/07");
-//   std::string output = "some output here";
-//   adventofcode::answer_t a = day07::part2(input);
-//   EXPECT_EQ("", a.error);
-//   EXPECT_EQ(output, a.answer);
-//   input.close();
-// }
+TEST(Year2019Day07, Part2Example2) {
+  std::ifstream input("year2019/day07/testdata/p2ex2");
+  std::string output = "18216";
+  adventofcode::answer_t a = day07::part2(input);
+  EXPECT_EQ("", a.error);
+  EXPECT_EQ(output, a.answer);
+  input.close();
+}
+
+TEST(Year2019Day07, Part2Actual) {
+  std::ifstream input("year2019/testdata/07");
+  std::string output = "";
+  adventofcode::answer_t a = day07::part2(input);
+  EXPECT_EQ("", a.error);
+  EXPECT_EQ(output, a.answer);
+  input.close();
+}
