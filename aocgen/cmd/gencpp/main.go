@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
+	"text/template"
 )
 
 var (
@@ -56,16 +58,52 @@ func imain() int {
 		return 1
 	}
 
+	fullYear := fmt.Sprintf("year%d", year)
+	fullDay := fmt.Sprintf("day%02d", day)
 	data := templateData{
 		Year:      year,
-		FullYear:  fmt.Sprintf("year%d", year),
+		FullYear:  fullYear,
 		Day:       day,
 		PaddedDay: fmt.Sprintf("%02d", day),
-		FullDay:   fmt.Sprintf("day%02d", day),
+		FullDay:   fullDay,
 	}
 	fmt.Printf("template data: %+v\n", data)
 	fmt.Printf("basedir: %s\n", basedir)
 	fmt.Printf("templatedir: %s\n", templatedir)
+
+	outputdir := path.Join(basedir, fullYear, fullDay)
+	fmt.Printf("outputdir: %s\n", outputdir)
+	if _, err := os.Stat(outputdir); os.IsNotExist(err) {
+		if err := os.MkdirAll(outputdir, os.ModePerm); err != nil {
+			fmt.Printf("error creating output directory %s: %+v\n", outputdir, err)
+			return 2
+		}
+	}
+
+	for _, tt := range []struct {
+		name   string
+		output string
+	}{
+		{name: "BUILD.bazel"},
+	} {
+		templatePath := path.Join(templatedir, tt.name)
+		tmpl, err := template.ParseFiles(templatePath)
+		if err != nil {
+			fmt.Printf("error parsing template %s: %+v\n", templatePath, err)
+			return 2
+		}
+		outputFilename := tt.output
+		if outputFilename == "" {
+			outputFilename = tt.name
+		}
+		outputPath := path.Join(outputdir, outputFilename)
+		templateFile, err := os.Create(outputPath)
+		if err != nil {
+			fmt.Printf("error creating output file %s: %+v\n", outputPath, err)
+			return 2
+		}
+		tmpl.Execute(templateFile, data)
+	}
 
 	return 0
 }
