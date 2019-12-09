@@ -6,24 +6,131 @@
 
 #include "absl/strings/str_split.h"
 
+bool write_param(int opcode, int n) {
+  bool b = false;
+  switch (opcode) {
+  case 1:
+  case 2:
+  case 7:
+  case 8:
+    b = n == 3;
+    break;
+  case 3:
+    b = n == 1;
+  }
+  return b;
+}
+
 namespace intcode {
-  int opcode(int instruction) {
-    return instruction % 100;
+  memory mem(const execution& e) {
+    return e.m;
   }
 
-  bool write_param(int opcode, int n) {
-    bool b = false;
-    switch (opcode) {
+  void write(execution& e, const int& i) {
+    e.in.push_back(i);
+  }
+
+  void write_all(execution& e, const input& i) {
+    e.in.insert(e.in.end(), i.begin(), i.end());
+  }
+
+  int read(execution& e) {
+    auto v = e.out.front();
+    e.out.pop_front();
+    return v;
+  }
+
+  output read_all(execution& e) {
+    auto copy = e.out;
+    e.out.clear();
+    return copy;
+  }
+
+  void run_instruction(execution& e) {
+    auto instruction = e.m[e.position];
+    auto op = opcode(instruction);
+    if (op == 99) {
+      e.state = execution_state::halted;
+      return;
+    }
+    auto n = n_params(op);
+    std::vector<int> params;
+    params.reserve(n);
+    for (int param = 1; param <= n; param++) {
+      auto value = e.m[e.position + param];
+      if (position_mode(instruction, param) && !write_param(op, param)) {
+        value = e.m[value];
+      }
+      params.push_back(value);
+    }
+    int operand1, operand2, destination, value;
+    auto new_position = e.position + n + 1;
+    switch (op) {
+    // addition, multiplication
     case 1:
     case 2:
+      operand1 = params[0];
+      operand2 = params[1];
+      destination = params[2];
+      if (op == 1) {
+        value = operand1 + operand2;
+      } else {
+        value = operand1 * operand2;
+      }
+      e.m[destination] = value;
+      break;
+    // read input
+    case 3:
+      if (e.in.empty()) {
+        e.state = execution_state::waiting;
+        return;
+      }
+      value = e.in.front();
+      e.in.pop_front();
+      destination = params[0];
+      e.m[destination] = value;
+      break;
+    // produce output
+    case 4:
+      value = params[0];
+      e.out.push_back(value);
+      break;
+    // jump-if-true, jump-if-false
+    case 5:
+    case 6:
+      operand1 = params[0];
+      value = params[1];
+      if (op == 5 ? operand1 != 0 : operand1 == 0) {
+        new_position = value;
+      }
+      break;
+    // less than, equals
     case 7:
     case 8:
-      b = n == 3;
+      operand1 = params[0];
+      operand2 = params[1];
+      destination = params[2];
+      if (op == 7 ? operand1 < operand2 : operand1 == operand2) {
+        e.m[destination] = 1;
+      } else {
+        e.m[destination] = 0;
+      }
       break;
-    case 3:
-      b = n == 1;
     }
-    return b;
+    e.position = new_position;
+    e.state = execution_state::running;
+  }
+
+  void run(execution& e) {
+    auto state = e.state;
+    do {
+      run_instruction(e);
+      state = e.state;
+    } while (state == execution_state::running);
+  }
+
+  int opcode(int instruction) {
+    return instruction % 100;
   }
 
   bool immediate_mode(int instruction, int n) {
@@ -76,77 +183,9 @@ namespace intcode {
   }
 
   std::pair<memory, output> run(const memory& initial, const input& input) {
-    intcode::memory memory = initial;
-    size_t position = 0;
-    int instruction = 0;
-    auto input_it = input.begin();
-    intcode::output output;
-    while ((instruction = memory[position])) {
-      int op = opcode(instruction);
-      if (op == 99) {
-        break;
-      }
-      int n = n_params(op);
-      std::vector<int> params;
-      params.reserve(n);
-      for (int param = 1; param <= n; param++) {
-        int value = memory[position + param];
-        if (position_mode(instruction, param) && !write_param(op, param)) {
-          value = memory[value];
-        }
-        params.push_back(value);
-      }
-      int operand1, operand2, destination, value;
-      int new_position = position + n + 1;
-      std::string operation;
-      switch (op) {
-      // addition, multiplication
-      case 1:
-      case 2:
-        operand1 = params[0];
-        operand2 = params[1];
-        destination = params[2];
-        if (op == 1) {
-          value = operand1 + operand2;
-          operation = "+";
-        } else {
-          value = operand1 * operand2;
-          operation = "*";
-        }
-        memory[destination] = value;
-        break;
-      case 3:
-        value = *input_it;
-        input_it++;
-        destination = params[0];
-        memory[destination] = value;
-        break;
-      case 4:
-        value = params[0];
-        output.push_back(value);
-        break;
-      case 5:
-      case 6:
-        operand1 = params[0];
-        value = params[1];
-        if (op == 5 ? operand1 != 0 : operand1 == 0) {
-          new_position = value;
-        }
-        break;
-      case 7:
-      case 8:
-        operand1 = params[0];
-        operand2 = params[1];
-        destination = params[2];
-        if (op == 7 ? operand1 < operand2 : operand1 == operand2) {
-          memory[destination] = 1;
-        } else {
-          memory[destination] = 0;
-        }
-        break;
-      }
-      position = new_position;
-    }
-    return {memory, output};
+    execution e {initial};
+    write_all(e, input);
+    run(e);
+    return {mem(e), read_all(e)};
   }
 }
