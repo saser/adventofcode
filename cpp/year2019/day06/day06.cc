@@ -33,6 +33,9 @@ namespace day06 {
     int answer = sum_depth(tree, "COM");
     return adventofcode::ok(std::to_string(answer));
   }
+  adventofcode::answer_t part2(std::istream& is) {
+    return adventofcode::err("not implemented yet");
+  }
 }
 
 int sum_depth_aux(const orbit_tree& tree, const std::string& node, const int depth) {
