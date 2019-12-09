@@ -83,7 +83,7 @@ namespace intcode {
   bool position_mode(int instruction, int n);
 
   // Return the number of parameters for the given opcode.
-  size_t n_params(int opcode);
+  int n_params(int opcode);
 
   // Parse a string into a memory.
   memory parse(const std::string& s);
