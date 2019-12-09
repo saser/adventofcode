@@ -26,13 +26,31 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::string line;
   std::getline(is, line);
   intcode::memory program = intcode::parse(line);
-  std::vector<int> phase_settings {0, 1, 2, 3, 4};
+  std::vector<int> phase_settings;
+  if (part == 1) {
+    phase_settings = {0, 1, 2, 3, 4};
+  } else {
+    phase_settings = {5, 6, 7, 8, 9};
+  }
+  auto perms = permutations(phase_settings);
   std::optional<int> max_signal;
+  std::vector<intcode::execution> executions;
+  executions.reserve(5);
   for (auto permutation : permutations(phase_settings)) {
-    int signal = 0;
-    for (auto phase_setting : permutation) {
-      auto [ _, output ] = intcode::run(program, {phase_setting, signal});
-      signal = output[0];
+    executions.clear();
+    for (size_t i = 0; i < permutation.size(); i++) {
+      auto e = intcode::execution {program};
+      intcode::write(e, permutation[i]);
+      executions.push_back(e);
+    }
+    auto signal = 0;
+    auto current = 0;
+    while (executions[executions.size() - 1].state != intcode::execution_state::halted) {
+      auto &e = executions[current];
+      intcode::write(e, signal);
+      intcode::run(e);
+      signal = intcode::read(e);
+      current = (current + 1) % executions.size();
     }
     max_signal = std::max(max_signal.value_or(signal), signal);
   }
