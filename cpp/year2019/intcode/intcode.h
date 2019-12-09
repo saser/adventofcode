@@ -19,6 +19,12 @@ namespace intcode {
     99, // halt
   };
 
+  enum parameter_mode {
+    position,
+    immediate,
+    relative,
+  };
+
   // Memory is represented as a vector of ints.
   typedef std::vector<int64_t> memory;
 
@@ -76,11 +82,8 @@ namespace intcode {
   // Determine the opcode for a given memory value.
   int opcode(int64_t instruction);
 
-  // Determine whether parameter number `n` is in immediate mode.
-  bool immediate_mode(int64_t instruction, int n);
-
-  // Determine whether parameter number `n` is in position mode.
-  bool position_mode(int64_t instruction, int n);
+  // Determine which mode parameter number `n` is in.
+  parameter_mode mode(int64_t instruction, int n);
 
   // Return the number of parameters for the given opcode.
   int n_params(int opcode);

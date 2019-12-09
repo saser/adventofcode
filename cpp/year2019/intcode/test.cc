@@ -32,27 +32,27 @@ TEST(Intcode, ImmediateMode) {
     int opcode = *it;
     // All parameters in position mode.
     for (int n = 1; n <= 3; n++) {
-      EXPECT_FALSE(intcode::immediate_mode(opcode, n));
+      EXPECT_NE(intcode::parameter_mode::immediate, intcode::mode(opcode, n));
     }
     // First parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100, 1));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100, 1));
     // Second parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000, 2));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 1000, 2));
     // Third parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 10000, 3));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 10000, 3));
     // First and second parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000, 1));
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000, 2));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 1000, 1));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 1000, 2));
     // First and third parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 10000, 1));
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 10000, 3));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 10000, 1));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 10000, 3));
     // Second and third parameter in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000 + 10000, 2));
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 1000 + 10000, 3));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 1000 + 10000, 2));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 1000 + 10000, 3));
     // All parameters in immediate mode.
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 1));
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 2));
-    EXPECT_TRUE(intcode::immediate_mode(opcode + 100 + 1000 + 10000, 3));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 1000 + 10000, 1));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 1000 + 10000, 2));
+    EXPECT_EQ(intcode::parameter_mode::immediate, intcode::mode(opcode + 100 + 1000 + 10000, 3));
   }
 }
 
