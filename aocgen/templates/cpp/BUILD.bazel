@@ -1,0 +1,26 @@
+cc_library(
+    name = "{{.FullDay}}",
+    hdrs = ["{{.FullDay}}.h"],
+    srcs = ["{{.FullDay}}.cc"],
+    deps = ["//:adventofcode"],
+)
+
+cc_test(
+    name = "test",
+    srcs = ["test.cc"],
+    deps = [
+        ":{{.FullDay}}",
+        "@googletest//:gtest_main",
+    ],
+    data = ["//{{.FullYear}}:testdata/{{.PaddedDay}}"],
+)
+
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
+    deps = [
+        ":{{.FullDay}}",
+        "@googlebenchmark//:benchmark_main",
+    ],
+    data = ["//{{.FullYear}}:testdata/{{.PaddedDay}}"],
+)
