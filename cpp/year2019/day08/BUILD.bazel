@@ -12,7 +12,7 @@ cc_test(
         ":day08",
         "@googletest//:gtest_main",
     ],
-    data = ["//year2019:testdata/08"],
+    data = glob(["testdata/*"]) + ["//year2019:testdata/08"],
 )
 
 cc_binary(
