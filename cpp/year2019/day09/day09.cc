@@ -22,6 +22,6 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::string line;
   std::getline(is, line);
   intcode::memory program = intcode::parse(line);
-  auto [ _, output ] = intcode::run(program, {1});
+  auto [ _, output ] = intcode::run(program, {part});
   return adventofcode::ok(std::to_string(output.back()));
 }
