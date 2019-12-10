@@ -21,6 +21,62 @@ bool write_param(int opcode, int n) {
   return b;
 }
 
+int64_t src_param(const intcode::execution& e, int64_t instruction, int n) {
+  auto value = e.m[e.position + n];
+  auto m = intcode::mode(instruction, n);
+  switch (m) {
+  case intcode::parameter_mode::position:
+    value = e.m[value];
+    break;
+  case intcode::parameter_mode::relative:
+    value = e.m[e.relative_base + value];
+  default:
+    break;
+  }
+  return value;
+}
+
+size_t dst_param(intcode::execution& e, int64_t instruction, int n) {
+  auto dst = e.m[e.position + n];
+  auto m = intcode::mode(instruction, n);
+  switch (m) {
+  case intcode::parameter_mode::relative:
+    dst = e.relative_base + dst;
+    break;
+  default:
+    break;
+  }
+  return dst;
+}
+
+std::vector<int64_t> parse_params(intcode::execution& e, int64_t instruction) {
+  std::vector<int64_t> params;
+  switch (intcode::opcode(instruction)) {
+  case 1:
+  case 2:
+  case 7:
+  case 8:
+    params.push_back(src_param(e, instruction, 1));
+    params.push_back(src_param(e, instruction, 2));
+    params.push_back(dst_param(e, instruction, 3));
+    break;
+  case 3:
+    params.push_back(dst_param(e, instruction, 1));
+    break;
+  case 4:
+    params.push_back(src_param(e, instruction, 1));
+    break;
+  case 5:
+  case 6:
+    params.push_back(src_param(e, instruction, 1));
+    params.push_back(src_param(e, instruction, 2));
+    break;
+  case 9:
+    params.push_back(src_param(e, instruction, 1));
+  }
+  return params;
+}
+
 namespace intcode {
   memory mem(const execution& e) {
     return e.m;
@@ -54,24 +110,7 @@ namespace intcode {
       return;
     }
     auto n = n_params(op);
-    std::vector<int64_t> params;
-    params.reserve(n);
-    for (int param = 1; param <= n; param++) {
-      auto value = e.m[e.position + param];
-      if (!write_param(op, param)) {
-        switch (mode(instruction, param)) {
-        case parameter_mode::position:
-          value = e.m[value];
-          break;
-        case parameter_mode::relative:
-          value = e.m[e.relative_base + value];
-          break;
-        default:
-          break;
-        }
-      }
-      params.push_back(value);
-    }
+    auto params = parse_params(e, instruction);
     int64_t operand1, operand2, destination, value;
     auto new_position = e.position + n + 1;
     switch (op) {
