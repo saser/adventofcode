@@ -2,7 +2,10 @@ cc_library(
     name = "day11",
     hdrs = ["day11.h"],
     srcs = ["day11.cc"],
-    deps = ["//:adventofcode"],
+    deps = [
+        "//:adventofcode",
+        "//year2019/intcode:intcode",
+    ],
 )
 
 cc_test(
