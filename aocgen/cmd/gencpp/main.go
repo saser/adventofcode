@@ -102,6 +102,11 @@ func imain() int {
 			fmt.Printf("error creating output file %s: %+v\n", outputPath, err)
 			return 2
 		}
+		defer func() {
+			if err := templateFile.Close(); err != nil {
+				fmt.Printf("error closing output file %s: %+v\n", outputPath, err)
+			}
+		}()
 		tmpl.Execute(templateFile, data)
 	}
 
