@@ -219,7 +219,7 @@ namespace intcode {
     memory m;
     m.reserve(parts.size());
     for (auto part : parts) {
-      m.push_back(std::stoi(part));
+      m.push_back(std::stol(part));
     }
     return m;
   }
