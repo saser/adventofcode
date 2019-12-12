@@ -21,15 +21,15 @@ bool write_param(int opcode, int n) {
   return b;
 }
 
-int64_t src_param(const intcode::execution& e, int64_t instruction, int n) {
-  auto value = e.m[e.position + n];
+int64_t src_param(intcode::execution& e, int64_t instruction, int n) {
+  auto value = e.at(e.position + n);
   auto m = intcode::mode(instruction, n);
   switch (m) {
   case intcode::parameter_mode::position:
-    value = e.m[value];
+    value = e.at(value);
     break;
   case intcode::parameter_mode::relative:
-    value = e.m[e.relative_base + value];
+    value = e.at(e.relative_base + value);
   default:
     break;
   }
@@ -37,7 +37,7 @@ int64_t src_param(const intcode::execution& e, int64_t instruction, int n) {
 }
 
 size_t dst_param(intcode::execution& e, int64_t instruction, int n) {
-  auto dst = e.m[e.position + n];
+  auto dst = e.at(e.position + n);
   auto m = intcode::mode(instruction, n);
   switch (m) {
   case intcode::parameter_mode::relative:
@@ -78,41 +78,48 @@ std::vector<int64_t> parse_params(intcode::execution& e, int64_t instruction) {
 }
 
 namespace intcode {
-  memory mem(const execution& e) {
-    return e.m;
+  int64_t& execution::at(size_t position) {
+    if (position >= m.size()) {
+      m.resize(position + 1);
+    }
+    return m.at(position);
   }
 
-  void write(execution& e, const int64_t& i) {
-    e.in.push_back(i);
+  memory execution::mem() const {
+    return m;
   }
 
-  void write_all(execution& e, const input& i) {
-    e.in.insert(e.in.end(), i.begin(), i.end());
+  void execution::write(const int64_t& input) {
+    in.push_back(input);
   }
 
-  int64_t read(execution& e) {
-    auto v = e.out.front();
-    e.out.pop_front();
+  void execution::write_all(const input& inputs) {
+    in.insert(in.end(), inputs.begin(), inputs.end());
+  }
+
+  int64_t execution::read() {
+    auto v = out.front();
+    out.pop_front();
     return v;
   }
 
-  output read_all(execution& e) {
-    auto copy = e.out;
-    e.out.clear();
+  output execution::read_all() {
+    auto copy = out;
+    out.clear();
     return copy;
   }
 
-  void run_instruction(execution& e) {
-    auto instruction = e.m[e.position];
+  void execution::run_instruction() {
+    auto instruction = at(position);
     auto op = opcode(instruction);
     if (op == 99) {
-      e.state = execution_state::halted;
+      state = execution_state::halted;
       return;
     }
     auto n = n_params(op);
-    auto params = parse_params(e, instruction);
+    auto params = parse_params(*this, instruction);
     int64_t operand1, operand2, destination, value;
-    auto new_position = e.position + n + 1;
+    auto new_position = position + n + 1;
     switch (op) {
     // addition, multiplication
     case 1:
@@ -125,23 +132,23 @@ namespace intcode {
       } else {
         value = operand1 * operand2;
       }
-      e.m[destination] = value;
+      at(destination) = value;
       break;
     // read input
     case 3:
-      if (e.in.empty()) {
-        e.state = execution_state::waiting;
+      if (in.empty()) {
+        state = execution_state::waiting;
         return;
       }
-      value = e.in.front();
-      e.in.pop_front();
+      value = in.front();
+      in.pop_front();
       destination = params[0];
-      e.m[destination] = value;
+      m.at(destination) = value;
       break;
     // produce output
     case 4:
       value = params[0];
-      e.out.push_back(value);
+      out.push_back(value);
       break;
     // jump-if-true, jump-if-false
     case 5:
@@ -159,26 +166,24 @@ namespace intcode {
       operand2 = params[1];
       destination = params[2];
       if (op == 7 ? operand1 < operand2 : operand1 == operand2) {
-        e.m[destination] = 1;
+        at(destination) = 1;
       } else {
-        e.m[destination] = 0;
+        at(destination) = 0;
       }
       break;
     // adjust relative base
     case 9:
       value = params[0];
-      e.relative_base += value;
+      relative_base += value;
       break;
     }
-    e.position = new_position;
-    e.state = execution_state::running;
+    position = new_position;
+    state = execution_state::running;
   }
 
-  void run(execution& e) {
-    auto state = e.state;
+  void execution::run() {
     do {
-      run_instruction(e);
-      state = e.state;
+      run_instruction();
     } while (state == execution_state::running);
   }
 
@@ -249,8 +254,8 @@ namespace intcode {
 
   std::pair<memory, output> run(const memory& initial, const input& input) {
     execution e {initial};
-    write_all(e, input);
-    run(e);
-    return {mem(e), read_all(e)};
+    e.write_all(input);
+    e.run();
+    return {e.mem(), e.read_all()};
   }
 }

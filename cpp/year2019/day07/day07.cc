@@ -40,16 +40,17 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     executions.clear();
     for (size_t i = 0; i < permutation.size(); i++) {
       auto e = intcode::execution {program};
-      intcode::write(e, permutation[i]);
+      e.write(permutation.at(i));
       executions.push_back(e);
     }
     auto signal = 0;
     auto current = 0;
-    while (executions[executions.size() - 1].state != intcode::execution_state::halted) {
-      auto &e = executions[current];
-      intcode::write(e, signal);
-      intcode::run(e);
-      signal = intcode::read(e);
+    auto& last = executions.at(executions.size() - 1);
+    while (last.state != intcode::execution_state::halted) {
+      auto &e = executions.at(current);
+      e.write(signal);
+      e.run();
+      signal = e.read();
       current = (current + 1) % executions.size();
     }
     max_signal = std::max(max_signal.value_or(signal), signal);

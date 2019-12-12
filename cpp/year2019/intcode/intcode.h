@@ -52,34 +52,38 @@ namespace intcode {
     execution_state state = execution_state::initialized;
 
     execution(const memory& _m) : m(_m) {}
+
+    // Retrieves the value at `position` in memory, growing the memory if
+    // needed. If memory grows, all new elements are initialized to 0.
+    int64_t& at(size_t position);
+
+    // Return a copy of the current execution memory.
+    memory mem() const;
+
+    // Write an input value to the input of the execution.
+    void write(const int64_t& input);
+
+    // Write all provided input values to the input of the execution.
+    void write_all(const input& inputs);
+
+    // Read an output value produced by the execution. The value is consumed by
+    // reading it. Reading when no output is available is undefiend behavior.
+    int64_t read();
+
+    // Read all output produced by the execution. All output values are
+    // consumed.
+    output read_all();
+
+    // Runs the instruction at the current position in memory. Returns the next
+    // execution state. Running an instruction might cause the execution to
+    // enter the `halted` state, from which it will never transition to another
+    // state. If the current instruction is to read input, and no input is
+    // available, nothing happens, and the returned state will be `waiting`.
+    void run_instruction();
+
+    // Runs instructions until the execution halts or waits for input.
+    void run();
   };
-
-  // Return a copy of the current execution memory.
-  memory mem(const execution& e);
-
-  // Write an input value to the input of the execution.
-  void write(execution& e, const int64_t& i);
-
-  // Write all input values to the input of the execution.
-  void write_all(execution& e, const input& i);
-
-  // Read an output value produced by the execution. The value is consumed by
-  // reading it. Reading when no output is available is undefiend behavior.
-  int64_t read(execution& e);
-
-  // Read all output produced by the execution. All output values are
-  // consumed.
-  output read_all(execution& e);
-
-  // Runs the instruction at the current position in memory. Returns the next
-  // execution state. Running an instruction might cause the execution to
-  // enter the `halted` state, from which it will never transition to another
-  // state. If the current instruction is to read input, and no input is
-  // available, nothing happens, and the returned state will be `waiting`.
-  void run_instruction(execution& e);
-
-  // Runs instructions until the execution halts or waits for input.
-  void run(execution& e);
 
   // Determine the opcode for a given memory value.
   int opcode(int64_t instruction);
