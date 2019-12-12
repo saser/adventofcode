@@ -103,15 +103,27 @@ void n_body_step(state& state) {
   apply_velocity(state);
 }
 
+bool states_equal(const state& s1, const state& s2) {
+  if (s1.size() != s2.size()) {
+    return false;
+  }
+  for (auto i = 0lu; i < s1.size(); i++) {
+    auto [p1, v1] = s1[i];
+    auto [p2, v2] = s2[i];
+    if (p1 != p2 || v1 != v2) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::vector<state> find_cycle(const state& initial_state) {
-  std::set<state> states;
   std::vector<state> states_v;
   state state = initial_state;
-  while (states.find(state) == states.end()) {
-    states.insert(state);
+  do {
     states_v.push_back(state);
     n_body_step(state);
-  }
+  } while (!states_equal(state, initial_state));
   return states_v;
 }
 
