@@ -20,7 +20,7 @@ namespace intcode {
     99, // halt
   };
 
-  enum parameter_mode {
+  enum class parameter_mode {
     position,
     immediate,
     relative,
@@ -35,7 +35,7 @@ namespace intcode {
   typedef std::deque<int64_t> input;
   typedef std::deque<int64_t> output;
 
-  enum execution_state {
+  enum class execution_state {
     initialized,
     running,
     waiting,
