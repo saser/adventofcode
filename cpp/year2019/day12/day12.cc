@@ -1,38 +1,22 @@
 #include "year2019/day12/day12.h"
 
 #include <cmath>
-#include <iostream>
+#include <istream>
 #include <regex>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
-
-#include "absl/strings/str_format.h"
 
 #include "adventofcode.h"
 
-struct point {
-  int x;
-  int y;
-  int z;
-
-  int energy() const;
-};
-
-struct moon {
-  point position;
-  point velocity;
-};
+using state = std::vector<std::pair<int, int>>;
 
 adventofcode::answer_t solve(std::istream& is, unsigned int steps, int part);
-std::vector<moon> parse(std::istream& is);
-std::string format_moon(const moon& moon);
-void apply_gravity_axis(const int& p1, const int& p2, int& v1, int& v2);
-void apply_gravity(std::vector<moon>& moons);
-void apply_velocity(std::vector<moon>& moons);
-void n_body_step(std::vector<moon>& moons);
-int potential_energy(const moon& moon);
-int kinetic_energy(const moon& moon);
-int total_energy(const std::vector<moon>& moons);
+std::tuple<state, state, state> parse(std::istream& is);
+std::vector<state> find_cycle(const state& state);
+unsigned int total_energy(const std::vector<state>& axes);
+long unsigned int lcm_all(const std::vector<long unsigned int>& ns);
 
 namespace day12 {
   adventofcode::answer_t part1(std::istream& is, unsigned int steps) {
@@ -45,53 +29,48 @@ namespace day12 {
 }
 
 adventofcode::answer_t solve(std::istream& is, unsigned int steps, int part) {
-  auto moons = parse(is);
-  for (unsigned int i = 0; i < steps; i++) {
-    n_body_step(moons);
+  auto [x_state, y_state, z_state] = parse(is);
+  auto x_cycle = find_cycle(x_state);
+  auto x_n = x_cycle.size();
+  state final_x_state = x_cycle[steps % x_n];
+  auto y_cycle = find_cycle(y_state);
+  auto y_n = y_cycle.size();
+  state final_y_state = y_cycle[steps % y_n];
+  auto z_cycle = find_cycle(z_state);
+  auto z_n = z_cycle.size();
+  state final_z_state = z_cycle[steps % z_n];
+  if (part == 1) {
+    auto total = total_energy({final_x_state, final_y_state, final_z_state});
+    return adventofcode::ok(std::to_string(total));
   }
-  auto energy = total_energy(moons);
-  return adventofcode::ok(std::to_string(energy));
+  auto full_cycle_n = lcm_all({x_n, y_n, z_n});
+  return adventofcode::ok(std::to_string(full_cycle_n));
 }
 
-std::vector<moon> parse(std::istream& is) {
+std::tuple<state, state, state> parse(std::istream& is) {
   std::string line;
-  std::vector<moon> moons;
+  state x_state;
+  state y_state;
+  state z_state;
   const std::regex re(R"(<x=(-?\d+), y=(-?\d+), z=(-?\d+)>)");
   std::smatch match;
   while (std::getline(is, line)) {
     if (!std::regex_match(line, match, re)) {
       continue;
     }
-    auto x_match = match[1];
-    auto x = std::stoi(x_match);
-    auto y_match = match[2];
-    auto y = std::stoi(y_match);
-    auto z_match = match[3];
-    auto z = std::stoi(z_match);
-    point position {x: x, y: y, z: z};
-    point velocity {x: 0, y: 0, z: 0};
-    moon m {position: position, velocity: velocity};
-    moons.push_back(m);
+    auto x = std::stoi(match[1]);
+    x_state.push_back({x, 0});
+    auto y = std::stoi(match[2]);
+    y_state.push_back({y, 0});
+    auto z = std::stoi(match[3]);
+    z_state.push_back({z, 0});
   }
-  return moons;
+  return {x_state, y_state, z_state};
 }
 
-std::string format_moon(const moon& moon) {
-  auto p = moon.position;
-  auto v = moon.velocity;
-  return absl::StrFormat("pos=<x=% 3d, y=% 3d, z=% 3d>, vel=<x=% 3d, y=% 3d, z=% 3d>", p.x, p.y, p.z, v.x, v.y, v.z);
-}
-
-int point::energy() const {
-  return std::abs(x) + std::abs(y) + std::abs(z);
-}
-
-void n_body_step(std::vector<moon>& moons) {
-  apply_gravity(moons);
-  apply_velocity(moons);
-}
-
-void apply_gravity_axis(const int& p1, const int& p2, int& v1, int& v2) {
+void apply_gravity_axis(std::pair<int, int>& body1, std::pair<int, int>& body2) {
+  auto& [p1, v1] = body1;
+  auto& [p2, v2] = body2;
   if (p1 == p2) {
     return;
   }
@@ -104,39 +83,74 @@ void apply_gravity_axis(const int& p1, const int& p2, int& v1, int& v2) {
   }
 }
 
-void apply_gravity(std::vector<moon>& moons) {
-  using size = std::vector<moon>::size_type;
-  for (size i = 0; i < moons.size(); i++) {
-    for (size j = i + 1; j < moons.size(); j++) {
-      auto& moon1 = moons.at(i);
-      auto& moon2 = moons.at(j);
-      apply_gravity_axis(moon1.position.x, moon2.position.x, moon1.velocity.x, moon2.velocity.x);
-      apply_gravity_axis(moon1.position.y, moon2.position.y, moon1.velocity.y, moon2.velocity.y);
-      apply_gravity_axis(moon1.position.z, moon2.position.z, moon1.velocity.z, moon2.velocity.z);
+void apply_gravity(state& state) {
+  using size = state::size_type;
+  for (size i = 0; i < state.size(); i++) {
+    for (size j = i + 1; j < state.size(); j++) {
+      apply_gravity_axis(state.at(i), state.at(j));
     }
   }
 }
 
-void apply_velocity(std::vector<moon>& moons) {
-  for (auto& moon : moons) {
-    moon.position.x += moon.velocity.x;
-    moon.position.y += moon.velocity.y;
-    moon.position.z += moon.velocity.z;
+void apply_velocity(state& state) {
+  for (auto& [ p, v ] : state) {
+    p += v;
   }
 }
 
-int potential_energy(const moon& moon) {
-  return moon.position.energy();
+void n_body_step(state& state) {
+  apply_gravity(state);
+  apply_velocity(state);
 }
 
-int kinetic_energy(const moon& moon) {
-  return moon.velocity.energy();
-}
-
-int total_energy(const std::vector<moon>& moons) {
-  int sum = 0;
-  for (auto& moon : moons) {
-    sum += potential_energy(moon) * kinetic_energy(moon);
+std::vector<state> find_cycle(const state& initial_state) {
+  std::set<state> states;
+  std::vector<state> states_v;
+  state state = initial_state;
+  while (states.find(state) == states.end()) {
+    states.insert(state);
+    states_v.push_back(state);
+    n_body_step(state);
   }
-  return sum;
+  return states_v;
+}
+
+unsigned int total_energy(const std::vector<state>& axes) {
+  auto bodies = axes.at(0).size();
+  std::vector<unsigned int> potential_energies(bodies);
+  std::vector<unsigned int> kinetic_energies(bodies);
+  for (auto axis : axes) {
+    for (auto body = 0lu; body < bodies; body++) {
+      auto [p, v] = axis.at(body);
+      potential_energies.at(body) += std::abs(p);
+      kinetic_energies.at(body) += std::abs(v);
+    }
+  }
+  unsigned int total_energy = 0;
+  for (auto body = 0lu; body < bodies; body++) {
+    total_energy += potential_energies.at(body) * kinetic_energies.at(body);
+  }
+  return total_energy;
+}
+
+long unsigned int gcd(const long unsigned int& a, const long unsigned int& b) {
+  if (b > a) {
+    return gcd(b, a);
+  }
+  if (b == 0) {
+    return a;
+  }
+  return gcd(b, a % b);
+}
+
+long unsigned int lcm(const long unsigned int& a, const long unsigned int& b) {
+  return (a / gcd(a, b)) * b;
+}
+
+long unsigned int lcm_all(const std::vector<long unsigned int>& ns) {
+  auto acc = ns.front();
+  for (auto it = ns.begin() + 1; it != ns.end(); it++) {
+    acc = lcm(acc, *it);
+  }
+  return acc;
 }
