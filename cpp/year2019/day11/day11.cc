@@ -1,6 +1,8 @@
 #include "year2019/day11/day11.h"
 
-#include <istream>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -37,6 +39,9 @@ namespace std {
   };
 }
 
+std::vector<std::vector<char>> to_grid(const std::unordered_map<point, bool>& painted);
+std::string render(const std::vector<std::vector<char>>& grid);
+
 namespace day11 {
   adventofcode::answer_t part1(std::istream& is) {
     return solve(is, 1);
@@ -54,6 +59,9 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   intcode::execution e {program};
   robot r {};
   std::unordered_map<point, bool> painted;
+  if (part == 2) {
+    painted[r.p] = true;
+  }
   while (e.state != intcode::execution_state::halted) {
     auto color = false;
     auto lookup = painted.find(r.p);
@@ -72,7 +80,12 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     }
     r.step();
   }
-  return adventofcode::ok(std::to_string(painted.size()));
+  if (part == 1) {
+    return adventofcode::ok(std::to_string(painted.size()));
+  }
+  auto grid = to_grid(painted);
+  auto output = render(grid);
+  return adventofcode::ok(output);
 }
 
 bool point::operator==(const point& other) const {
@@ -114,4 +127,44 @@ void robot::turn_right() {
     dx = 0;
     dy = 1;
   }
+}
+
+std::vector<std::vector<char>> to_grid(const std::unordered_map<point, bool>& painted) {
+  using pair_type = std::unordered_map<point, bool>::value_type;
+  auto [ min_x_pair, max_x_pair ] = std::minmax_element(
+    painted.begin(), painted.end(),
+    [] (const pair_type& pair1, const pair_type& pair2) {
+      return pair1.first.x < pair2.first.x;
+    }
+  );
+  auto min_x = min_x_pair->first.x;
+  auto max_x = max_x_pair->first.x;
+  auto cols = max_x - min_x + 1;
+  auto [ min_y_pair, max_y_pair ] = std::minmax_element(
+    painted.begin(), painted.end(),
+    [] (const pair_type& pair1, const pair_type& pair2) {
+      return pair1.first.y < pair2.first.y;
+    }
+  );
+  auto min_y = min_y_pair->first.y;
+  auto max_y = max_y_pair->first.y;
+  auto rows = max_y - min_y + 1;
+  std::vector<std::vector<char>> grid(rows, std::vector<char>(cols, '.'));
+  for (auto [ p, color ] : painted) {
+    grid[p.y - min_y][p.x - min_x] = color ? '#' : '.';
+  }
+  return grid;
+}
+
+std::string render(const std::vector<std::vector<char>>& grid) {
+  std::stringbuf sb;
+  std::ostream os {&sb};
+  for (auto it = grid.crbegin(); it != grid.crend(); it++) {
+    auto row = *it;
+    for (auto c : row) {
+      os << c;
+    }
+    os << std::endl;
+  }
+  return sb.str();
 }
