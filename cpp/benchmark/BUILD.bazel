@@ -1,0 +1,10 @@
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
+    deps = [
+        "@googlebenchmark//:benchmark",
+        "//year2019/day01:benchmark",
+        "//year2019/day02:benchmark",
+        "//year2019/day03:benchmark",
+    ],
+)

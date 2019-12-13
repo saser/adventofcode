@@ -18,12 +18,13 @@ cc_test(
     data = glob(["testdata/*"]) + ["//year2019:testdata/03"],
 )
 
-cc_binary(
+cc_library(
     name = "benchmark",
-    srcs = ["benchmark.cc"],
+    hdrs = ["benchmark.h"],
     deps = [
         ":day03",
         "@googlebenchmark//:benchmark_main",
     ],
     data = ["//year2019:testdata/03"],
+    visibility = ["//visibility:public"],
 )

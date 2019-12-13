@@ -15,12 +15,13 @@ cc_test(
     data = ["//year2019:testdata/01"],
 )
 
-cc_binary(
+cc_library(
     name = "benchmark",
-    srcs = ["benchmark.cc"],
+    hdrs = ["benchmark.h"],
     deps = [
         ":day01",
         "@googlebenchmark//:benchmark_main",
     ],
     data = ["//year2019:testdata/01"],
+    visibility = ["//visibility:public"],
 )
