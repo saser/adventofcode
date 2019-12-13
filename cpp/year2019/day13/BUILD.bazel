@@ -1,0 +1,26 @@
+cc_library(
+    name = "day13",
+    hdrs = ["day13.h"],
+    srcs = ["day13.cc"],
+    deps = ["//:adventofcode"],
+)
+
+cc_test(
+    name = "test",
+    srcs = ["test.cc"],
+    deps = [
+        ":day13",
+        "@googletest//:gtest_main",
+    ],
+    data = ["//year2019:testdata/13"],
+)
+
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
+    deps = [
+        ":day13",
+        "@googlebenchmark//:benchmark_main",
+    ],
+    data = ["//year2019:testdata/13"],
+)
