@@ -1,9 +1,7 @@
 #include "year2019/day13/day13.h"
 
 #include <istream>
-#include <map>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "adventofcode.h"
@@ -24,7 +22,6 @@ struct breakout {
 };
 
 adventofcode::answer_t solve(std::istream& is, int part);
-screen_t to_screen(const std::map<std::pair<int64_t, int64_t>, int64_t>& tiles);
 
 namespace day13 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -41,43 +38,31 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::getline(is, input);
   auto program = intcode::parse(input);
   auto [_, output] = intcode::run(program, {});
+  screen_t screen;
+  auto block_tiles = 0;
   auto it = output.begin();
-  std::map<std::pair<int64_t, int64_t>, int64_t> tiles;
   while (it != output.end()) {
     auto x = *it++;
     auto y = *it++;
     auto tile = *it++;
-    tiles[{x, y}] = tile;
+    auto n_rows = std::max((unsigned long int) y + 1, screen.size());
+    auto n_cols = std::max((unsigned long int) x + 1, screen.size());
+    screen.resize(n_rows);
+    for (auto& row : screen) {
+      row.resize(n_cols);
+    }
+    screen.at(y).at(x) = tile;
+    if (tile == 2) {
+      block_tiles++;
+    }
   }
   if (part == 1) {
-    auto block_tiles = 0;
-    for (auto [pos, tile] : tiles) {
-      if (tile == 2) {
-        block_tiles++;
-      }
-    }
     return adventofcode::ok(std::to_string(block_tiles));
   }
   program.at(0) = 2;
-  screen_t screen = to_screen(tiles);
   breakout b {program, screen};
   b.run();
   return adventofcode::ok(std::to_string(b.score));
-}
-
-screen_t to_screen(const std::map<std::pair<int64_t, int64_t>, int64_t>& tiles) {
-  screen_t screen;
-  for (auto [p, tile] : tiles) {
-    auto [x, y] = p;
-    auto ux = (unsigned long int) x;
-    auto uy = (unsigned long int) y;
-    screen.resize(std::max(uy + 1, screen.size()));
-    for (auto& row : screen) {
-      row.resize(std::max(ux + 1, row.size()));
-    }
-    screen.at(uy).at(ux) = tile;
-  }
-  return screen;
 }
 
 void breakout::read() {
