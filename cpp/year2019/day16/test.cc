@@ -34,7 +34,7 @@ TEST(Year2019Day16, Part1Example3) {
 
 TEST(Year2019Day16, Part1Actual) {
   std::ifstream input("year2019/testdata/16");
-  std::string output = "";
+  std::string output = "49254779";
   adventofcode::answer_t a = day16::part1(input);
   EXPECT_EQ("", a.error);
   EXPECT_EQ(output, a.answer);
