@@ -10,12 +10,12 @@
 #include "adventofcode.h"
 
 struct reagent {
-  unsigned int amount;
+  unsigned long amount;
   std::string chemical;
 };
 
-using productions_t = std::unordered_map<std::string, std::pair<unsigned int, std::vector<reagent>>>;
-using produce_t = std::unordered_map<std::string, unsigned int>;
+using productions_t = std::unordered_map<std::string, std::pair<unsigned long, std::vector<reagent>>>;
+using produce_t = std::unordered_map<std::string, unsigned long>;
 
 adventofcode::answer_t solve(std::istream& is, int part);
 productions_t parse(std::istream& is);
@@ -52,7 +52,7 @@ productions_t parse(std::istream& is) {
     auto matches_end = std::sregex_iterator();
     while (matches_it != matches_end) {
       auto match = *matches_it;
-      auto amount = (unsigned int) std::stoul(match[1]);
+      auto amount = std::stoul(match[1]);
       auto chemical = match[2];
       requirements.push_back(reagent {amount, chemical});
       matches_it++;
