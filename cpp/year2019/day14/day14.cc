@@ -20,6 +20,7 @@ using produce_t = std::unordered_map<std::string, unsigned long>;
 adventofcode::answer_t solve(std::istream& is, int part);
 productions_t parse(std::istream& is);
 std::pair<produce_t, produce_t> produce(const reagent& r, const productions_t& productions);
+unsigned long ore_for_fuel(const unsigned long& amount, const productions_t& productions);
 
 namespace day14 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -33,12 +34,29 @@ namespace day14 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto productions = parse(is);
-  reagent fuel {1, "FUEL"};
-  auto [produced, _] = produce(fuel, productions);
+  unsigned long ore = ore_for_fuel(1, productions);
   if (part == 1) {
-    return adventofcode::ok(std::to_string(produced["ORE"]));
+    return adventofcode::ok(std::to_string(ore));
   }
-  return adventofcode::err("not implemented yet");
+  // This is a bit of cleverness. It is based on that if `n` ore can produce `m`
+  // fuel, then `target` ore makes _at least_ `m * target / n` fuel. This makes
+  // `m * target / n` a good guess for `fuel` for the next iteration.
+  // We use `fuel + 1` to not "overshoot" the `target`. Due to how we update
+  // `fuel`, we know that the ore for `fuel` will never overshoot the target.
+  // We convert everything to doubles before performing the division. This helps
+  // with problems that arise due to integer division. We then floor everything
+  // by converting it back to a long again.
+  //
+  // This method was not found by me. I got stuck and looked for hints on the
+  // Advent of Code subreddit, and found this solution by user
+  // /u/hotzenplotz6. The comment is available here:
+  // https://www.reddit.com/r/adventofcode/comments/eafj32/2019_day_14_solutions/faqkkwv/
+  auto fuel = 1ul;
+  auto target = 1'000'000'000'000ul;
+  while ((ore = ore_for_fuel(fuel + 1, productions)) < target) {
+    fuel = (unsigned long) ((double) (fuel + 1) * (double) target / (double) ore);
+  }
+  return adventofcode::ok(std::to_string(fuel));
 }
 
 productions_t parse(std::istream& is) {
@@ -91,4 +109,9 @@ std::pair<produce_t, produce_t> produce(const reagent& r, const productions_t& p
   produce_t available_chemicals;
   produce_aux(r, productions, produced_chemicals, available_chemicals);
   return {produced_chemicals, available_chemicals};
+}
+
+unsigned long ore_for_fuel(const unsigned long& amount, const productions_t& productions) {
+  auto [produced, _] = produce(reagent {amount, "FUEL"}, productions);
+  return produced.at("ORE");
 }
