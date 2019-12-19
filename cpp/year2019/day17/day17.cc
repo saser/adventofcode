@@ -31,10 +31,29 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::string input;
   std::getline(is, input);
   intcode::memory program = intcode::parse(input);
+  if (part == 2) {
+    program[0] = 2;
+  }
   intcode::execution e {program};
+  if (part == 1) {
+    e.run();
+    auto grid = parse_grid(e.read_all());
+    return adventofcode::ok(std::to_string(sum_alignment_params(grid)));
+  }
+  // This program was found by hand by me.
+  std::string instructions =
+    "A,B,A,C,A,C,B,C,C,B\n"
+    "L,4,L,4,L,10,R,4\n"
+    "R,4,L,4,L,4,R,8,R,10\n"
+    "R,4,L,10,R,10\n"
+    "n\n";
+  for (auto c : instructions) {
+    e.write(c);
+  }
   e.run();
-  auto grid = parse_grid(e.read_all());
-  return adventofcode::ok(std::to_string(sum_alignment_params(grid)));
+  auto output = e.read_all();
+  auto dust = output.back();
+  return adventofcode::ok(std::to_string(dust));
 }
 
 grid_t parse_grid(const intcode::output& output) {
