@@ -1,6 +1,6 @@
 #include "year2019/day14/day14.h"
 
-#include <iostream>
+#include <istream>
 #include <regex>
 #include <string>
 #include <unordered_map>
@@ -15,9 +15,11 @@ struct reagent {
 };
 
 using productions_t = std::unordered_map<std::string, std::pair<unsigned int, std::vector<reagent>>>;
+using produce_t = std::unordered_map<std::string, unsigned int>;
 
 adventofcode::answer_t solve(std::istream& is, int part);
 productions_t parse(std::istream& is);
+std::pair<produce_t, produce_t> produce(const reagent& r, const productions_t& productions);
 
 namespace day14 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -31,15 +33,9 @@ namespace day14 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto productions = parse(is);
-  for (auto [chemical, pair] : productions) {
-    auto [amount, reagents] = pair;
-    std::cout << "To produce " << amount << " of " << chemical << ": ";
-    for (auto reagent : reagents) {
-      std::cout << reagent.amount << " " << reagent.chemical << ", ";
-    }
-    std::cout << std::endl;
-  }
-  return adventofcode::err("not implemented yet");
+  reagent fuel {1, "FUEL"};
+  auto [produced, _] = produce(fuel, productions);
+  return adventofcode::ok(std::to_string(produced["ORE"]));
 }
 
 productions_t parse(std::istream& is) {
@@ -63,4 +59,33 @@ productions_t parse(std::istream& is) {
     productions[result.chemical] = {result.amount, requirements};
   }
   return productions;
+}
+
+void produce_aux(const reagent& r, const productions_t& productions, produce_t& produced_chemicals, produce_t& available_chemicals) {
+  auto to_produce = r.amount;
+  auto& available = available_chemicals[r.chemical];
+  if (available >= to_produce) {
+    return;
+  }
+  to_produce -= available;
+  auto [result_amount, requirements] = productions.at(r.chemical);
+  auto times = to_produce / result_amount;
+  if (to_produce % result_amount != 0) {
+    times++;
+  }
+  for (auto requirement : requirements) {
+    requirement.amount *= times;
+    produce_aux(requirement, productions, produced_chemicals, available_chemicals);
+    available_chemicals[requirement.chemical] -= requirement.amount;
+  }
+  auto total = result_amount * times;
+  produced_chemicals[r.chemical] += total;
+  available += total;
+}
+
+std::pair<produce_t, produce_t> produce(const reagent& r, const productions_t& productions) {
+  produce_t produced_chemicals;
+  produce_t available_chemicals;
+  produce_aux(r, productions, produced_chemicals, available_chemicals);
+  return {produced_chemicals, available_chemicals};
 }
