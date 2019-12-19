@@ -11,6 +11,7 @@
 adventofcode::answer_t solve(std::istream& is, int part);
 int output(const std::vector<int>& v, unsigned int n);
 void phase(std::vector<int>& v);
+void fast_phase(std::vector<int>& v, std::vector<int>::size_type offset);
 
 namespace day16 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -29,13 +30,27 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   for (auto c : input) {
     v.push_back(c - '0');
   }
+  std::vector<int>::size_type offset = 0;
+  if (part == 2) {
+    auto copy = v;
+    for (auto i = 1; i < 10000; i++) {
+      v.insert(v.end(), copy.begin(), copy.end());
+    }
+    for (auto it = v.begin(); it != v.begin() + 7; it++) {
+      offset = offset * 10 + *it;
+    }
+  }
   for (auto i = 0; i < 100; i++) {
-    phase(v);
+    if (part == 1) {
+      phase(v);
+    } else {
+      fast_phase(v, offset);
+    }
   }
   std::stringbuf sb;
   std::ostream os {&sb};
   for (std::vector<int>::size_type i = 0; i < 8; i++) {
-    os << v[i];
+    os << v[i + offset];
   }
   return adventofcode::ok(sb.str());
 }
@@ -56,5 +71,24 @@ void phase(std::vector<int>& v) {
   auto copy = v;
   for (std::vector<int>::size_type i = 0; i < v.size(); i++) {
     v[i] = output(copy, i + 1);
+  }
+}
+
+// This is based on the fact that if `offset` points to an element in the later
+// half of the input signal, then we can simply calculate the new digits as the
+// cumulative sum of the last digits, starting from `offset`. For an example of
+// this, see how the last 4 digits are calculated in the description of the
+// puzzle.
+//
+// I was very close to coming up with this solution myself, since I noted that
+// cumulative sum pattern, but I needed Reddit as help to push me over the
+// edge. I thought I still had to calculate the entire output signal, including
+// the first half as well.
+void fast_phase(std::vector<int>& v, std::vector<int>::size_type offset) {
+  auto copy = v;
+  auto sum = 0;
+  for (std::vector<int>::size_type i = v.size() - 1; i >= offset; i--) {
+    sum += copy[i];
+    v[i] = sum % 10;
   }
 }
