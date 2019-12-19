@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -47,9 +48,23 @@ namespace std {
   };
 }
 
+using world_t = std::unordered_map<point, char>;
+
+struct droid {
+  intcode::execution e;
+  world_t world;
+  point position;
+
+  droid (const intcode::execution& _e) : e(_e), world(), position() {}
+
+  void explore(int64_t direction);
+  void explore_fully();
+  point find_oxygen() const;
+  std::unordered_map<point, unsigned int> distances_from(const point& start) const;
+  void draw() const;
+};
+
 adventofcode::answer_t solve(std::istream& is, int part);
-std::pair<unsigned int, std::unordered_map<point, char>> find_oxygen(intcode::execution& e);
-void draw(const std::unordered_map<point, char>& visited, const point& position);
 
 namespace day15 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -66,24 +81,30 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::getline(is, input);
   intcode::memory program = intcode::parse(input);
   intcode::execution e {program};
-  auto [steps, _] = find_oxygen(e);
-  return adventofcode::ok(std::to_string(steps));
+  droid d {e};
+  d.explore_fully();
+  auto oxygen = d.find_oxygen();
+  auto distances = d.distances_from(oxygen);
+  if (part == 1) {
+    return adventofcode::ok(std::to_string(distances[point {0, 0}]));
+  }
+  return adventofcode::err("not implemented yet");
 }
 
-unsigned int explore(intcode::execution& e, int64_t direction, std::unordered_map<point, char>& visited, const point& position) {
+void droid::explore(int64_t direction) {
   auto new_position = position.step(direction);
+  if (world.find(new_position) != world.end()) {
+    return;
+  }
   e.write(direction);
   e.run();
   auto reply = e.read();
   if (reply == 0) {
-    visited[new_position] = '#';
-    return 0;
+    world[new_position] = '#';
+    return;
   }
-  if (reply == 2) {
-    visited[new_position] = 'X';
-    return 1;
-  }
-  visited[new_position] = '.';
+  position = new_position;
+  world[position] = reply == 2 ? 'O' : '.';
   int64_t backtrack;
   switch (direction) {
   case 1:
@@ -103,66 +124,80 @@ unsigned int explore(intcode::execution& e, int64_t direction, std::unordered_ma
     if (new_direction == backtrack) {
       continue;
     }
-    auto next_position = new_position.step(new_direction);
-    if (visited.find(next_position) != visited.end()) {
-      continue;
-    }
-    auto steps = explore(e, new_direction, visited, new_position);
-    if (steps > 0) {
-      return 1 + steps;
-    }
+    explore(new_direction);
   }
   e.write(backtrack);
   e.run();
   e.read();
-  return 0;
+  position = position.step(backtrack);
 }
 
-std::pair<unsigned int, std::unordered_map<point, char>> find_oxygen(intcode::execution& e) {
-  unsigned int steps = 0;
-  std::unordered_map<point, char> visited;
-  point origin {0, 0};
-  visited[origin] = '@';
+void droid::explore_fully() {
+  world[point {0, 0}] = '.';
   for (auto direction : {1, 2, 3, 4}) {
-    auto explored_steps = explore(e, direction, visited, origin);
-    if (explored_steps > 0) {
-      steps = explored_steps;
-      break;
+    explore(direction);
+  }
+}
+
+point droid::find_oxygen() const {
+  for (auto [p, c] : world) {
+    if (c == 'O') {
+      return p;
     }
   }
-  return {steps, visited};
+  return point {0, 0};
 }
 
-void draw(const std::unordered_map<point, char>& visited, const point& position) {
-  using pair_type = std::unordered_map<point, char>::value_type;
-  auto [min_x_point, max_x_point] = std::minmax_element(
-    visited.begin(), visited.end(),
-    [] (const pair_type& pair1, const pair_type& pair2) {
-      return pair1.first.x < pair2.first.x;
+std::unordered_map<point, unsigned int> droid::distances_from(const point& start) const {
+  std::unordered_map<point, unsigned int> distances;
+  std::deque<std::pair<point, unsigned int>> q;
+  q.push_back({start, 0});
+  while (!q.empty()) {
+    auto [p, distance] = q.front();
+    q.pop_front();
+    if (distances.find(p) != distances.end()) {
+      continue;
+    }
+    distances[p] = distance;
+    for (auto direction : {1, 2, 3, 4}) {
+      auto new_p = p.step(direction);
+      if (world.at(new_p) == '#') {
+        continue;
+      }
+      q.push_back({new_p, distance + 1});
+    }
+  }
+  return distances;
+}
+
+void droid::draw() const {
+  auto [min_x_pair, max_x_pair] = std::minmax_element(
+    world.begin(), world.end(),
+    [] (const auto& pair1, const auto& pair2) {
+    return pair1.first.x < pair2.first.x;
     }
   );
-  auto min_x = min_x_point->first.x;
-  auto max_x = max_x_point->first.x;
-  auto cols = max_x - min_x + 1;
-  auto [min_y_point, max_y_point] = std::minmax_element(
-    visited.begin(), visited.end(),
-    [] (const pair_type& pair1, const pair_type& pair2) {
-      return pair1.first.y < pair2.first.y;
+  auto min_x = min_x_pair->first.x;
+  auto max_x = max_x_pair->first.x;
+  auto [min_y_pair, max_y_pair] = std::minmax_element(
+    world.begin(), world.end(),
+    [] (const auto& pair1, const auto& pair2) {
+    return pair1.first.y < pair2.first.y;
     }
   );
-  auto min_y = min_y_point->first.y;
-  auto max_y = max_y_point->first.y;
+  auto min_y = min_y_pair->first.y;
+  auto max_y = max_y_pair->first.y;
   auto rows = max_y - min_y + 1;
+  auto cols = max_x - min_x + 1;
   std::vector<std::vector<char>> grid(rows, std::vector<char>(cols, ' '));
-  for (auto [p, c] : visited) {
+  for (auto [p, c] : world) {
     if (p == position) {
       c = 'D';
     }
     grid[p.y - min_y][p.x - min_x] = c;
   }
   for (auto it = grid.crbegin(); it != grid.crend(); it++) {
-    auto row = *it;
-    for (auto col : row) {
+    for (auto col : *it) {
       std::cout << col;
     }
     std::cout << std::endl;
