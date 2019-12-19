@@ -88,7 +88,11 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   if (part == 1) {
     return adventofcode::ok(std::to_string(distances[point {0, 0}]));
   }
-  return adventofcode::err("not implemented yet");
+  unsigned int max_distance = 0;
+  for (auto [_, distance] : distances) {
+    max_distance = std::max(max_distance, distance);
+  }
+  return adventofcode::ok(std::to_string(max_distance));
 }
 
 void droid::explore(int64_t direction) {
