@@ -35,7 +35,10 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   auto productions = parse(is);
   reagent fuel {1, "FUEL"};
   auto [produced, _] = produce(fuel, productions);
-  return adventofcode::ok(std::to_string(produced["ORE"]));
+  if (part == 1) {
+    return adventofcode::ok(std::to_string(produced["ORE"]));
+  }
+  return adventofcode::err("not implemented yet");
 }
 
 productions_t parse(std::istream& is) {
