@@ -143,7 +143,7 @@ namespace intcode {
       value = in.front();
       in.pop_front();
       destination = params[0];
-      m.at(destination) = value;
+      at(destination) = value;
       break;
     // produce output
     case 4:
