@@ -23,13 +23,28 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::getline(is, input);
   intcode::memory program = intcode::parse(input);
   intcode::execution e {program};
-  std::string springscript =
-    "OR D T\n"
-    "NOT C J\n"
-    "AND T J\n"
-    "NOT A T\n"
-    "OR T J\n"
-    "WALK\n";
+  std::string springscript;
+  if (part == 1) {
+    springscript =
+      "OR D T\n"
+      "NOT C J\n"
+      "AND T J\n"
+      "NOT A T\n"
+      "OR T J\n"
+      "WALK\n";
+  } else {
+    springscript =
+      "NOT A J\n"
+      "NOT C T\n"
+      "AND D T\n"
+      "AND H T\n"
+      "OR T J\n"
+      "NOT B T\n"
+      "AND D T\n"
+      "AND H T\n"
+      "OR T J\n"
+      "RUN\n";
+  }
   for (auto c : springscript) {
     e.write(c);
   }
