@@ -39,6 +39,12 @@ namespace day22 {
 }
 
 adventofcode::answer_t solve(std::istream& is, int part) {
+  // It should be very clearly stated that I did _not_ come up with this
+  // solution myself -- I was not even close. I would most likely not have
+  // figured out that we were dealing with modular exponentiation and modular
+  // inverses. As such, this solution was taken from Reddit. More specifically,
+  // it was the beautiful solution posted by /u/mcpower_, found here:
+  // https://www.reddit.com/r/adventofcode/comments/ee0rqi/2019_day_22_solutions/fbnkaju/
   uint64_t modulo = 10007;
   if (part == 2) {
     modulo = 119315717514047;
