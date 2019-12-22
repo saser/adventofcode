@@ -24,6 +24,7 @@ struct deck_t {
 
 uint64_t mod_mul(uint64_t a, uint64_t b, uint64_t modulo);
 uint64_t mod_exp(uint64_t base, uint64_t exponent, uint64_t modulo);
+uint64_t mod_geo_sum(uint64_t a, uint64_t r, uint64_t n, uint64_t modulo);
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
@@ -39,6 +40,9 @@ namespace day22 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   uint64_t modulo = 10007;
+  if (part == 2) {
+    modulo = 119315717514047;
+  }
   deck_t deck(modulo);
   std::string line;
   while (std::getline(is, line)) {
@@ -60,12 +64,18 @@ adventofcode::answer_t solve(std::istream& is, int part) {
       continue;
     }
   }
-  for (auto i = 0u; i < modulo; i++) {
-    if (deck.get(i) == 2019) {
-      return adventofcode::ok(std::to_string(i));
+  if (part == 1) {
+    for (auto i = 0u; i < modulo; i++) {
+      if (deck.get(i) == 2019) {
+        return adventofcode::ok(std::to_string(i));
+      }
     }
+    return adventofcode::err("no solution found");
   }
-  return adventofcode::err("no solution found");
+  auto iterations = 101741582076661;
+  deck.offset = mod_geo_sum(deck.offset, deck.increment, iterations, modulo);
+  deck.increment = mod_exp(deck.increment, iterations, modulo);
+  return adventofcode::ok(std::to_string(deck.get(2020)));
 }
 
 uint64_t mod_mul(uint64_t a, uint64_t b, uint64_t modulo) {
@@ -89,6 +99,12 @@ uint64_t mod_exp(uint64_t base, uint64_t exponent, uint64_t modulo) {
   } else {
     return mod_mul(base, mod_exp(base, exponent - 1, modulo), modulo);
   }
+}
+
+uint64_t mod_geo_sum(uint64_t a, uint64_t r, uint64_t n, uint64_t modulo) {
+  auto enumerator = modulo + 1 - mod_exp(r, n, modulo);
+  auto denominator = mod_exp(modulo + 1 - r, modulo - 2, modulo);
+  return mod_mul(a, mod_mul(enumerator, denominator, modulo), modulo);
 }
 
 uint64_t deck_t::get(uint64_t n) const {
