@@ -26,10 +26,9 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::string springscript;
   if (part == 1) {
     springscript =
-      "OR D T\n"
-      "NOT C J\n"
-      "AND T J\n"
-      "NOT A T\n"
+      "NOT A J\n"
+      "NOT C T\n"
+      "AND D T\n"
       "OR T J\n"
       "WALK\n";
   } else {
