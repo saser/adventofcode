@@ -14,14 +14,14 @@ using point_t = std::pair<grid_t::size_type, grid_t::value_type::size_type>;
 
 struct maze_t {
   grid_t grid;
-  std::map<point_t, point_t> warps;
+  std::map<point_t, std::tuple<point_t, bool>> warps;
   point_t start;
   point_t end;
 
   maze_t(const grid_t& _grid) : grid(_grid), warps(), start(), end() {}
 
   void process_grid();
-  unsigned int start_to_end() const;
+  unsigned int start_to_end(bool recursive) const;
 };
 
 adventofcode::answer_t solve(std::istream& is, int part);
@@ -41,7 +41,7 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   auto grid = read_grid(is);
   maze_t maze {grid};
   maze.process_grid();
-  auto steps = maze.start_to_end();
+  auto steps = maze.start_to_end(part == 2);
   return adventofcode::ok(std::to_string(steps));
 }
 
@@ -68,6 +68,7 @@ void maze_t::process_grid() {
   struct portal_t {
     point_t entrance;
     point_t in_maze;
+    bool is_outer;
   };
   std::map<std::string, std::vector<portal_t>> portals_by;
   for (grid_t::size_type row_i = 0; row_i < grid.size() - 1; row_i++) {
@@ -90,6 +91,7 @@ void maze_t::process_grid() {
           portal.entrance = {row_i, col_i};
           portal.in_maze = {row_i, col_i - 1};
         }
+        portal.is_outer = col_i == 0 || col_i == row.size() - 2;
       } else if (is_alpha(down)) {
         next = down;
         if (row_i == 0 || grid.at(row_i - 1).at(col_i) == ' ') {
@@ -99,6 +101,7 @@ void maze_t::process_grid() {
           portal.entrance = {row_i, col_i};
           portal.in_maze = {row_i - 1, col_i};
         }
+        portal.is_outer = row_i == 0 || row_i == grid.size() - 2;
       } else {
         continue;
       }
@@ -113,44 +116,60 @@ void maze_t::process_grid() {
       end = portals[0].in_maze;
     } else {
       auto in1 = portals[0].entrance;
+      auto in1_is_outer = portals[0].is_outer;
       auto out1 = portals[1].in_maze;
-      warps[in1] = out1;
+      warps[in1] = {out1, in1_is_outer};
       auto in2 = portals[1].entrance;
+      auto in2_is_outer = portals[1].is_outer;
       auto out2 = portals[0].in_maze;
-      warps[in2] = out2;
+      warps[in2] = {out2, in2_is_outer};
     }
   }
 }
 
-unsigned int maze_t::start_to_end() const {
-  std::map<point_t, unsigned int> distances;
-  std::deque<std::pair<point_t, unsigned int>> q;
-  q.push_back({start, 0});
+unsigned int maze_t::start_to_end(bool recursive) const {
+  std::map<unsigned int, std::map<point_t, unsigned int>> distances;
+  std::deque<std::tuple<point_t, unsigned int, unsigned int>> q;
+  q.push_back({start, 0, 0});
   while (!q.empty()) {
-    auto [p, distance] = q.front();
-    if (p == end) {
+    auto [p, distance, level] = q.front();
+    q.pop_front();
+    if (p == end && level == 0) {
       return distance;
     }
-    q.pop_front();
     auto [row, col] = p;
     if (grid.at(row).at(col) != '.') {
       continue;
     }
-    if (distances.find(p) != distances.end()) {
+    auto& level_distances = distances[level];
+    if (level_distances.find(p) != level_distances.end()) {
       continue;
     }
-    distances[p] = distance;
+    level_distances[p] = distance;
     std::vector<point_t> neighbors;
     neighbors.push_back({row - 1, col});
     neighbors.push_back({row + 1, col});
     neighbors.push_back({row, col - 1});
     neighbors.push_back({row, col + 1});
     for (auto neighbor : neighbors) {
-      auto warp = warps.find(neighbor);
-      if (warp != warps.end()) {
-        neighbor = warp->second;
+      auto new_level = level;
+      auto search = warps.find(neighbor);
+      if (search != warps.end()) {
+        auto [_, tuple] = *search;
+        auto [out, is_outer] = tuple;
+        if (recursive) {
+          if (level == 0 && is_outer) {
+            continue;
+          }
+          if (is_outer) {
+            new_level--;
+          } else {
+            new_level++;
+          }
+        }
+        neighbor = out;
       }
-      q.push_back({neighbor, distance + 1});
+      q.push_back({neighbor, distance + 1, new_level});
     }
   }
   return 0;
