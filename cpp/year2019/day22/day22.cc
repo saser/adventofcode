@@ -10,12 +10,20 @@
 #include "adventofcode.h"
 
 struct deck_t {
-  std::deque<uint16_t> d;
+  uint64_t modulo;
+  uint64_t offset;
+  uint64_t increment;
 
-  deck_t into_new() const;
-  deck_t cut(int n) const;
-  deck_t increment(unsigned int n) const;
+  deck_t(uint64_t _modulo) : modulo(_modulo), offset(0), increment(1) {}
+
+  uint64_t get(uint64_t n) const;
+  void into_new();
+  void cut_by(int64_t n);
+  void increment_by(uint64_t n);
 };
+
+uint64_t mod_mul(uint64_t a, uint64_t b, uint64_t modulo);
+uint64_t mod_exp(uint64_t base, uint64_t exponent, uint64_t modulo);
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
@@ -30,73 +38,76 @@ namespace day22 {
 }
 
 adventofcode::answer_t solve(std::istream& is, int part) {
-  std::deque<uint16_t> d;
-  for (auto i = 0u; i < 10007; i++) {
-    d.push_back(i);
-  }
-  deck_t deck {d};
+  uint64_t modulo = 10007;
+  deck_t deck(modulo);
   std::string line;
   while (std::getline(is, line)) {
     if (line == "deal into new stack") {
-      deck = deck.into_new();
+      deck.into_new();
       continue;
     }
     std::smatch match;
     const std::regex cut_re(R"(cut (-?\d+))");
     if (std::regex_match(line, match, cut_re)) {
       auto n = std::stoi(match[1]);
-      deck = deck.cut(n);
+      deck.cut_by(n);
       continue;
     }
     const std::regex increment_re(R"(deal with increment (\d+))");
     if (std::regex_match(line, match, increment_re)) {
       auto n = std::stoi(match[1]);
-      deck = deck.increment(n);
+      deck.increment_by(n);
       continue;
     }
   }
-  for (auto i = 0u; i < deck.d.size(); i++) {
-    if (deck.d.at(i) == 2019) {
+  for (auto i = 0u; i < modulo; i++) {
+    if (deck.get(i) == 2019) {
       return adventofcode::ok(std::to_string(i));
     }
   }
   return adventofcode::err("no solution found");
 }
 
-deck_t deck_t::into_new() const {
-  auto copy = d;
-  std::reverse(copy.begin(), copy.end());
-  return deck_t {copy};
+uint64_t mod_mul(uint64_t a, uint64_t b, uint64_t modulo) {
+  uint64_t result = 0;
+  a %= modulo;
+  while (b > 0) {
+    if (b % 2 == 1) {
+      result = (result + a) % modulo;
+    }
+    a = (a * 2) % modulo;
+    b /= 2;
+  }
+  return result;
 }
 
-deck_t deck_t::cut(int n) const {
-  auto copy = d;
-  if (n >= 0) {
-    for (auto i = 0; i < n; i++) {
-      auto popped = copy.front();
-      copy.pop_front();
-      copy.push_back(popped);
-    }
+uint64_t mod_exp(uint64_t base, uint64_t exponent, uint64_t modulo) {
+  if (exponent == 0) {
+    return 1;
+  } else if (exponent % 2 == 0) {
+    return mod_exp(mod_mul(base, base, modulo), exponent / 2, modulo);
   } else {
-    auto an = std::abs(n);
-    for (auto i = 0; i < an; i++) {
-      auto popped = copy.back();
-      copy.pop_back();
-      copy.push_front(popped);
-    }
+    return mod_mul(base, mod_exp(base, exponent - 1, modulo), modulo);
   }
-  return deck_t {copy};
 }
 
-deck_t deck_t::increment(unsigned int n) const {
-  auto copy = d;
-  auto len = copy.size();
-  auto i = 0;
-  auto it = d.cbegin();
-  while (it != d.cend()) {
-    copy[i] = *it;
-    i = (i + n) % len;
-    it++;
+uint64_t deck_t::get(uint64_t n) const {
+  return (offset + mod_mul(increment, n, modulo)) % modulo;
+}
+
+void deck_t::into_new() {
+  increment = modulo - increment;
+  offset = (offset + increment) % modulo;
+}
+
+void deck_t::cut_by(int64_t n) {
+  if (n >= 0) {
+    offset = get(n);
+  } else {
+    offset = get(modulo + n);
   }
-  return deck_t {copy};
+}
+
+void deck_t::increment_by(uint64_t n) {
+  increment = mod_mul(increment, mod_exp(n, modulo - 2, modulo), modulo);
 }
