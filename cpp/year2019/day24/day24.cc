@@ -15,8 +15,16 @@ using point_t = std::pair<row_i_t, col_i_t>;
 
 adventofcode::answer_t solve(std::istream& is, int part);
 grid_t parse(std::istream& is);
-std::vector<bool> neighbors(const point_t& point, const grid_t& grid);
+
+grid_t empty_grid();
+grid_t unit_grid();
+unsigned int neighbors(const point_t& point,
+                       const grid_t& outer,
+                       const grid_t& grid,
+                       const grid_t& inner);
 grid_t step(const grid_t& grid);
+grid_t step_recursive(const grid_t& outer, const grid_t& grid, const grid_t& inner);
+
 unsigned int biodiversity_rating(const grid_t& grid);
 
 namespace day24 {
@@ -60,41 +68,154 @@ grid_t parse(std::istream& is) {
   return grid;
 }
 
-std::vector<bool> neighbors(const point_t& point, const grid_t& grid) {
-  auto n_rows = grid.size();
-  auto n_cols = grid.at(0).size();
+unsigned int neighbors_vertical(const point_t& point,
+                                const grid_t& outer,
+                                const grid_t& grid,
+                                const grid_t& inner,
+                                bool up) {
+  unsigned int n = 0;
+  row_i_t outer_edge_row;
+  row_i_t outer_row;
+  row_i_t inner_edge_row;
+  row_i_t inner_row;
+  if (up) {
+    outer_edge_row = 0;
+    outer_row = 1;
+    inner_edge_row = 3;
+    inner_row = 4;
+  } else {
+    outer_edge_row = 4;
+    outer_row = 3;
+    inner_edge_row = 1;
+    inner_row = 0;
+  }
   auto [row_i, col_i] = point;
-  std::vector<bool> n;
-  if (row_i != 0) {
-    n.push_back(grid.at(row_i - 1).at(col_i));
-  }
-  if (row_i != n_rows - 1) {
-    n.push_back(grid.at(row_i + 1).at(col_i));
-  }
-  if (col_i != 0) {
-    n.push_back(grid.at(row_i).at(col_i - 1));
-  }
-  if (col_i != n_cols - 1) {
-    n.push_back(grid.at(row_i).at(col_i + 1));
+  if (row_i == outer_edge_row) {
+    n += outer.at(outer_row).at(2);
+  } else if (row_i == inner_edge_row && col_i == 2) {
+    for (auto b : inner.at(inner_row)) {
+      n += b;
+    }
+  } else {
+    row_i_t grid_row = up ? row_i - 1 : row_i + 1;
+    n += grid.at(grid_row).at(col_i);
   }
   return n;
 }
 
+unsigned int neighbors_horizontal(const point_t& point,
+                                  const grid_t& outer,
+                                  const grid_t& grid,
+                                  const grid_t& inner,
+                                  bool left) {
+  unsigned int n = 0;
+  col_i_t outer_edge_col;
+  col_i_t outer_col;
+  col_i_t inner_edge_col;
+  col_i_t inner_col;
+  if (left) {
+    outer_edge_col = 0;
+    outer_col = 1;
+    inner_edge_col = 3;
+    inner_col = 4;
+  } else {
+    outer_edge_col = 4;
+    outer_col = 3;
+    inner_edge_col = 1;
+    inner_col = 0;
+  }
+  auto [row_i, col_i] = point;
+  if (col_i == outer_edge_col) {
+    n += outer.at(2).at(outer_col);
+  } else if (col_i == inner_edge_col && row_i == 2) {
+    for (row_i_t inner_row = 0; inner_row < 5; inner_row++) {
+      n += inner.at(inner_row).at(inner_col);
+    }
+  } else {
+    col_i_t grid_col = left ? col_i - 1 : col_i + 1;
+    n += grid.at(row_i).at(grid_col);
+  }
+  return n;
+}
+
+grid_t empty_grid() {
+  return grid_t(5, std::vector<bool>(5, false));
+}
+
+grid_t unit_grid() {
+  auto grid = empty_grid();
+  std::vector<point_t> bugs {
+    {0, 2},
+    {4, 2},
+    {2, 0},
+    {2, 4},
+  };
+  for (auto [row_i, col_i] : bugs) {
+    grid.at(row_i).at(col_i) = true;
+  }
+  return grid;
+}
+
+unsigned int neighbors_up(const point_t& point,
+                          const grid_t& outer,
+                          const grid_t& grid,
+                          const grid_t& inner) {
+  return neighbors_vertical(point, outer, grid, inner, true);
+}
+
+unsigned int neighbors_down(const point_t& point,
+                            const grid_t& outer,
+                            const grid_t& grid,
+                            const grid_t& inner) {
+  return neighbors_vertical(point, outer, grid, inner, false);
+}
+
+unsigned int neighbors_left(const point_t& point,
+                            const grid_t& outer,
+                            const grid_t& grid,
+                            const grid_t& inner) {
+  return neighbors_horizontal(point, outer, grid, inner, true);
+}
+
+unsigned int neighbors_right(const point_t& point,
+                             const grid_t& outer,
+                             const grid_t& grid,
+                             const grid_t& inner) {
+  return neighbors_horizontal(point, outer, grid, inner, false);
+}
+
+unsigned int neighbors(const point_t& point,
+                       const grid_t& outer,
+                       const grid_t& grid,
+                       const grid_t& inner) {
+  unsigned int n = 0;
+  n += neighbors_up(point, outer, grid, inner);
+  n += neighbors_down(point, outer, grid, inner);
+  n += neighbors_left(point, outer, grid, inner);
+  n += neighbors_right(point, outer, grid, inner);
+  return n;
+}
+
 grid_t step(const grid_t& grid) {
+  grid_t inner;
+  if (grid.at(2).at(2)) {
+    inner = unit_grid();
+  } else {
+    inner = empty_grid();
+  }
+  return step_recursive(empty_grid(), grid, inner);
+}
+
+grid_t step_recursive(const grid_t& outer, const grid_t& grid, const grid_t& inner) {
   auto copy = grid;
-  for (row_i_t row_i = 0; row_i < grid.size(); row_i++) {
-    for (col_i_t col_i = 0; col_i < grid.at(row_i).size(); col_i++) {
-      auto count = 0;
-      for (auto neighbor : neighbors({row_i, col_i}, grid)) {
-        if (neighbor) {
-          count++;
-        }
-      }
+  for (row_i_t row_i = 0; row_i < 5; row_i++) {
+    for (col_i_t col_i = 0; col_i < 5; col_i++) {
+      auto surrounding = neighbors({row_i, col_i}, outer, grid, inner);
       auto is_bug = grid.at(row_i).at(col_i);
       auto new_is_bug = copy.at(row_i).at(col_i);
-      if (is_bug && count != 1) {
+      if (is_bug && surrounding != 1) {
         new_is_bug = false;
-      } else if (!is_bug && (count == 1 || count == 2)) {
+      } else if (!is_bug && (surrounding == 1 || surrounding == 2)) {
         new_is_bug = true;
       }
     }
