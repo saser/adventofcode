@@ -1,6 +1,7 @@
 #include "year2019/day18/day18.h"
 
 #include <istream>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@ struct grid_t {
 
   const char& at(const point_t& point) const;
   point_t start() const;
+  std::set<point_t> neighbors(const point_t& point) const;
 };
 
 adventofcode::answer_t solve(std::istream& is, int part);
@@ -75,4 +77,22 @@ point_t grid_t::start() const {
     }
   }
   return {0, 0};
+}
+
+std::set<point_t> grid_t::neighbors(const point_t& point) const {
+  std::set<point_t> n;
+  auto [row_i, col_i] = point;
+  if (row_i > 0) {
+    n.insert({row_i - 1, col_i});
+  }
+  if (row_i < g.size()) {
+    n.insert({row_i + 1, col_i});
+  }
+  if (col_i > 0) {
+    n.insert({row_i, col_i - 1});
+  }
+  if (col_i < g.at(0).size()) {
+    n.insert({row_i, col_i + 1});
+  }
+  return n;
 }
