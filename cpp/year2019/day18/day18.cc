@@ -21,6 +21,10 @@ struct grid_t {
 adventofcode::answer_t solve(std::istream& is, int part);
 grid_t parse(std::istream& is);
 
+bool is_wall(char c);
+bool is_key(char c);
+bool is_door(char c);
+
 namespace day18 {
   adventofcode::answer_t part1(std::istream& is) {
     return solve(is, 1);
@@ -42,6 +46,18 @@ grid_t parse(std::istream& is) {
     g.push_back(std::vector<char>(line.begin(), line.end()));
   }
   return grid_t {g};
+}
+
+bool is_wall(char c) {
+  return c == '#';
+}
+
+bool is_key(char c) {
+  return c >= 'a' && c <= 'z';
+}
+
+bool is_door(char c) {
+  return c >= 'A' && c <= 'Z';
 }
 
 point_t grid_t::start() const {
