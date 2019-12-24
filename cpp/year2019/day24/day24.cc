@@ -1,8 +1,10 @@
 #include "year2019/day24/day24.h"
 
+#include <deque>
 #include <istream>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -24,8 +26,10 @@ unsigned int neighbors(const point_t& point,
                        const grid_t& inner);
 grid_t step(const grid_t& grid);
 grid_t step_recursive(const grid_t& outer, const grid_t& grid, const grid_t& inner);
+std::deque<grid_t> full_step_recursive(const std::deque<grid_t>& grids);
 
 unsigned int biodiversity_rating(const grid_t& grid);
+unsigned int count_bugs(const grid_t& grid);
 
 namespace day24 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -39,14 +43,25 @@ namespace day24 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto grid = parse(is);
-  std::set<unsigned int> seen_ratings;
-  auto rating = biodiversity_rating(grid);
-  while (seen_ratings.find(rating) == seen_ratings.end()) {
-    seen_ratings.insert(rating);
-    grid = step(grid);
-    rating = biodiversity_rating(grid);
+  if (part == 1) {
+    std::set<unsigned int> seen_ratings;
+    auto rating = biodiversity_rating(grid);
+    while (seen_ratings.find(rating) == seen_ratings.end()) {
+      seen_ratings.insert(rating);
+      grid = step(grid);
+      rating = biodiversity_rating(grid);
+    }
+    return adventofcode::ok(std::to_string(rating));
   }
-  return adventofcode::ok(std::to_string(rating));
+  std::deque<grid_t> grids {grid};
+  for (auto i = 0; i < 200; i++) {
+    grids = full_step_recursive(grids);
+  }
+  unsigned int count = 0;
+  for (auto grid : grids) {
+    count += count_bugs(grid) - grid.at(2).at(2);
+  }
+  return adventofcode::ok(std::to_string(count));
 }
 
 grid_t parse(std::istream& is) {
@@ -223,6 +238,26 @@ grid_t step_recursive(const grid_t& outer, const grid_t& grid, const grid_t& inn
   return copy;
 }
 
+std::deque<grid_t> full_step_recursive(const std::deque<grid_t>& grids) {
+  auto padded = grids;
+  padded.push_front(empty_grid());
+  padded.push_back(empty_grid());
+  auto copy = padded;
+  for (decltype(padded)::size_type i = 0; i < padded.size(); i++) {
+    auto outer = i == 0 ? empty_grid() : padded.at(i - 1);
+    auto grid = padded.at(i);
+    auto inner = i == padded.size() - 1 ? empty_grid() : padded.at(i + 1);
+    copy.at(i) = step_recursive(outer, grid, inner);
+  }
+  while (copy.front() == empty_grid()) {
+    copy.pop_front();
+  }
+  while (copy.back() == empty_grid()) {
+    copy.pop_back();
+  }
+  return copy;
+}
+
 unsigned int biodiversity_rating(const grid_t& grid) {
   auto rating = 0;
   for (auto row_it = grid.crbegin(); row_it != grid.crend(); row_it++) {
@@ -235,4 +270,14 @@ unsigned int biodiversity_rating(const grid_t& grid) {
     }
   }
   return rating;
+}
+
+unsigned int count_bugs(const grid_t& grid) {
+  unsigned int count = 0;
+  for (auto row : grid) {
+    for (auto b : row) {
+      count += b;
+    }
+  }
+  return count;
 }
