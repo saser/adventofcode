@@ -15,6 +15,7 @@ using point_t = std::pair<row_i_t, col_i_t>;
 struct grid_t {
   raw_grid_t g;
 
+  const char& at(const point_t& point) const;
   point_t start() const;
 };
 
@@ -58,6 +59,11 @@ bool is_key(char c) {
 
 bool is_door(char c) {
   return c >= 'A' && c <= 'Z';
+}
+
+const char& grid_t::at(const point_t& point) const {
+  auto [row_i, col_i] = point;
+  return g.at(row_i).at(col_i);
 }
 
 point_t grid_t::start() const {
