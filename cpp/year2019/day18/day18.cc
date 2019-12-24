@@ -1,6 +1,9 @@
 #include "year2019/day18/day18.h"
 
+#include <cctype>
+#include <deque>
 #include <istream>
+#include <map>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,6 +22,7 @@ struct grid_t {
   const char& at(const point_t& point) const;
   point_t start() const;
   std::set<point_t> neighbors(const point_t& point) const;
+  std::map<char, unsigned int> adjacent_keys(const point_t& from, const std::set<char>& collected_keys) const;
 };
 
 adventofcode::answer_t solve(std::istream& is, int part);
@@ -39,6 +43,7 @@ namespace day18 {
 }
 
 adventofcode::answer_t solve(std::istream& is, int part) {
+  auto grid = parse(is);
   return adventofcode::err("not implemented yet");
 }
 
@@ -95,4 +100,34 @@ std::set<point_t> grid_t::neighbors(const point_t& point) const {
     n.insert({row_i, col_i + 1});
   }
   return n;
+}
+
+std::map<char, unsigned int> grid_t::adjacent_keys(const point_t& from, const std::set<char>& collected_keys) const {
+  std::map<char, unsigned int> adjacent;
+  std::set<point_t> visited;
+  std::deque<std::pair<point_t, unsigned int>> q;
+  q.push_back({from, 0});
+  while (!q.empty()) {
+    auto [p, distance] = q.front();
+    q.pop_front();
+    auto c = at(p);
+    if (is_wall(c)) {
+      continue;
+    }
+    if (visited.find(p) != visited.end()) {
+      continue;
+    }
+    visited.insert(p);
+    if (is_door(c) && collected_keys.find(tolower(c)) == collected_keys.end()) {
+      continue;
+    }
+    if (is_key(c) && collected_keys.find(c) == collected_keys.end()) {
+      adjacent[c] = distance;
+      continue;
+    }
+    for (auto neighbor : neighbors(p)) {
+      q.push_back({neighbor, distance + 1});
+    }
+  }
+  return adjacent;
 }
