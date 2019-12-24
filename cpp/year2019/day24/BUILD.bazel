@@ -1,0 +1,26 @@
+cc_library(
+    name = "day24",
+    hdrs = ["day24.h"],
+    srcs = ["day24.cc"],
+    deps = ["//:adventofcode"],
+)
+
+cc_test(
+    name = "test",
+    srcs = ["test.cc"],
+    deps = [
+        ":day24",
+        "@googletest//:gtest_main",
+    ],
+    data = glob(["testdata/*"]) + ["//year2019:testdata/24"],
+)
+
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmark.cc"],
+    deps = [
+        ":day24",
+        "@googlebenchmark//:benchmark_main",
+    ],
+    data = ["//year2019:testdata/24"],
+)
