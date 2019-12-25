@@ -153,10 +153,10 @@ std::map<char, unsigned int> grid_t::adjacent_keys(const point_t& from, const st
 }
 
 unsigned int grid_t::collect_keys() const {
-  using elem_t = std::tuple<point_t, unsigned int, std::set<char>>;
+  using elem_t = std::tuple<std::set<point_t>, unsigned int, std::set<char>>;
   auto compare = [](const elem_t& elem1, const elem_t& elem2) {
-    auto [p1, d1, c1] = elem1;
-    auto [p2, d2, c2] = elem2;
+    auto [ps1, d1, c1] = elem1;
+    auto [ps2, d2, c2] = elem2;
     return d2 < d1;
   };
   auto key_positions = all_keys();
@@ -165,22 +165,27 @@ unsigned int grid_t::collect_keys() const {
     required.insert(key);
   }
   std::priority_queue<elem_t, std::vector<elem_t>, decltype(compare)> q(compare);
-  q.push({start(), 0, {}});
-  std::set<std::pair<std::set<char>, point_t>> visited;
+  q.push({{start()}, 0, {}});
+  std::set<std::pair<std::set<char>, std::set<point_t>>> visited;
   while (!q.empty()) {
-    auto [point, distance, collected_keys] = q.top();
+    auto [points, distance, collected_keys] = q.top();
     q.pop();
     if (collected_keys == required) {
       return distance;
     }
-    if (visited.find({collected_keys, point}) != visited.end()) {
+    if (visited.find({collected_keys, points}) != visited.end()) {
       continue;
     }
-    visited.insert({collected_keys, point});
-    for (auto [next_key, next_distance] : adjacent_keys(point, collected_keys)) {
-      auto next_collected_keys = collected_keys;
-      next_collected_keys.insert(next_key);
-      q.push({key_positions[next_key], distance + next_distance, next_collected_keys});
+    visited.insert({collected_keys, points});
+    for (auto point : points) {
+      for (auto [next_key, next_distance] : adjacent_keys(point, collected_keys)) {
+        auto next_points = points;
+        next_points.erase(next_points.find(point));
+        next_points.insert(key_positions[next_key]);
+        auto next_collected_keys = collected_keys;
+        next_collected_keys.insert(next_key);
+        q.push({next_points, distance + next_distance, next_collected_keys});
+      }
     }
   }
   return 0;
