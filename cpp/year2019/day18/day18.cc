@@ -22,7 +22,7 @@ struct grid_t {
   raw_grid_t g;
 
   const char& at(const point_t& point) const;
-  point_t start() const;
+  std::set<point_t> starts() const;
   std::map<char, point_t> all_keys() const;
   std::set<point_t> neighbors(const point_t& point) const;
   std::map<char, unsigned int> adjacent_keys(const point_t& from, const std::set<char>& collected_keys) const;
@@ -81,15 +81,17 @@ const char& grid_t::at(const point_t& point) const {
   return g.at(row_i).at(col_i);
 }
 
-point_t grid_t::start() const {
+std::set<point_t> grid_t::starts() const {
+  std::set<point_t> s;
   for (row_i_t row_i = 0; row_i < g.size(); row_i++) {
     for (col_i_t col_i = 0; col_i < g.at(row_i).size(); col_i++) {
-      if (g.at(row_i).at(col_i) == '@') {
-        return {row_i, col_i};
+      point_t p {row_i, col_i};
+      if (at(p) == '@') {
+        s.insert(p);
       }
     }
   }
-  return {0, 0};
+  return s;
 }
 
 std::map<char, point_t> grid_t::all_keys() const {
@@ -165,7 +167,7 @@ unsigned int grid_t::collect_keys() const {
     required.insert(key);
   }
   std::priority_queue<elem_t, std::vector<elem_t>, decltype(compare)> q(compare);
-  q.push({{start()}, 0, {}});
+  q.push({starts(), 0, {}});
   std::set<std::pair<std::set<char>, std::set<point_t>>> visited;
   while (!q.empty()) {
     auto [points, distance, collected_keys] = q.top();
