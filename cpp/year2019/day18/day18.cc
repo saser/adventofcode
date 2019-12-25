@@ -48,11 +48,22 @@ namespace day18 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto grid = parse(is);
-  if (part == 1) {
-    auto steps = grid.collect_keys();
-    return adventofcode::ok(std::to_string(steps));
+  if (part == 2) {
+    auto [start_row_i, start_col_i] = *(grid.starts().begin());
+    for (row_i_t row_i = start_row_i - 1; row_i <= start_row_i + 1; row_i++) {
+      for (col_i_t col_i = start_col_i - 1; col_i <= start_col_i + 1; col_i++) {
+        auto& c = grid.g.at(row_i).at(col_i);
+        if ((row_i == start_row_i - 1 || row_i == start_row_i + 1)
+            && (col_i == start_col_i - 1 || col_i == start_col_i + 1)) {
+          c = '@';
+        } else {
+          c = '#';
+        }
+      }
+    }
   }
-  return adventofcode::err("not implemented yet");
+  auto steps = grid.collect_keys();
+  return adventofcode::ok(std::to_string(steps));
 }
 
 grid_t parse(std::istream& is) {
