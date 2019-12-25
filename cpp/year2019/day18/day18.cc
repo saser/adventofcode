@@ -21,6 +21,7 @@ struct grid_t {
 
   const char& at(const point_t& point) const;
   point_t start() const;
+  std::map<char, point_t> all_keys() const;
   std::set<point_t> neighbors(const point_t& point) const;
   std::map<char, unsigned int> adjacent_keys(const point_t& from, const std::set<char>& collected_keys) const;
 };
@@ -82,6 +83,18 @@ point_t grid_t::start() const {
     }
   }
   return {0, 0};
+}
+
+std::map<char, point_t> grid_t::all_keys() const {
+  std::map<char, point_t> k;
+  for (row_i_t row_i = 0; row_i < g.size(); row_i++) {
+    for (col_i_t col_i = 0; col_i < g.at(row_i).size(); col_i++) {
+      if (auto c = g.at(row_i).at(col_i); is_key(c)) {
+        k[c] = {row_i, col_i};
+      }
+    }
+  }
+  return k;
 }
 
 std::set<point_t> grid_t::neighbors(const point_t& point) const {
