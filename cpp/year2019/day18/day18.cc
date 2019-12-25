@@ -48,8 +48,11 @@ namespace day18 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto grid = parse(is);
-  auto steps = grid.collect_keys();
-  return adventofcode::ok(std::to_string(steps));
+  if (part == 1) {
+    auto steps = grid.collect_keys();
+    return adventofcode::ok(std::to_string(steps));
+  }
+  return adventofcode::err("not implemented yet");
 }
 
 grid_t parse(std::istream& is) {
