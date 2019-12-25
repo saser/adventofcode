@@ -97,6 +97,16 @@ namespace intcode {
     in.insert(in.end(), inputs.begin(), inputs.end());
   }
 
+  void execution::write_string(const std::string& input) {
+    for (auto c : input) {
+      write(c);
+    }
+  }
+
+  void execution::write_stringln(const std::string& input) {
+    write_string(input + '\n');
+  }
+
   int64_t execution::read() {
     auto v = out.front();
     out.pop_front();
