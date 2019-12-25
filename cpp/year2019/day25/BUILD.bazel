@@ -8,6 +8,13 @@ cc_library(
     ],
 )
 
+cc_binary(
+    name = "explore",
+    srcs = ["explore.cc"],
+    deps = ["//year2019/intcode:intcode"],
+    data = ["//year2019:testdata/25"],
+)
+
 cc_test(
     name = "test",
     srcs = ["test.cc"],
