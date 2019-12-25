@@ -4,8 +4,10 @@
 #include <deque>
 #include <istream>
 #include <map>
+#include <queue>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -24,6 +26,7 @@ struct grid_t {
   std::map<char, point_t> all_keys() const;
   std::set<point_t> neighbors(const point_t& point) const;
   std::map<char, unsigned int> adjacent_keys(const point_t& from, const std::set<char>& collected_keys) const;
+  unsigned int collect_keys() const;
 };
 
 adventofcode::answer_t solve(std::istream& is, int part);
@@ -45,7 +48,8 @@ namespace day18 {
 
 adventofcode::answer_t solve(std::istream& is, int part) {
   auto grid = parse(is);
-  return adventofcode::err("not implemented yet");
+  auto steps = grid.collect_keys();
+  return adventofcode::ok(std::to_string(steps));
 }
 
 grid_t parse(std::istream& is) {
@@ -143,4 +147,38 @@ std::map<char, unsigned int> grid_t::adjacent_keys(const point_t& from, const st
     }
   }
   return adjacent;
+}
+
+unsigned int grid_t::collect_keys() const {
+  using elem_t = std::tuple<point_t, unsigned int, std::set<char>>;
+  auto compare = [](const elem_t& elem1, const elem_t& elem2) {
+    auto [p1, d1, c1] = elem1;
+    auto [p2, d2, c2] = elem2;
+    return d2 < d1;
+  };
+  auto key_positions = all_keys();
+  std::set<char> required;
+  for (auto [key, _] : key_positions) {
+    required.insert(key);
+  }
+  std::priority_queue<elem_t, std::vector<elem_t>, decltype(compare)> q(compare);
+  q.push({start(), 0, {}});
+  std::set<std::pair<std::set<char>, point_t>> visited;
+  while (!q.empty()) {
+    auto [point, distance, collected_keys] = q.top();
+    q.pop();
+    if (collected_keys == required) {
+      return distance;
+    }
+    if (visited.find({collected_keys, point}) != visited.end()) {
+      continue;
+    }
+    visited.insert({collected_keys, point});
+    for (auto [next_key, next_distance] : adjacent_keys(point, collected_keys)) {
+      auto next_collected_keys = collected_keys;
+      next_collected_keys.insert(next_key);
+      q.push({key_positions[next_key], distance + next_distance, next_collected_keys});
+    }
+  }
+  return 0;
 }
