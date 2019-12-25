@@ -66,6 +66,15 @@ namespace intcode {
     // Write all provided input values to the input of the execution.
     void write_all(const input& inputs);
 
+    // Write the contents of a string as ASCII characters to the input of the
+    // execution.
+    void write_string(const std::string& input);
+
+    // Write the contents of a string as ASCII characters to the input of the
+    // execution. A newline (`\n`, ASCII code 10) will be written after the
+    // string.
+    void write_stringln(const std::string& input);
+
     // Read an output value produced by the execution. The value is consumed by
     // reading it. Reading when no output is available is undefiend behavior.
     int64_t read();
