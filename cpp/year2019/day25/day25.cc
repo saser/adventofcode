@@ -29,6 +29,9 @@ std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
 bool cant_move(const lines_t& lines);
 
+std::string reverse(const std::string& direction);
+path_t reverse_path(const path_t& path);
+
 struct player_t {
   intcode::execution reset;
   std::string current_room;
@@ -149,6 +152,29 @@ std::vector<std::string> extract_items(const lines_t& lines) {
 
 bool cant_move(const lines_t& lines) {
   return extract_item(lines, std::regex(R"(can't move)")).has_value();
+}
+
+std::string reverse(const std::string& direction) {
+  if (direction == "north") {
+    return "south";
+  } else if (direction == "south") {
+    return "north";
+  } else if (direction == "east") {
+    return "west";
+  } else if (direction == "west") {
+    return "east";
+  } else {
+    return "north";
+  }
+}
+
+path_t reverse_path(const path_t& path) {
+  path_t p;
+  p.reserve(path.size());
+  for (auto it = path.crbegin(); it != path.crend(); it++) {
+    p.push_back(reverse(*it));
+  }
+  return p;
 }
 
 void player_t::find_rooms() {
