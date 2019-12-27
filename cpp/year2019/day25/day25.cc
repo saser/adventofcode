@@ -15,6 +15,7 @@
 
 using lines_t = std::vector<std::string>;
 using path_t = std::vector<std::string>;
+using instructions_t = std::vector<std::string>;
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
@@ -43,6 +44,9 @@ struct player_t {
   void find_rooms();
   void find_items();
   void try_items();
+
+  std::set<std::string> safe_items() const;
+  instructions_t collect_items(const std::set<std::string>& items) const;
 };
 
 namespace day25 {
@@ -78,6 +82,10 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   player.try_items();
   for (auto item : player.dangerous_items) {
     std::cout << item << std::endl;
+  }
+  std::cout << "-----------------" << std::endl;
+  for (auto i : player.collect_items(player.safe_items())) {
+    std::cout << i << std::endl;
   }
   return adventofcode::err("not implemented yet");
 }
@@ -250,4 +258,31 @@ void player_t::try_items() {
       dangerous_items.insert(item);
     }
   }
+}
+
+std::set<std::string> player_t::safe_items() const {
+  std::set<std::string> items;
+  for (auto [item, _] : item_locations) {
+    if (dangerous_items.find(item) != dangerous_items.end()) {
+      continue;
+    }
+    items.insert(item);
+  }
+  return items;
+}
+
+instructions_t player_t::collect_items(const std::set<std::string>& items) const {
+  instructions_t instructions;
+  for (auto item : items) {
+    if (item_locations.find(item) == item_locations.end()) {
+      std::cout << "unknown item: " << item << std::endl;
+      continue;
+    }
+    auto path = room_paths.at(item_locations.at(item));
+    instructions.insert(instructions.end(), path.begin(), path.end());
+    instructions.push_back("take " + item);
+    auto backtrack = reverse_path(path);
+    instructions.insert(instructions.end(), backtrack.begin(), backtrack.end());
+  }
+  return instructions;
 }
