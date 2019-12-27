@@ -1,19 +1,24 @@
 #include "year2019/day25/day25.h"
 
+#include <deque>
 #include <iostream>
+#include <map>
 #include <optional>
 #include <regex>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "adventofcode.h"
 #include "year2019/intcode/intcode.h"
 
 using lines_t = std::vector<std::string>;
+using path_t = std::vector<std::string>;
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
 lines_t output_lines(const intcode::output& output);
+void print_lines(const lines_t& lines);
 std::optional<std::string> extract_item(const lines_t& lines, const std::regex& item_re);
 std::vector<std::string> extract_list(const lines_t& lines,
                                       const std::regex& header_re,
@@ -21,6 +26,15 @@ std::vector<std::string> extract_list(const lines_t& lines,
 std::optional<std::string> extract_room_name(const lines_t& lines);
 std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
+
+struct player_t {
+  intcode::execution reset;
+  std::string current_room;
+
+  std::map<std::string, path_t> room_paths;
+
+  void find_rooms();
+};
 
 namespace day25 {
   adventofcode::answer_t part1(std::istream& is) {
@@ -37,21 +51,15 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   std::getline(is, input);
   intcode::memory program = intcode::parse(input);
   intcode::execution e {program};
-  e.run();
-  auto lines = output_lines(e.read_all());
-  if (auto room_name = extract_room_name(lines); room_name.has_value()) {
-    std::cout << "room name: " << *room_name << std::endl;
+  player_t player {e};
+  player.find_rooms();
+  for (auto [room, path] : player.room_paths) {
+    std::cout << room << ": ";
+    for (auto step : path) {
+      std::cout << step << ", ";
+    }
+    std::cout << std::endl;
   }
-  std::cout << "directions: ";
-  for (auto direction : extract_directions(lines)) {
-    std::cout << direction << ", ";
-  }
-  std::cout << std::endl;
-  std::cout << "items: ";
-  for (auto item : extract_items(lines)) {
-    std::cout << item << ", ";
-  }
-  std::cout << std::endl;
   return adventofcode::err("not implemented yet");
 }
 
@@ -67,6 +75,12 @@ lines_t output_lines(const intcode::output& output) {
     line += c;
   }
   return lines;
+}
+
+void print_lines(const lines_t& lines) {
+  for (auto line : lines) {
+    std::cout << line << std::endl;
+  }
 }
 
 std::optional<std::string> extract_item(const lines_t& lines, const std::regex& item_re) {
@@ -115,4 +129,35 @@ std::vector<std::string> extract_items(const lines_t& lines) {
   return extract_list(lines,
                       std::regex(R"(Items here:)"),
                       std::regex(R"(- (.+))"));
+}
+
+void player_t::find_rooms() {
+  using elem_t = std::tuple<intcode::execution, path_t>;
+  std::deque<elem_t> q;
+  q.push_back({reset, {}});
+  while (!q.empty()) {
+    auto [e, path] = q.front();
+    q.pop_front();
+    e.run();
+    auto lines = output_lines(e.read_all());
+    auto room_name = extract_room_name(lines);
+    if (!room_name.has_value()) {
+      std::cout << "no room name! full output:" << std::endl;
+      std::cout << "--------------------------" << std::endl;
+      print_lines(lines);
+      std::cout << "--------------------------" << std::endl;
+      continue;
+    }
+    if (room_paths.find(*room_name) != room_paths.end()) {
+      continue;
+    }
+    room_paths[*room_name] = path;
+    for (auto direction : extract_directions(lines)) {
+      auto new_e = e;
+      new_e.write_stringln(direction);
+      auto new_path = path;
+      new_path.push_back(direction);
+      q.push_back({new_e, new_path});
+    }
+  }
 }
