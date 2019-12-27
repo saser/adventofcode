@@ -32,8 +32,10 @@ struct player_t {
   std::string current_room;
 
   std::map<std::string, path_t> room_paths;
+  std::map<std::string, std::string> item_locations;
 
   void find_rooms();
+  void find_items();
 };
 
 namespace day25 {
@@ -59,6 +61,11 @@ adventofcode::answer_t solve(std::istream& is, int part) {
       std::cout << step << ", ";
     }
     std::cout << std::endl;
+  }
+  std::cout << "-----------------" << std::endl;
+  player.find_items();
+  for (auto [item, room] : player.item_locations) {
+    std::cout << item << ": " << room << std::endl;
   }
   return adventofcode::err("not implemented yet");
 }
@@ -158,6 +165,26 @@ void player_t::find_rooms() {
       auto new_path = path;
       new_path.push_back(direction);
       q.push_back({new_e, new_path});
+    }
+  }
+}
+
+void player_t::find_items() {
+  for (auto [room, path] : room_paths) {
+    if (path.empty()) {
+      continue;
+    }
+    auto ec = reset;
+    for (auto it = path.cbegin(); it != path.cend() - 1; it++) {
+      ec.write_stringln(*it);
+    }
+    ec.run();
+    ec.read_all();
+    ec.write_stringln(path.back());
+    ec.run();
+    auto lines = output_lines(ec.read_all());
+    for (auto item : extract_items(lines)) {
+      item_locations[item] = room;
     }
   }
 }
