@@ -29,6 +29,7 @@ std::optional<std::string> extract_room_name(const lines_t& lines);
 std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
 bool cant_move(const lines_t& lines);
+bool next_is_pressure_sensitive(const lines_t& lines);
 
 std::string reverse(const std::string& direction);
 path_t reverse_path(const path_t& path);
@@ -38,6 +39,7 @@ struct player_t {
   std::string current_room;
 
   std::map<std::string, path_t> room_paths;
+  std::set<std::string> pressure_sensitive_rooms;
   std::map<std::string, std::string> item_locations;
   std::set<std::string> dangerous_items {"infinite loop"};
 
@@ -72,6 +74,10 @@ adventofcode::answer_t solve(std::istream& is, int part) {
       std::cout << step << ", ";
     }
     std::cout << std::endl;
+  }
+  std::cout << "-----------------" << std::endl;
+  for (auto room : player.pressure_sensitive_rooms) {
+    std::cout << room << std::endl;
   }
   std::cout << "-----------------" << std::endl;
   player.find_items();
@@ -162,6 +168,10 @@ bool cant_move(const lines_t& lines) {
   return extract_item(lines, std::regex(R"(can't move)")).has_value();
 }
 
+bool next_is_pressure_sensitive(const lines_t& lines) {
+  return extract_item(lines, std::regex(R"(next room, a pressure-sensitive)")).has_value();
+}
+
 std::string reverse(const std::string& direction) {
   if (direction == "north") {
     return "south";
@@ -206,7 +216,24 @@ void player_t::find_rooms() {
       continue;
     }
     room_paths[*room_name] = path;
-    for (auto direction : extract_directions(lines)) {
+    auto directions = extract_directions(lines);
+    if (next_is_pressure_sensitive(lines)) {
+      auto last_step = path.back();
+      for (auto direction : directions) {
+        if (direction == reverse(last_step)) {
+          continue;
+        }
+        e.write_stringln(direction);
+        e.run();
+        auto ps_room_name = *(extract_room_name(output_lines(e.read_all())));
+        pressure_sensitive_rooms.insert(ps_room_name);
+        auto ps_path = path;
+        ps_path.push_back(direction);
+        room_paths[ps_room_name] = ps_path;
+      }
+      continue;
+    }
+    for (auto direction : directions) {
       auto new_e = e;
       new_e.write_stringln(direction);
       auto new_path = path;
