@@ -5,6 +5,7 @@
 #include <map>
 #include <optional>
 #include <regex>
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -26,6 +27,7 @@ std::vector<std::string> extract_list(const lines_t& lines,
 std::optional<std::string> extract_room_name(const lines_t& lines);
 std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
+bool cant_move(const lines_t& lines);
 
 struct player_t {
   intcode::execution reset;
@@ -33,9 +35,11 @@ struct player_t {
 
   std::map<std::string, path_t> room_paths;
   std::map<std::string, std::string> item_locations;
+  std::set<std::string> dangerous_items {"infinite loop"};
 
   void find_rooms();
   void find_items();
+  void try_items();
 };
 
 namespace day25 {
@@ -66,6 +70,11 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   player.find_items();
   for (auto [item, room] : player.item_locations) {
     std::cout << item << ": " << room << std::endl;
+  }
+  std::cout << "-----------------" << std::endl;
+  player.try_items();
+  for (auto item : player.dangerous_items) {
+    std::cout << item << std::endl;
   }
   return adventofcode::err("not implemented yet");
 }
@@ -138,6 +147,10 @@ std::vector<std::string> extract_items(const lines_t& lines) {
                       std::regex(R"(- (.+))"));
 }
 
+bool cant_move(const lines_t& lines) {
+  return extract_item(lines, std::regex(R"(can't move)")).has_value();
+}
+
 void player_t::find_rooms() {
   using elem_t = std::tuple<intcode::execution, path_t>;
   std::deque<elem_t> q;
@@ -185,6 +198,30 @@ void player_t::find_items() {
     auto lines = output_lines(ec.read_all());
     for (auto item : extract_items(lines)) {
       item_locations[item] = room;
+    }
+  }
+}
+
+void player_t::try_items() {
+  for (auto [item, room] : item_locations) {
+    if (dangerous_items.find(item) != dangerous_items.end()) {
+      continue;
+    }
+    auto ec = reset;
+    for (auto step : room_paths.at(room)) {
+      ec.write_stringln(step);
+    }
+    ec.write_stringln("take " + item);
+    ec.run();
+    if (ec.state == intcode::execution_state::halted) {
+      dangerous_items.insert(item);
+    }
+    ec.read_all();
+    ec.write_stringln("north");
+    ec.run();
+    auto lines = output_lines(ec.read_all());
+    if (cant_move(lines)) {
+      dangerous_items.insert(item);
     }
   }
 }
