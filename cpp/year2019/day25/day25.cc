@@ -50,14 +50,15 @@ struct player_t {
   std::optional<std::string> pressure_sensitive_room;
   std::map<std::string, std::string> item_locations;
   std::set<std::string> dangerous_items {"infinite loop"};
+  std::set<std::string> required_items;
 
   void find_rooms();
   void find_items();
   void try_items();
+  void find_required_items();
 
   std::set<std::string> safe_items() const;
   instructions_t collect_items(const std::set<std::string>& items) const;
-  std::set<std::string> find_requirements(const std::string& room_name) const;
 };
 
 namespace day25 {
@@ -101,7 +102,8 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     std::cout << i << std::endl;
   }
   std::cout << "-----------------" << std::endl;
-  for (auto i : player.find_requirements(*player.pressure_sensitive_room)) {
+  player.find_required_items();
+  for (auto i : player.required_items) {
     std::cout << i << std::endl;
   }
   return adventofcode::err("not implemented yet");
@@ -353,16 +355,13 @@ instructions_t player_t::collect_items(const std::set<std::string>& items) const
   return instructions;
 }
 
-std::set<std::string> player_t::find_requirements(const std::string& room_name) const {
-  if (pressure_sensitive_room.has_value() && room_name != *pressure_sensitive_room) {
-    return {};
-  }
+void player_t::find_required_items() {
   auto e = reset;
   auto items = safe_items();
   for (auto step : collect_items(items)) {
     e.write_stringln(step);
   }
-  auto path = room_paths.at(room_name);
+  auto path = room_paths.at(*pressure_sensitive_room);
   for (auto it = path.cbegin(); it != path.cend() - 1; it++) {
     e.write_stringln(*it);
   }
@@ -372,7 +371,6 @@ std::set<std::string> player_t::find_requirements(const std::string& room_name) 
   e.run();
   e.read_all();
   using items_t = std::set<std::string>;
-  items_t requirements;
   std::set<items_t> too_heavy;
   using elem_t = std::tuple<intcode::execution, items_t>;
   std::deque<elem_t> q;
@@ -391,7 +389,7 @@ std::set<std::string> player_t::find_requirements(const std::string& room_name) 
       continue;
     }
     if (!is_heavier(lines)) {
-      requirements = carried_items;
+      required_items = carried_items;
       break;
     }
     for (auto item : items) {
@@ -407,5 +405,4 @@ std::set<std::string> player_t::find_requirements(const std::string& room_name) 
       q.push_back({new_e, new_carried_items});
     }
   }
-  return requirements;
 }
