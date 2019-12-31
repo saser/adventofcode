@@ -47,7 +47,7 @@ struct player_t {
   std::string current_room;
 
   std::map<std::string, path_t> room_paths;
-  std::set<std::string> pressure_sensitive_rooms;
+  std::optional<std::string> pressure_sensitive_room;
   std::map<std::string, std::string> item_locations;
   std::set<std::string> dangerous_items {"infinite loop"};
 
@@ -85,9 +85,7 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     std::cout << std::endl;
   }
   std::cout << "-----------------" << std::endl;
-  for (auto room : player.pressure_sensitive_rooms) {
-    std::cout << room << std::endl;
-  }
+  std::cout << *player.pressure_sensitive_room << std::endl;
   std::cout << "-----------------" << std::endl;
   player.find_items();
   for (auto [item, room] : player.item_locations) {
@@ -103,7 +101,7 @@ adventofcode::answer_t solve(std::istream& is, int part) {
     std::cout << i << std::endl;
   }
   std::cout << "-----------------" << std::endl;
-  for (auto i : player.find_requirements(*player.pressure_sensitive_rooms.begin())) {
+  for (auto i : player.find_requirements(*player.pressure_sensitive_room)) {
     std::cout << i << std::endl;
   }
   return adventofcode::err("not implemented yet");
@@ -267,7 +265,7 @@ void player_t::find_rooms() {
         e.write_stringln(direction);
         e.run();
         auto ps_room_name = *(extract_room_name(output_lines(e.read_all())));
-        pressure_sensitive_rooms.insert(ps_room_name);
+        pressure_sensitive_room = ps_room_name;
         auto ps_path = path;
         ps_path.push_back(direction);
         room_paths[ps_room_name] = ps_path;
@@ -356,7 +354,7 @@ instructions_t player_t::collect_items(const std::set<std::string>& items) const
 }
 
 std::set<std::string> player_t::find_requirements(const std::string& room_name) const {
-  if (pressure_sensitive_rooms.find(room_name) == pressure_sensitive_rooms.end()) {
+  if (pressure_sensitive_room.has_value() && room_name != *pressure_sensitive_room) {
     return {};
   }
   auto e = reset;
