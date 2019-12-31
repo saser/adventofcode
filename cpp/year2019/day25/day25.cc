@@ -26,6 +26,7 @@ std::vector<std::string> extract_list(const lines_t& lines,
                                       const std::regex& header_re,
                                       const std::regex& item_re);
 std::optional<std::string> extract_room_name(const lines_t& lines);
+std::optional<std::string> extract_password(const lines_t& lines);
 std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
 bool cant_move(const lines_t& lines);
@@ -78,35 +79,19 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   intcode::execution e {program};
   player_t player {e};
   player.find_rooms();
-  for (auto [room, path] : player.room_paths) {
-    std::cout << room << ": ";
-    for (auto step : path) {
-      std::cout << step << ", ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << "-----------------" << std::endl;
-  std::cout << *player.pressure_sensitive_room << std::endl;
-  std::cout << "-----------------" << std::endl;
   player.find_items();
-  for (auto [item, room] : player.item_locations) {
-    std::cout << item << ": " << room << std::endl;
-  }
-  std::cout << "-----------------" << std::endl;
   player.try_items();
-  for (auto item : player.dangerous_items) {
-    std::cout << item << std::endl;
-  }
-  std::cout << "-----------------" << std::endl;
-  for (auto i : player.collect_items(player.safe_items())) {
-    std::cout << i << std::endl;
-  }
-  std::cout << "-----------------" << std::endl;
   player.find_required_items();
-  for (auto i : player.required_items) {
-    std::cout << i << std::endl;
+  for (auto i : player.collect_items(player.required_items)) {
+    e.write_stringln(i);
   }
-  return adventofcode::err("not implemented yet");
+  for (auto step : player.room_paths.at(*player.pressure_sensitive_room)) {
+    e.write_stringln(step);
+  }
+  e.run();
+  auto lines = output_lines(e.read_all());
+  auto password = *extract_password(lines);
+  return adventofcode::ok(password);
 }
 
 lines_t output_lines(const intcode::output& output) {
@@ -163,6 +148,10 @@ std::vector<std::string> extract_list(const lines_t& lines,
 
 std::optional<std::string> extract_room_name(const lines_t& lines) {
   return extract_item(lines, std::regex(R"(== (.+) ==)"));
+}
+
+std::optional<std::string> extract_password(const lines_t& lines) {
+  return extract_item(lines, std::regex(R"((\d+).+airlock)"));
 }
 
 std::vector<std::string> extract_directions(const lines_t& lines) {
