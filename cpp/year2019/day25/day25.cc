@@ -30,9 +30,17 @@ std::vector<std::string> extract_directions(const lines_t& lines);
 std::vector<std::string> extract_items(const lines_t& lines);
 bool cant_move(const lines_t& lines);
 bool next_is_pressure_sensitive(const lines_t& lines);
+bool is_lighter(const lines_t& lines);
+bool is_heavier(const lines_t& lines);
 
 std::string reverse(const std::string& direction);
 path_t reverse_path(const path_t& path);
+
+template<class T>
+bool is_subset(const std::set<T>& a, const std::set<T>& b);
+
+template<class T>
+bool is_subset_any(const std::set<T>& a, const std::set<std::set<T>>& bs);
 
 struct player_t {
   intcode::execution reset;
@@ -49,6 +57,7 @@ struct player_t {
 
   std::set<std::string> safe_items() const;
   instructions_t collect_items(const std::set<std::string>& items) const;
+  std::set<std::string> find_requirements(const std::string& room_name) const;
 };
 
 namespace day25 {
@@ -91,6 +100,10 @@ adventofcode::answer_t solve(std::istream& is, int part) {
   }
   std::cout << "-----------------" << std::endl;
   for (auto i : player.collect_items(player.safe_items())) {
+    std::cout << i << std::endl;
+  }
+  std::cout << "-----------------" << std::endl;
+  for (auto i : player.find_requirements(*player.pressure_sensitive_rooms.begin())) {
     std::cout << i << std::endl;
   }
   return adventofcode::err("not implemented yet");
@@ -172,6 +185,14 @@ bool next_is_pressure_sensitive(const lines_t& lines) {
   return extract_item(lines, std::regex(R"(next room, a pressure-sensitive)")).has_value();
 }
 
+bool is_lighter(const lines_t& lines) {
+  return extract_item(lines, std::regex(R"(lighter)")).has_value();
+}
+
+bool is_heavier(const lines_t& lines) {
+  return extract_item(lines, std::regex(R"(heavier)")).has_value();
+}
+
 std::string reverse(const std::string& direction) {
   if (direction == "north") {
     return "south";
@@ -193,6 +214,26 @@ path_t reverse_path(const path_t& path) {
     p.push_back(reverse(*it));
   }
   return p;
+}
+
+template<class T>
+bool is_subset(const std::set<T>& a, const std::set<T>& b) {
+  for (auto t : a) {
+    if (b.find(t) == b.end()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<class T>
+bool is_subset_any(const std::set<T>& a, const std::set<std::set<T>>& bs) {
+  for (auto b : bs) {
+    if (is_subset(a, b)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void player_t::find_rooms() {
@@ -312,4 +353,61 @@ instructions_t player_t::collect_items(const std::set<std::string>& items) const
     instructions.insert(instructions.end(), backtrack.begin(), backtrack.end());
   }
   return instructions;
+}
+
+std::set<std::string> player_t::find_requirements(const std::string& room_name) const {
+  if (pressure_sensitive_rooms.find(room_name) == pressure_sensitive_rooms.end()) {
+    return {};
+  }
+  auto e = reset;
+  auto items = safe_items();
+  for (auto step : collect_items(items)) {
+    e.write_stringln(step);
+  }
+  auto path = room_paths.at(room_name);
+  for (auto it = path.cbegin(); it != path.cend() - 1; it++) {
+    e.write_stringln(*it);
+  }
+  for (auto item : items) {
+    e.write_stringln("drop " + item);
+  }
+  e.run();
+  e.read_all();
+  using items_t = std::set<std::string>;
+  items_t requirements;
+  std::set<items_t> too_heavy;
+  using elem_t = std::tuple<intcode::execution, items_t>;
+  std::deque<elem_t> q;
+  q.push_back({e, {}});
+  while (!q.empty()) {
+    auto [e, carried_items] = q.front();
+    q.pop_front();
+    if (is_subset_any(carried_items, too_heavy)) {
+      continue;
+    }
+    e.write_stringln(path.back());
+    e.run();
+    auto lines = output_lines(e.read_all());
+    if (is_lighter(lines)) {
+      too_heavy.insert(carried_items);
+      continue;
+    }
+    if (!is_heavier(lines)) {
+      requirements = carried_items;
+      break;
+    }
+    for (auto item : items) {
+      if (carried_items.find(item) != carried_items.end()) {
+        continue;
+      }
+      auto new_e = e;
+      new_e.write_stringln("take " + item);
+      new_e.run();
+      new_e.read_all();
+      auto new_carried_items = carried_items;
+      new_carried_items.insert(item);
+      q.push_back({new_e, new_carried_items});
+    }
+  }
+  return requirements;
 }
