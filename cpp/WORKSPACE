@@ -13,7 +13,11 @@ git_repository(
 git_repository(
     name = "googlebenchmark",
     remote = "https://github.com/google/benchmark",
-    tag = "v1.5.0",
+    # `commit` and `shallow_since` was given by first specifying:
+    #     tag = "v1.5.0"
+    # and then following the debug messages given by Bazel.
+    commit = "090faecb454fbd6e6e17a75ef8146acb037118d4",
+    shallow_since = "1557776538 +0300",
 )
 
 git_repository(
