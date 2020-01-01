@@ -28,14 +28,11 @@ func solve(r io.Reader, part int) (string, error) {
 		armor:     0,
 		mana:      500,
 	}
-	mana, err := search(player, boss)
+	mana, err := search(player, boss, part == 2)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 22, part %d: %w", part, err)
 	}
-	if part == 1 {
-		return fmt.Sprint(mana), nil
-	}
-	return "", errors.New("not implemented yet")
+	return fmt.Sprint(mana), nil
 }
 
 type bossStats struct {
@@ -179,7 +176,7 @@ func (pq *priorityQueue) Pop() interface{} {
 	return item
 }
 
-func search(player playerStats, boss bossStats) (int, error) {
+func search(player playerStats, boss bossStats, hard bool) (int, error) {
 	state := state{
 		player:        player,
 		boss:          boss,
@@ -196,6 +193,9 @@ func search(player playerStats, boss bossStats) (int, error) {
 	heap.Init(&pq)
 	for pq.Len() > 0 {
 		item := heap.Pop(&pq).(item)
+		if item.state.playerTurn && hard {
+			item.state.player.hitpoints -= 1
+		}
 		item.state.tickEffects()
 		if item.state.boss.hitpoints <= 0 {
 			return item.mana, nil
