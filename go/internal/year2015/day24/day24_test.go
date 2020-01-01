@@ -14,7 +14,7 @@ const (
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
 		testcase.FromFile(t, exampleFile, "99"),
-		testcase.FromFile(t, inputFile, ""),
+		testcase.FromFile(t, inputFile, "11266889531"),
 	} {
 		testcase.Run(t, tc, Part1)
 	}
