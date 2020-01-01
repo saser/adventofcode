@@ -27,7 +27,11 @@ func solve(r io.Reader, part int) (string, error) {
 	for _, item := range items {
 		target += item
 	}
-	target /= 3
+	if part == 1 {
+		target /= 3
+	} else {
+		target /= 4
+	}
 	qe, err := search(items, target)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 24, part %d: %w", part, err)
