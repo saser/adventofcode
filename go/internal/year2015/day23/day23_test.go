@@ -9,12 +9,8 @@ import (
 const inputFile = "../testdata/23"
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, "testdata/example", "0"),
-		testcase.FromFile(t, inputFile, ""),
-	} {
-		testcase.Run(t, tc, Part1)
-	}
+	tc := testcase.FromFile(t, inputFile, "307")
+	testcase.Run(t, tc, Part1)
 }
 
 func BenchmarkPart1(b *testing.B) {
