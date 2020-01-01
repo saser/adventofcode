@@ -9,7 +9,7 @@ import (
 const inputFile = "../testdata/22"
 
 func TestPart1(t *testing.T) {
-	tc := testcase.FromFile(t, inputFile, "")
+	tc := testcase.FromFile(t, inputFile, "1269")
 	testcase.Run(t, tc, Part1)
 }
 
