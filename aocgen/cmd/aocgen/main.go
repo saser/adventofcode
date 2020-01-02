@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -64,55 +66,51 @@ func imain() int {
 	}
 
 	fullYear := fmt.Sprintf("year%d", year)
-	fullDay := fmt.Sprintf("day%02d", day)
+	paddedDay := fmt.Sprintf("%02d", day)
+	fullDay := fmt.Sprintf("day%s", paddedDay)
 	data := templateData{
 		Year:      year,
 		FullYear:  fullYear,
 		Day:       day,
-		PaddedDay: fmt.Sprintf("%02d", day),
+		PaddedDay: paddedDay,
 		FullDay:   fullDay,
 	}
 
-	outputdir := path.Join(basedir, fullYear, fullDay)
-	if _, err := os.Stat(outputdir); os.IsNotExist(err) {
-		if err := os.MkdirAll(outputdir, os.ModePerm); err != nil {
-			fmt.Printf("error creating output directory %s: %+v\n", outputdir, err)
-			return 2
+	walkFn := func(templatePath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
-	}
-
-	for _, tt := range []struct {
-		name   string
-		output string
-	}{
-		{name: "BUILD.bazel"},
-		{name: "dayXX.h", output: fmt.Sprintf("%s.h", fullDay)},
-		{name: "dayXX.cc", output: fmt.Sprintf("%s.cc", fullDay)},
-		{name: "test.cc"},
-		{name: "benchmark.cc"},
-	} {
-		templatePath := path.Join(templatedir, tt.name)
+		outPath := strings.TrimPrefix(templatePath, templatedir)
+		outPath = strings.Replace(outPath, "YYYY", fmt.Sprint(year), -1)
+		outPath = strings.Replace(outPath, "DD", paddedDay, -1)
+		outPath = path.Join(basedir, outPath)
+		if info.IsDir() {
+			if err := os.MkdirAll(outPath, os.ModePerm); err != nil {
+				return fmt.Errorf("error creating directory %s: %w", outPath, err)
+			}
+			return nil
+		}
 		tmpl, err := template.ParseFiles(templatePath)
 		if err != nil {
-			fmt.Printf("error parsing template %s: %+v\n", templatePath, err)
-			return 2
+			return fmt.Errorf("error parsing template: %w", err)
 		}
-		outputFilename := tt.output
-		if outputFilename == "" {
-			outputFilename = tt.name
-		}
-		outputPath := path.Join(outputdir, outputFilename)
-		templateFile, err := os.Create(outputPath)
+		outFile, err := os.Create(outPath)
 		if err != nil {
-			fmt.Printf("error creating output file %s: %+v\n", outputPath, err)
-			return 2
+			return fmt.Errorf("error creating output file: %w", err)
 		}
 		defer func() {
-			if err := templateFile.Close(); err != nil {
-				fmt.Printf("error closing output file %s: %+v\n", outputPath, err)
+			if err := outFile.Close(); err != nil {
+				fmt.Printf("error closing output file: %+v\n", err)
 			}
 		}()
-		tmpl.Execute(templateFile, data)
+		if err := tmpl.Execute(outFile, data); err != nil {
+			return fmt.Errorf("error executing template: %w", err)
+		}
+		return nil
+	}
+	if err := filepath.Walk(templatedir, walkFn); err != nil {
+		fmt.Printf("error when rendering templates: %+v\n", err)
+		return 2
 	}
 
 	return 0
