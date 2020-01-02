@@ -2,11 +2,8 @@ package day24
 
 import (
 	"bufio"
-	"container/heap"
-	"errors"
 	"fmt"
 	"io"
-	"math/bits"
 	"strconv"
 )
 
@@ -23,7 +20,7 @@ func solve(r io.Reader, part int) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 24, part %d: %w", part, err)
 	}
-	target := uint(0)
+	target := uint64(0)
 	for _, item := range items {
 		target += item
 	}
@@ -32,111 +29,74 @@ func solve(r io.Reader, part int) (string, error) {
 	} else {
 		target /= 4
 	}
-	qe, err := search(items, target)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 24, part %d: %w", part, err)
-	}
+	qe := search(items, target)
 	return fmt.Sprint(qe), nil
 }
 
-func parse(r io.Reader) ([]uint, error) {
+func parse(r io.Reader) ([]uint64, error) {
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
-	var weights []uint
+	var weights []uint64
 	for sc.Scan() {
-		weight, err := strconv.Atoi(sc.Text())
+		weight, err := strconv.ParseUint(sc.Text(), 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}
-		weights = append(weights, uint(weight))
+		weights = append(weights, weight)
 	}
 	return weights, nil
 }
 
-func set(mask uint, i int) uint {
-	return mask | (1 << i)
-}
-
-func isSet(mask uint, i int) bool {
-	return mask&(1<<i) != 0
-}
-
-type inventory []uint
-
-func (i inventory) eval(mask uint) (int, uint, uint) {
-	n := bits.OnesCount(mask)
-	sum := uint(0)
-	qe := uint(1)
-	for idx := 0; idx < bits.Len(mask); idx++ {
-		if isSet(mask, idx) {
-			item := i[idx]
-			sum += item
-			qe *= item
-		}
+// search implements a pseudo-polynomial time dynamic programming algorithm for
+// the subset sum problem, which this is a variation of. The algorithm was taken
+// from the following Wikipedia page:
+// https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dynamic_programming_solution
+func search(items []uint64, target uint64) uint64 {
+	type value struct {
+		n  uint64
+		qe uint64
 	}
-	return n, sum, qe
-}
-
-type priorityQueue struct {
-	inventory inventory
-	masks     []uint
-}
-
-func (pq *priorityQueue) Len() int {
-	return len(pq.masks)
-}
-
-func (pq *priorityQueue) Less(i, j int) bool {
-	iN, _, iQE := pq.inventory.eval(pq.masks[i])
-	jN, _, jQE := pq.inventory.eval(pq.masks[j])
-	if iN != jN {
-		return iN < jN
+	min := func(v1, v2 value) value {
+		var none value
+		if v1 == none {
+			return v2
+		}
+		if v2 == none {
+			return v1
+		}
+		if v1.n < v2.n || v1.n == v2.n && v1.qe < v2.qe {
+			return v1
+		}
+		return v2
 	}
-	return iQE < jQE
-}
-
-func (pq *priorityQueue) Swap(i, j int) {
-	pq.masks[i], pq.masks[j] = pq.masks[j], pq.masks[i]
-}
-
-func (pq *priorityQueue) Push(x interface{}) {
-	pq.masks = append(pq.masks, x.(uint))
-}
-
-func (pq *priorityQueue) Pop() interface{} {
-	n := len(pq.masks)
-	mask := pq.masks[n-1]
-	pq.masks = pq.masks[0 : n-1]
-	return mask
-}
-
-func search(inventory inventory, target uint) (uint, error) {
-	pq := priorityQueue{
-		inventory: inventory,
-		masks:     make([]uint, 1),
-	}
-	pq.masks[0] = 0
-	heap.Init(&pq)
-	visited := make(map[uint]struct{})
-	for pq.Len() > 0 {
-		mask := heap.Pop(&pq).(uint)
-		_, sum, qe := inventory.eval(mask)
-		if sum == target {
-			return qe, nil
-		}
-		if sum > target {
-			continue
-		}
-		if _, ok := visited[mask]; ok {
-			continue
-		}
-		visited[mask] = struct{}{}
-		for i, _ := range inventory {
-			if isSet(mask, i) {
-				continue
+	q := make(map[uint64]map[uint64]value)
+	for i := uint64(0); i < uint64(len(items)); i++ {
+		q[i] = make(map[uint64]value)
+		item := items[i]
+		for s := uint64(0); s <= target; s++ {
+			var v value
+			if item == s {
+				v = value{
+					n:  1,
+					qe: item,
+				}
 			}
-			heap.Push(&pq, set(mask, i))
+			if i != 0 {
+				if vv, ok := q[i-1][s]; ok {
+					v = min(v, vv)
+				}
+				if s >= item {
+					if vv, ok := q[i-1][s-item]; ok {
+						vv.n++
+						vv.qe *= item
+						v = min(v, vv)
+					}
+				}
+			}
+			if v.n != 0 {
+				q[i][s] = v
+			}
 		}
 	}
-	return 0, errors.New("no way to organize packages")
+	return q[uint64(len(items)-1)][target].qe
 }
