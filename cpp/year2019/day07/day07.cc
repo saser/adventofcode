@@ -1,12 +1,12 @@
-#include "year2019/day07/day07.h"
+#include "cpp/year2019/day07/day07.h"
 
 #include <algorithm>
 #include <istream>
 #include <optional>
 #include <string>
 
-#include "adventofcode.h"
-#include "year2019/intcode/intcode.h"
+#include "cpp/adventofcode.h"
+#include "cpp/year2019/intcode/intcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 template<class T>

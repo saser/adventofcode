@@ -1,11 +1,11 @@
-#include "year2019/day01/day01.h"
+#include "cpp/year2019/day01/day01.h"
 
 #include <fstream>
 #include <sstream>
 
 #include "gtest/gtest.h"
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 TEST(Year2019Day01, Part1Example1) {
   std::istringstream input("12");
@@ -40,7 +40,7 @@ TEST(Year2019Day01, Part1Example4) {
 }
 
 TEST(Year2019Day01, Part1Actual) {
-  std::ifstream input("year2019/testdata/01");
+  std::ifstream input("inputs/2019/01");
   std::string output = "3154112";
   adventofcode::answer_t a = day01::part1(input);
   EXPECT_EQ("", a.error);
@@ -73,7 +73,7 @@ TEST(Year2019Day01, Part2Example3) {
 }
 
 TEST(Year2019Day01, Part2Actual) {
-  std::ifstream input("year2019/testdata/01");
+  std::ifstream input("inputs/2019/01");
   std::string output = "4728317";
   adventofcode::answer_t a = day01::part2(input);
   EXPECT_EQ("", a.error);

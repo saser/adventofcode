@@ -1,4 +1,4 @@
-#include "year2019/day15/day15.h"
+#include "cpp/year2019/day15/day15.h"
 
 #include <algorithm>
 #include <iostream>
@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <utility>
 
-#include "adventofcode.h"
-#include "year2019/intcode/intcode.h"
+#include "cpp/adventofcode.h"
+#include "cpp/year2019/intcode/intcode.h"
 
 struct point {
   int x;

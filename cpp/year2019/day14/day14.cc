@@ -1,4 +1,4 @@
-#include "year2019/day14/day14.h"
+#include "cpp/year2019/day14/day14.h"
 
 #include <istream>
 #include <regex>
@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 struct reagent {
   unsigned long amount;

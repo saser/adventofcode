@@ -1,4 +1,4 @@
-#include "year2019/day10/day10.h"
+#include "cpp/year2019/day10/day10.h"
 
 #include <algorithm>
 #include <cmath>
@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 struct point {
   int x;

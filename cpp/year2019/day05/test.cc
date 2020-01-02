@@ -1,11 +1,11 @@
-#include "year2019/day05/day05.h"
+#include "cpp/year2019/day05/day05.h"
 
 #include <fstream>
 
 #include "gtest/gtest.h"
 
 TEST(Year2019Day05, Part1Actual) {
-  std::ifstream input("year2019/testdata/05");
+  std::ifstream input("inputs/2019/05");
   std::string output = "12896948";
   adventofcode::answer_t a = day05::part1(input);
   EXPECT_EQ("", a.error);
@@ -14,7 +14,7 @@ TEST(Year2019Day05, Part1Actual) {
 }
 
 TEST(Year2019Day05, Part2Actual) {
-  std::ifstream input("year2019/testdata/05");
+  std::ifstream input("inputs/2019/05");
   std::string output = "7704130";
   adventofcode::answer_t a = day05::part2(input);
   EXPECT_EQ("", a.error);

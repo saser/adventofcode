@@ -1,4 +1,4 @@
-#include "year2019/day20/day20.h"
+#include "cpp/year2019/day20/day20.h"
 
 #include <istream>
 #include <map>
@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 using grid_t = std::vector<std::vector<char>>;
 using point_t = std::pair<grid_t::size_type, grid_t::value_type::size_type>;

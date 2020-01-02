@@ -1,11 +1,11 @@
-#include "year2019/day07/day07.h"
+#include "cpp/year2019/day07/day07.h"
 
 #include <fstream>
 
 #include "benchmark/benchmark.h"
 
 static void Year2019Day07Part1(benchmark::State& state) {
-  std::ifstream input("year2019/testdata/07");
+  std::ifstream input("inputs/2019/07");
   for (auto _ : state) {
     day07::part1(input);
     input.clear();
@@ -15,7 +15,7 @@ static void Year2019Day07Part1(benchmark::State& state) {
 BENCHMARK(Year2019Day07Part1);
 
 static void Year2019Day07Part2(benchmark::State& state) {
-  std::ifstream input("year2019/testdata/07");
+  std::ifstream input("inputs/2019/07");
   for (auto _ : state) {
     day07::part2(input);
     input.clear();

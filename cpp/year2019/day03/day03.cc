@@ -1,11 +1,11 @@
-#include "year2019/day03/day03.h"
+#include "cpp/year2019/day03/day03.h"
 
 #include <istream>
 #include <unordered_map>
 
 #include "absl/strings/str_split.h"
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 struct point {
   int x;

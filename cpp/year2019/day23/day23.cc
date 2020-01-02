@@ -1,4 +1,4 @@
-#include "year2019/day23/day23.h"
+#include "cpp/year2019/day23/day23.h"
 
 #include <deque>
 #include <istream>
@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "adventofcode.h"
-#include "year2019/intcode/intcode.h"
+#include "cpp/adventofcode.h"
+#include "cpp/year2019/intcode/intcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 

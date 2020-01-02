@@ -1,4 +1,4 @@
-#include "year2019/day11/day11.h"
+#include "cpp/year2019/day11/day11.h"
 
 #include <algorithm>
 #include <iostream>
@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "adventofcode.h"
-#include "year2019/intcode/intcode.h"
+#include "cpp/adventofcode.h"
+#include "cpp/year2019/intcode/intcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 
