@@ -1,8 +1,8 @@
-#include "{{.FullYear}}/{{.FullDay}}/{{.FullDay}}.h"
+#include "cpp/{{.FullYear}}/{{.FullDay}}/{{.FullDay}}.h"
 
 #include <istream>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 

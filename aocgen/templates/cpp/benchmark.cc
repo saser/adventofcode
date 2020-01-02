@@ -1,4 +1,4 @@
-#include "{{.FullYear}}/{{.FullDay}}/{{.FullDay}}.h"
+#include "cpp/{{.FullYear}}/{{.FullDay}}/{{.FullDay}}.h"
 
 #include <fstream>
 
