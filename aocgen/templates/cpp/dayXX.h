@@ -3,7 +3,7 @@
 
 #include <istream>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 namespace {{.FullDay}} {
   adventofcode::answer_t part1(std::istream& is);
