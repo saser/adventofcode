@@ -1,4 +1,4 @@
-#include "year2019/day18/day18.h"
+#include "cpp/year2019/day18/day18.h"
 
 #include <cctype>
 #include <deque>
@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 using raw_grid_t = std::vector<std::vector<char>>;
 using row_i_t = raw_grid_t::size_type;

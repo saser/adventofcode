@@ -2,7 +2,7 @@ cc_library(
     name = "day16",
     hdrs = ["day16.h"],
     srcs = ["day16.cc"],
-    deps = ["//:adventofcode"],
+    deps = ["//cpp:adventofcode"],
 )
 
 cc_test(
@@ -12,7 +12,7 @@ cc_test(
         ":day16",
         "@googletest//:gtest_main",
     ],
-    data = ["//year2019:testdata/16"],
+    data = ["//inputs:2019/16"],
 )
 
 cc_binary(
@@ -22,5 +22,5 @@ cc_binary(
         ":day16",
         "@googlebenchmark//:benchmark_main",
     ],
-    data = ["//year2019:testdata/16"],
+    data = ["//inputs:2019/16"],
 )

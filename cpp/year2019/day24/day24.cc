@@ -1,4 +1,4 @@
-#include "year2019/day24/day24.h"
+#include "cpp/year2019/day24/day24.h"
 
 #include <deque>
 #include <istream>
@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 using grid_t = std::vector<std::vector<bool>>;
 using row_i_t = grid_t::size_type;

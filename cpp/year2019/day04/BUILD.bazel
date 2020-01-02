@@ -4,7 +4,7 @@ cc_library(
     srcs = ["day04.cc"],
     deps = [
         "@abseil//absl/strings:strings",
-        "//:adventofcode",
+        "//cpp:adventofcode",
         ":internal",
     ],
 )
@@ -16,7 +16,7 @@ cc_test(
         ":day04",
         "@googletest//:gtest_main",
     ],
-    data = ["//year2019:testdata/04"],
+    data = ["//inputs:2019/04"],
 )
 
 cc_library(
@@ -41,5 +41,5 @@ cc_binary(
         ":day04",
         "@googlebenchmark//:benchmark_main",
     ],
-    data = ["//year2019:testdata/04"],
+    data = ["//inputs:2019/04"],
 )

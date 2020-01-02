@@ -1,8 +1,8 @@
-#include "year2019/day01/day01.h"
+#include "cpp/year2019/day01/day01.h"
 
 #include <istream>
 
-#include "adventofcode.h"
+#include "cpp/adventofcode.h"
 
 adventofcode::answer_t solve(std::istream& is, int part);
 

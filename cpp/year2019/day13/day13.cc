@@ -1,11 +1,11 @@
-#include "year2019/day13/day13.h"
+#include "cpp/year2019/day13/day13.h"
 
 #include <istream>
 #include <string>
 #include <vector>
 
-#include "adventofcode.h"
-#include "year2019/intcode/intcode.h"
+#include "cpp/adventofcode.h"
+#include "cpp/year2019/intcode/intcode.h"
 
 using screen_t = std::vector<std::vector<int>>;
 
