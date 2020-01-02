@@ -1,3 +1,3 @@
-load("//cpp:repositories.bzl", "cpp_repositories")
+load("//cpp:deps.bzl", "cpp_dependencies")
 
-cpp_repositories()
+cpp_dependencies()
