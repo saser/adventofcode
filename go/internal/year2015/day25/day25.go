@@ -10,17 +10,9 @@ import (
 )
 
 func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
-}
-
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
-}
-
-func solve(r io.Reader, part int) (string, error) {
 	row, col, err := parse(r)
 	if err != nil {
-		return "", fmt.Errorf("year 2015, day 25, part %d: %w", part, err)
+		return "", fmt.Errorf("year 2015, day 25, part 1: %w", err)
 	}
 	a := big.NewInt(20151125)
 	base := big.NewInt(252533)
