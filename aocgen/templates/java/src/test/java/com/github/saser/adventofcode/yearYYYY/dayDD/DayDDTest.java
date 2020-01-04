@@ -37,7 +37,7 @@ public class Day{{.PaddedDay}}Test {
     // }
 
     // @Test
-    // public void part2Actual() {
+    // public void part2Actual() throws IOException {
     //     try (var input = new FileReader("inputs/{{.Year}}/{{.PaddedDay}}")) {
     //         var output = "";
     //         var result = Day{{.PaddedDay}}.part2(input);
