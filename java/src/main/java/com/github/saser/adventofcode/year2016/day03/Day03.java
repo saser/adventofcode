@@ -1,6 +1,5 @@
 package com.github.saser.adventofcode.year2016.day03;
 
-import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,20 +18,14 @@ public final class Day03 {
     }
 
     private static Result solve(Reader r, int part) {
-        var br = new BufferedReader(r);
-        var numbers = br.lines()
-            .map((String line) -> {
-                    var s = new Scanner(line);
-                    var list = new ArrayList<Integer>();
-                    while (s.hasNextInt()) {
-                        list.add(s.nextInt());
-                    }
-                    return list;
-                })
-            .collect(Collectors.toList());
+        var sc = new Scanner(r);
+        var numbers = new ArrayList<Integer>();
+        while (sc.hasNextInt()) {
+            numbers.add(sc.nextInt());
+        }
         var count = 0;
         var horizontal = part == 1;
-        for (var i = 0; i < numbers.size() * 3; i += 3) {
+        for (var i = 0; i < numbers.size(); i += 3) {
             int a = at(numbers, i, horizontal);
             int b = at(numbers, i + 1, horizontal);
             int c = at(numbers, i + 2, horizontal);
@@ -43,18 +36,14 @@ public final class Day03 {
         return Result.ok(Integer.toString(count));
     }
 
-    private static int at(List<? extends List<Integer>> numbers, int i, boolean horizontal) {
-        int row;
-        int col;
+    private static int at(List<Integer> numbers, int i, boolean horizontal) {
         if (horizontal) {
-            row = i / 3;
-            col = i % 3;
-        } else {
-            var nrows = numbers.size();
-            row = i % nrows;
-            col = i / nrows;
+            return numbers.get(i);
         }
-        return numbers.get(row).get(col);
+        var nrows = numbers.size() / 3;
+        var row = i % nrows;
+        var col = i / nrows;
+        return numbers.get(row * 3 + col);
     }
 
     private static boolean correct(int a, int b, int c) {
