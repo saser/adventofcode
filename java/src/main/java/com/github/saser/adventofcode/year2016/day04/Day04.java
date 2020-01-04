@@ -32,7 +32,12 @@ public final class Day04 {
                 .sum();
             return Result.ok(Long.toString(sum));
         }
-        return Result.err("not implemented yet");
+        var northPoleRoom = infos.stream()
+            .filter((info) -> info.decrypt().contains("northpole"))
+            .findFirst()
+            .get()
+            .sectorID;
+        return Result.ok(Integer.toString(northPoleRoom));
     }
 
     private static class RoomInfo {
@@ -78,6 +83,28 @@ public final class Day04 {
                                       StringBuilder::append,
                                       StringBuilder::toString));
             return this.checksum.equals(checksum);
+        }
+
+        public char decryptChar(char c) {
+            if (c == '-') {
+                return ' ';
+            } else {
+                c -= 'a';
+                c += this.sectorID;
+                c %= 26;
+                c += 'a';
+                return c;
+            }
+        }
+
+        public String decrypt() {
+            return this.s
+                .chars()
+                .mapToObj((c) -> this.decryptChar((char) c))
+                .collect(Collector.of(StringBuilder::new,
+                                      StringBuilder::append,
+                                      StringBuilder::append,
+                                      StringBuilder::toString));
         }
     }
 }
