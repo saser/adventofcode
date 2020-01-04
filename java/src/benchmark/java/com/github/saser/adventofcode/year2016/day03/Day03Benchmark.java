@@ -22,7 +22,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @BenchmarkMode(Mode.AverageTime)
 @Fork(1)
 @Measurement(iterations = 1, time = 1)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
 @Warmup(iterations = 5, time = 1)
 public class Day03Benchmark {
