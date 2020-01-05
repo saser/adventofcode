@@ -22,7 +22,7 @@ public final class Day05 {
             var br = new BufferedReader(r);
             var doorID = br.readLine();
             var digests = interestingDigests(doorID);
-            return Result.ok(password(digests));
+            return Result.ok(password(digests, part == 2));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.err(e.getMessage());
@@ -40,13 +40,37 @@ public final class Day05 {
         return digest[0] == 0x00 && digest[1] == 0x00 && digest[2] >= 0x00 && digest[2] <= 0x0f;
     }
 
-    private static String password(Stream<byte[]> digests) {
-        return digests
-            .limit(8)
-            .map((digest) -> Character.forDigit(digest[2], 16))
-            .collect(Collector.of(StringBuilder::new,
-                                  StringBuilder::append,
-                                  StringBuilder::append,
-                                  StringBuilder::toString));
+    private static boolean containsPosition(byte[] digest) {
+        return isInteresting(digest) && digest[2] <= 0x07;
+    }
+
+    private static int extractPosition(byte[] digest) {
+        return digest[2];
+    }
+
+    private static char extractCharacter(byte[] digest) {
+        return Character.forDigit((digest[3] & 0xf0) >> 4, 16);
+    }
+
+    private static String password(Stream<byte[]> digests, boolean sophisticated) {
+        if (!sophisticated) {
+            return digests
+                    .limit(8)
+                    .map((digest) -> Character.forDigit(digest[2], 16))
+                    .collect(Collector.of(StringBuilder::new,
+                            StringBuilder::append,
+                            StringBuilder::append,
+                            StringBuilder::toString));
+        }
+        var pw = new StringBuilder("________");
+        var it = digests.filter(Day05::containsPosition).iterator();
+        while (pw.indexOf("_") != -1) {
+            var digest = it.next();
+            var position = extractPosition(digest);
+            if (pw.charAt(position) == '_') {
+                pw.setCharAt(position, extractCharacter(digest));
+            }
+        }
+        return pw.toString();
     }
 }
