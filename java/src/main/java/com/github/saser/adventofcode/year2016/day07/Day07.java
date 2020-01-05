@@ -2,6 +2,7 @@ package com.github.saser.adventofcode.year2016.day07;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public final class Day07 {
         var br = new BufferedReader(r);
         var count = br.lines()
                 .map(Address::parse)
-                .filter(Address::supportsTLS)
+                .filter(part == 1 ? Address::supportsTLS : Address::supportsSSL)
                 .count();
         return Result.ok(Long.toString(count));
     }
@@ -51,6 +52,31 @@ public final class Day07 {
             var hypernetsContainsABBA = this.hypernets.stream().anyMatch(Address::containsABBA);
             var supernetsContainsABBA = this.supernets.stream().anyMatch(Address::containsABBA);
             return !hypernetsContainsABBA && supernetsContainsABBA;
+        }
+
+        public boolean supportsSSL() {
+            return this.supernets
+                    .stream()
+                    .flatMap((s) -> findABAs(s).stream())
+                    .anyMatch((ab) -> {
+                        var bab = new String(new char[] {ab[1], ab[0], ab[1]});
+                        return this.hypernets
+                                .stream()
+                                .anyMatch((hypernet) -> hypernet.contains(bab));
+                    });
+        }
+
+        private static ArrayList<char[]> findABAs(String s) {
+            var abas = new ArrayList<char[]>();
+            var chars = s.toCharArray();
+            for (var i = 0; i < chars.length - 2; i++) {
+                var a = chars[i];
+                var b = chars[i + 1];
+                if (a != b && chars[i + 2] == a) {
+                    abas.add(new char[] {a, b});
+                }
+            }
+            return abas;
         }
 
         private static boolean containsABBA(String s) {
