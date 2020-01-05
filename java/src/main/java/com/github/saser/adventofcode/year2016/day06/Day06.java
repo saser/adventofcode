@@ -23,7 +23,7 @@ public final class Day06 {
         var br = new BufferedReader(r);
         var message = transpose(br.lines())
                 .map(Day06::count)
-                .map(Day06::maxByValue)
+                .map(part == 1 ? Day06::maxByValue : Day06::minByValue)
                 .collect(Collector.of( StringBuilder::new, StringBuilder::append, StringBuilder::append, StringBuilder::toString));
         return Result.ok(message);
     }
@@ -51,6 +51,14 @@ public final class Day06 {
         return map.entrySet()
                 .stream()
                 .max(Map.Entry.<K, V>comparingByValue())
+                .get()
+                .getKey();
+    }
+
+    private static <K, V extends Comparable<? super V>> K minByValue(Map<K, V> map) {
+        return map.entrySet()
+                .stream()
+                .min(Map.Entry.<K, V>comparingByValue())
                 .get()
                 .getKey();
     }
