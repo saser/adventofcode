@@ -65,7 +65,7 @@ public class Day09Test {
     @Test
     public void part1Actual() throws IOException {
         try (var input = new FileReader("inputs/2016/09")) {
-            var output = "";
+            var output = "107035";
             var result = Day09.part1(input);
             Assert.assertEquals("no error", "", result.error);
             Assert.assertEquals("correct output", output, result.answer);
