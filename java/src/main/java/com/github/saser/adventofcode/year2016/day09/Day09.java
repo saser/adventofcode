@@ -18,15 +18,16 @@ public final class Day09 {
         try {
             var br = new BufferedReader(r);
             var input = br.readLine();
-            return Result.ok(Long.toString(decompressedLength(input)));
+            var length = decompressedLength(input, part == 2);
+            return Result.ok(Long.toString(length));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.err(e.getMessage());
         }
     }
 
-    private static long decompressedLength(String s) {
-        var length = 0;
+    private static long decompressedLength(String s, boolean recursive) {
+        var length = 0L;
         for (var i = 0; i < s.length(); i++) {
             var markerStart = s.indexOf('(', i);
             if (markerStart == -1) {
@@ -38,7 +39,9 @@ public final class Day09 {
             var marker = parseMarker(s.substring(markerStart + 1, markerEnd));
             var dataStart = markerEnd + 1;
             var dataEnd = markerEnd + marker[0];
-            length += (dataEnd - dataStart + 1) * marker[1];
+            var data = s.substring(dataStart, dataEnd + 1);
+            var dataLength = recursive ? decompressedLength(data, recursive) : data.length();
+            length += dataLength * marker[1];
             i = dataEnd;
         }
         return length;
