@@ -18,34 +18,30 @@ public final class Day09 {
         try {
             var br = new BufferedReader(r);
             var input = br.readLine();
-            var decompressed = decompress(input);
-            return Result.ok(Integer.toString(decompressed.length()));
+            return Result.ok(Long.toString(decompressedLength(input)));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.err(e.getMessage());
         }
     }
 
-    private static String decompress(String s) {
-        var sb = new StringBuilder(s.length());
+    private static long decompressedLength(String s) {
+        var length = 0;
         for (var i = 0; i < s.length(); i++) {
             var markerStart = s.indexOf('(', i);
             if (markerStart == -1) {
-                sb.append(s.substring(i));
+                length += s.length() - i;
                 break;
             }
-            sb.append(s, i, markerStart);
+            length += markerStart - i;
             var markerEnd = s.indexOf(')', markerStart);
             var marker = parseMarker(s.substring(markerStart + 1, markerEnd));
             var dataStart = markerEnd + 1;
-            var dataEnd = markerEnd + 1 + marker[0];
-            var data = s.substring(dataStart, dataEnd);
-            for (var r = 0; r < marker[1]; r++) {
-                sb.append(data);
-            }
-            i = dataEnd - 1;
+            var dataEnd = markerEnd + marker[0];
+            length += (dataEnd - dataStart + 1) * marker[1];
+            i = dataEnd;
         }
-        return sb.toString();
+        return length;
     }
 
     private static int[] parseMarker(String marker) {
