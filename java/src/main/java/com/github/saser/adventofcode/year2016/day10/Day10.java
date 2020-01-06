@@ -31,7 +31,23 @@ public final class Day10 {
             var bot = visited61.iterator().next();
             return Result.ok(Integer.toString(bot));
         }
-        return Result.err("not implemented yet");
+        var product = 1;
+        var found = new boolean[3];
+        for (var entry : paths.entrySet()) {
+            var list = entry.getValue();
+            var output = list.get(list.size() - 1);
+            if (output >= 0 && output <= 2) {
+                if (found[output]) {
+                    continue;
+                }
+                found[output] = true;
+                product *= entry.getKey();
+            }
+            if (found[0] && found[1] && found[2]) {
+                break;
+            }
+        }
+        return Result.ok(Integer.toString(product));
     }
 
     private static class Network {
