@@ -72,22 +72,49 @@ public class Day09Test {
         }
     }
 
-    // @Test
-    // public void part2Example() {
-    //     var input = new StringReader("");
-    //     var output = "";
-    //     var result = Day09.part2(input);
-    //     Assert.assertEquals("no error", "", result.error);
-    //     Assert.assertEquals("correct output", output, result.answer);
-    // }
+    @Test
+    public void part2Example1() {
+        var input = new StringReader("(3x3)XYZ");
+        var output = "9";
+        var result = Day09.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
 
-    // @Test
-    // public void part2Actual() throws IOException {
-    //     try (var input = new FileReader("inputs/2016/09")) {
-    //         var output = "";
-    //         var result = Day09.part2(input);
-    //         Assert.assertEquals("no error", "", result.error);
-    //         Assert.assertEquals("correct output", output, result.answer);
-    //     }
-    // }
+    @Test
+    public void part2Example2() {
+        var input = new StringReader("X(8x2)(3x3)ABCY");
+        var output = "20";
+        var result = Day09.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
+
+    @Test
+    public void part2Example3() {
+        var input = new StringReader("(27x12)(20x12)(13x14)(7x10)(1x12)A");
+        var output = "241920";
+        var result = Day09.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
+
+    @Test
+    public void part2Example4() {
+        var input = new StringReader("(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN");
+        var output = "445";
+        var result = Day09.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
+
+    @Test
+    public void part2Actual() throws IOException {
+        try (var input = new FileReader("inputs/2016/09")) {
+            var output = "";
+            var result = Day09.part2(input);
+            Assert.assertEquals("no error", "", result.error);
+            Assert.assertEquals("correct output", output, result.answer);
+        }
+    }
 }
