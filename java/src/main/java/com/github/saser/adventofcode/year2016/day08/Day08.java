@@ -37,18 +37,21 @@ public final class Day08 {
                 return Result.err(String.format("invalid input line: %s", line));
             }
         }
-        var count = Arrays.stream(grid)
-                .mapToInt((row) -> {
-                    var c = 0;
-                    for (var b : row) {
-                        if (b) {
-                            c++;
+        if (part == 1) {
+            var count = Arrays.stream(grid)
+                    .mapToInt((row) -> {
+                        var c = 0;
+                        for (var b : row) {
+                            if (b) {
+                                c++;
+                            }
                         }
-                    }
-                    return c;
-                })
-                .sum();
-        return Result.ok(Long.toString(count));
+                        return c;
+                    })
+                    .sum();
+            return Result.ok(Long.toString(count));
+        }
+        return Result.ok(render(grid));
     }
 
     private static boolean[][] clone(boolean[][] grid) {
@@ -94,5 +97,16 @@ public final class Day08 {
 
     private static boolean[][] rotateColumnDown(boolean[][] grid, int col, int n) {
         return transpose(rotateRowRight(transpose(grid), col, n));
+    }
+
+    private static String render(boolean[][] grid) {
+        var sb = new StringBuilder();
+        for (var row = 0; row < grid.length; row++) {
+            for (var col = 0; col < grid[row].length; col++) {
+                sb.append(grid[row][col] ? '#' : '.');
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 }
