@@ -1,5 +1,7 @@
 package com.github.saser.adventofcode.year2016.assembunny;
 
+import java.io.InputStreamReader;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -100,5 +102,13 @@ public class VMTest {
         Assert.assertEquals(3, vm.c());
         vm.d(4);
         Assert.assertEquals(4, vm.d());
+    }
+
+    @Test
+    public void testDay12Example() {
+        var r = new InputStreamReader(this.getClass().getResourceAsStream("day12example"));
+        var vm = VM.from(r);
+        vm.runAll();
+        Assert.assertEquals(42, vm.a());
     }
 }

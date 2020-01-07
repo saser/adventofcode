@@ -1,7 +1,6 @@
 java_test(
     name = "test",
     srcs = glob(["*.java"]),
-    resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/day12:testdata"],
     test_class = "com.github.saser.adventofcode.year2016.day12.Day12Test",
     deps = [
         "@maven//:junit_junit",
