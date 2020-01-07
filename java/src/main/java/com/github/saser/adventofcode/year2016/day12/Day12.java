@@ -16,6 +16,7 @@ public final class Day12 {
 
     private static Result solve(Reader r, int part) {
         var vm = VM.from(r);
+        vm.c(part == 2 ? 1 : 0);
         vm.runAll();
         return Result.ok(Integer.toString(vm.a()));
     }
