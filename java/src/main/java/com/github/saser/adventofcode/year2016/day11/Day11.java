@@ -2,8 +2,10 @@ package com.github.saser.adventofcode.year2016.day11;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -23,15 +25,35 @@ public final class Day11 {
 
     private static Result solve(Reader r, int part) {
         var state = State.parse(r);
-        for (var floor = 1; floor <= 4; floor++) {
-            System.out.printf("%d: ", floor);
-            for (var item : state.items.entrySet()) {
-                System.out.printf("%s, ", item);
+        var steps = moveToFourth(state);
+        return Result.ok(Integer.toString(steps));
+    }
+
+    private static int moveToFourth(State start) {
+        var queue = new LinkedList<Map.Entry<State, Integer>>();
+        queue.add(Map.entry(start, 0));
+        var visited = new HashSet<Integer>();
+        while (!queue.isEmpty()) {
+            var e = queue.remove();
+            var state = e.getKey();
+            var steps = e.getValue();
+            var itemsBelow = 0;
+            for (var floor = 1; floor < 4; floor++) {
+                itemsBelow += state.items.get(floor).size();
             }
-            System.out.println();
+            if (itemsBelow == 0) {
+                return steps;
+            }
+            var hash = state.characteristicHashCode();
+            if (visited.contains(hash)) {
+                continue;
+            }
+            visited.add(hash);
+            for (var nextState : state.nextStates()) {
+                queue.add(Map.entry(nextState, steps + 1));
+            }
         }
-        System.out.printf("is safe: %b\n", state.isSafe());
-        return Result.err("not implemented yet");
+        throw new IllegalArgumentException("invalid starting state");
     }
 
     private static class State {
@@ -105,6 +127,16 @@ public final class Day11 {
         @Override
         public int hashCode() {
             return Objects.hash(elevator, items);
+        }
+
+        public int characteristicHashCode() {
+            var nMicrochips = new int[4];
+            var nGenerators = new int[4];
+            for (var floor = 1; floor <= 4; floor++) {
+                nMicrochips[floor - 1] = this.elements(floor, true).size();
+                nGenerators[floor - 1] = this.elements(floor, false).size();
+            }
+            return Objects.hash(this.elevator, Arrays.hashCode(nMicrochips), Arrays.hashCode(nGenerators));
         }
 
         public boolean isSafe() {
