@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.github.saser.adventofcode.Result;
 
@@ -28,6 +29,7 @@ public final class Day11 {
             }
             System.out.println();
         }
+        System.out.printf("is safe: %b\n", state.isSafe());
         return Result.err("not implemented yet");
     }
 
@@ -79,6 +81,36 @@ public final class Day11 {
                 }
             }
             return new State(1, items);
+        }
+
+        public boolean isSafe() {
+            if (this.elevator < 1 || this.elevator > 4) {
+                return false;
+            }
+            if (this.items.get(this.elevator).isEmpty()) {
+                return false;
+            }
+            for (var floor = 1; floor <= 4; floor++) {
+                if (!this.floorIsSafe(floor)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private boolean floorIsSafe(int floor) {
+            var generatorsHere = this.elements(floor, false);
+            var microchipsHere = this.elements(floor, true);
+            return generatorsHere.size() == 0 || generatorsHere.containsAll(microchipsHere);
+        }
+
+        private Set<String> elements(int floor, boolean wantMicrochip) {
+            return this.items
+                    .get(floor)
+                    .stream()
+                    .filter((item) -> item.contains("microchip") == wantMicrochip)
+                    .map((item) -> item.split(" ")[0])
+                    .collect(Collectors.toSet());
         }
     }
 }
