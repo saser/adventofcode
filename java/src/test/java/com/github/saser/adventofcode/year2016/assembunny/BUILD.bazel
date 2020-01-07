@@ -2,6 +2,7 @@ java_test(
     name = "test",
     srcs = glob(["*.java"]),
     test_class = "com.github.saser.adventofcode.year2016.assembunny.VMTest",
+    resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/assembunny:testdata"],
     deps = [
         "@maven//:junit_junit",
         "//java/src/main/java/com/github/saser/adventofcode/year2016/assembunny",
