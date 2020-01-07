@@ -1,0 +1,7 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "testdata",
+    testonly = 1,
+    srcs = glob(["*"]),
+)
