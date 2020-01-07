@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -25,6 +26,15 @@ public final class Day11 {
 
     private static Result solve(Reader r, int part) {
         var state = State.parse(r);
+        if (part == 2) {
+            var extraItems = new String[] {
+                    "elerium generator",
+                    "elerium microchip",
+                    "dilithium generator",
+                    "dilithium microchip",
+            };
+            state.items.get(1).addAll(List.of(extraItems));
+        }
         var steps = moveToFourth(state);
         return Result.ok(Integer.toString(steps));
     }
