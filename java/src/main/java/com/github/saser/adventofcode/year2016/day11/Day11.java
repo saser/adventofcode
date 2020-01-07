@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -83,6 +84,29 @@ public final class Day11 {
             return new State(1, items);
         }
 
+        @Override
+        public State clone() {
+            var items = new HashMap<Integer, Set<String>>();
+            for (var e : this.items.entrySet()) {
+                items.put(e.getKey(), new HashSet<>(e.getValue()));
+            }
+            return new State(this.elevator, items);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            State state = (State) o;
+            return elevator == state.elevator &&
+                    items.equals(state.items);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(elevator, items);
+        }
+
         public boolean isSafe() {
             if (this.elevator < 1 || this.elevator > 4) {
                 return false;
@@ -111,6 +135,54 @@ public final class Day11 {
                     .filter((item) -> item.contains("microchip") == wantMicrochip)
                     .map((item) -> item.split(" ")[0])
                     .collect(Collectors.toSet());
+        }
+
+        public Set<State> nextStates() {
+            var next = new HashSet<State>();
+            next.addAll(this.nextStates(+1));
+            next.addAll(this.nextStates(-1));
+            return next;
+        }
+
+        private Set<State> nextStates(int delta) {
+            var next = new HashSet<State>();
+            var newFloor = this.elevator + delta;
+            if (newFloor < 1 || newFloor > 4) {
+                return next;
+            }
+            var moved = this.clone();
+            moved.moveElevator(delta);
+            var itemsHere = this.items.get(this.elevator).toArray(new String[0]);
+            for (var i1 = 0; i1 < itemsHere.length; i1++) {
+                var item1 = itemsHere[i1];
+                var moved1 = moved.clone();
+                moved1.moveItem(item1, delta);
+                if (moved1.isSafe()) {
+                    next.add(moved1);
+                }
+                for (var i2 = i1 + 1; i2 < itemsHere.length; i2++) {
+                    var item2 = itemsHere[i2];
+                    var moved2 = moved1.clone();
+                    moved2.moveItem(item2, delta);
+                    if (moved2.isSafe()) {
+                        next.add(moved2);
+                    }
+                }
+            }
+            return next;
+        }
+
+        private void moveElevator(int delta) {
+            this.elevator += delta;
+        }
+
+        private void moveItem(String item, int delta) {
+            for (var floor = 1; floor <= 4; floor++) {
+                if (this.items.get(floor).remove(item)) {
+                    this.items.get(floor + delta).add(item);
+                    break;
+                }
+            }
         }
     }
 }
