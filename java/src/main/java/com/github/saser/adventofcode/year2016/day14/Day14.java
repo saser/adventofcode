@@ -26,7 +26,7 @@ public final class Day14 {
     private static Result solve(Reader r, int part) {
         try {
             var salt = new BufferedReader(r).readLine();
-            var hasher = new Hasher(salt);
+            var hasher = new Hasher(salt, part == 1 ? 0 : 2016);
             var key64 = hasher.keyStream()
                     .skip(63)
                     .findFirst()
@@ -40,21 +40,30 @@ public final class Day14 {
 
     private static class Hasher {
         public final String salt;
+        public final int extra;
         private final MessageDigest md;
         private final NavigableMap<Integer, Character> triples;
         private final NavigableMap<Integer, Set<Character>> fivetuples;
         private int nextHash;
 
-        public Hasher(String salt) throws Exception {
+        public Hasher(String salt, int extra) throws Exception {
             this.salt = salt;
+            this.extra = extra;
             this.md = MessageDigest.getInstance("MD5");
             this.triples = new TreeMap<>();
             this.fivetuples = new TreeMap<>();
             this.nextHash = 0;
         }
 
+        private String hashString(String s) {
+            return Day14.hexString(md.digest(s.getBytes()));
+        }
+
         private void hash(int index) {
-            var hash = Day14.hexString(md.digest((this.salt + index).getBytes()));
+            var hash = this.hashString(this.salt + index);
+            for (var i = 0; i < this.extra; i++) {
+                hash = this.hashString(hash);
+            }
             var groups = Day14.groups(hash);
             for (var group : groups) {
                 var c = group.charAt(0);
