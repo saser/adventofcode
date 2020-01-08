@@ -2,8 +2,9 @@ package com.github.saser.adventofcode.year2016.day13;
 
 import java.io.BufferedReader;
 import java.io.Reader;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import com.github.saser.adventofcode.Result;
 import com.github.saser.adventofcode.geo.Point2D;
@@ -26,28 +27,35 @@ public final class Day13 {
             var from = new Point2D(1, 1);
             var target = new Point2D(31, 39);
             var steps = Day13.steps(from, target, favorite);
-            return Result.ok(Integer.toString(steps));
+            if (part == 1) {
+                return Result.ok(Integer.toString(steps.get(target)));
+            }
+            var within50 = steps.values()
+                    .stream()
+                    .filter((length) -> length <= 50)
+                    .count();
+            return Result.ok(Long.toString(within50));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.err(e.getMessage());
         }
     }
 
-    private static int steps(Point2D from, Point2D target, int favorite) {
+    private static Map<Point2D, Integer> steps(Point2D from, Point2D target, int favorite) {
         var queue = new LinkedList<Tuple2<Point2D, Integer>>();
         queue.add(new Tuple2<>(from, 0));
-        var visited = new HashSet<Point2D>();
+        var visited = new HashMap<Point2D, Integer>();
         while (!queue.isEmpty()) {
             var tuple = queue.remove();
             var point = tuple.v1;
             var steps = tuple.v2;
-            if (point.equals(target)) {
-                return steps;
-            }
-            if (visited.contains(point)) {
+            if (visited.containsKey(point)) {
                 continue;
             }
-            visited.add(point);
+            visited.put(point, steps);
+            if (point.equals(target)) {
+                break;
+            }
             var neighbors = new Point2D[] {
                     point.plus(new Point2D(1, 0)),
                     point.plus(new Point2D(-1, 0)),
@@ -63,7 +71,7 @@ public final class Day13 {
                 }
             }
         }
-        return 0;
+        return visited;
     }
 
     private static boolean isWall(Point2D point, int favorite) {
