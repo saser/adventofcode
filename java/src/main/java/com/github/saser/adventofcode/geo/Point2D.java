@@ -25,6 +25,12 @@ public final class Point2D {
         this.y += other.y;
     }
 
+    public Point2D plus(Point2D other) {
+        var copy = this.clone();
+        copy.add(other);
+        return copy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
