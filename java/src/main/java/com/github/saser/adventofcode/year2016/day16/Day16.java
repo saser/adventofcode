@@ -18,7 +18,7 @@ public final class Day16 {
     private static Result solve(Reader r, int part) {
         try {
             var state = Day16.parse(r);
-            state = Day16.generate(state, 272);
+            state = Day16.generate(state, part == 1 ? 272 : 35651584);
             var checksum = Day16.checksum(state);
             return Result.ok(Day16.toString(checksum));
         } catch (Exception e) {
