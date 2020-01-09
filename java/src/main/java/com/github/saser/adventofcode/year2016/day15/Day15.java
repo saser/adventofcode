@@ -21,6 +21,9 @@ public final class Day15 {
 
     private static Result solve(Reader r, int part) {
         var discs = Day15.parse(r);
+        if (part == 2) {
+            discs.add(new Tuple3<>(discs.size() + 1L, 11L, 0L));
+        }
         var equations = discs.stream()
                 .map(tuple -> {
                     var disc = tuple.v1;
