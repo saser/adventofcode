@@ -45,22 +45,40 @@ public class Day17Test {
         }
     }
 
-    // @Test
-    // public void part2Example() {
-    //     var input = new StringReader("");
-    //     var output = "";
-    //     var result = Day17.part2(input);
-    //     Assert.assertEquals("no error", "", result.error);
-    //     Assert.assertEquals("correct output", output, result.answer);
-    // }
+    @Test
+    public void part2Example1() {
+        var input = new StringReader("ihgpwlah");
+        var output = "370";
+        var result = Day17.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
 
-    // @Test
-    // public void part2Actual() throws IOException {
-    //     try (var input = new FileReader("inputs/2016/17")) {
-    //         var output = "";
-    //         var result = Day17.part2(input);
-    //         Assert.assertEquals("no error", "", result.error);
-    //         Assert.assertEquals("correct output", output, result.answer);
-    //     }
-    // }
+    @Test
+    public void part2Example2() {
+        var input = new StringReader("kglvqrro");
+        var output = "492";
+        var result = Day17.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
+
+    @Test
+    public void part2Example3() {
+        var input = new StringReader("ulqzkmiv");
+        var output = "830";
+        var result = Day17.part2(input);
+        Assert.assertEquals("no error", "", result.error);
+        Assert.assertEquals("correct output", output, result.answer);
+    }
+
+    @Test
+    public void part2Actual() throws IOException {
+        try (var input = new FileReader("inputs/2016/17")) {
+            var output = "556";
+            var result = Day17.part2(input);
+            Assert.assertEquals("no error", "", result.error);
+            Assert.assertEquals("correct output", output, result.answer);
+        }
+    }
 }

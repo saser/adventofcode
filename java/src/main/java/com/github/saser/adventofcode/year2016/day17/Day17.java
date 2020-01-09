@@ -24,8 +24,14 @@ public final class Day17 {
         try {
             var passcode = new BufferedReader(r).readLine();
             var maze = new Maze(passcode);
-            var path = maze.findVault(new Point2D(3, 3));
-            return Result.ok(path);
+            var paths = maze.findVault(new Point2D(3, 3));
+            String answer;
+            if (part == 1) {
+                answer = paths.v1;
+            } else {
+                answer = Integer.toString(paths.v2.length());
+            }
+            return Result.ok(answer);
         } catch (Exception e) {
             e.printStackTrace();
             return Result.err(e.getMessage());
@@ -41,15 +47,21 @@ public final class Day17 {
             this.md = MessageDigest.getInstance("MD5");
         }
 
-        public String findVault(Point2D target) {
+        public Tuple2<String, String> findVault(Point2D target) {
             var queue = new LinkedList<Tuple2<Point2D, String>>();
             queue.add(new Tuple2<>(new Point2D(0, 0), ""));
+            var shortestPath = "";
+            var longestPath = "";
             while (!queue.isEmpty()) {
                 var tuple = queue.remove();
                 var point = tuple.v1;
                 var path = tuple.v2;
                 if (point.equals(target)) {
-                    return path;
+                    if (shortestPath.equals("")) {
+                        shortestPath = path;
+                    }
+                    longestPath = path;
+                    continue;
                 }
                 for (var nextStep : this.nextSteps(path)) {
                     var delta = new Point2D(0, 0);
@@ -74,7 +86,7 @@ public final class Day17 {
                     queue.add(new Tuple2<>(nextPoint, path + nextStep));
                 }
             }
-            throw new Error("unreachable");
+            return new Tuple2<>(shortestPath, longestPath);
         }
 
         private Set<Character> nextSteps(String path) {
