@@ -19,7 +19,7 @@ public final class Day18 {
         var state = Day18.parse(r);
         var states = Stream.iterate(state, Day18::next);
         var sum = states
-                .limit(40)
+                .limit(part == 1 ? 40 : 400000)
                 .mapToInt(Day18::count)
                 .sum();
         return Result.ok(Integer.toString(sum));
