@@ -25,13 +25,7 @@ public final class Day19 {
     }
 
     private static int play(int n) {
-        var start = 1;
-        var delta = 2;
-        while (n > 1) {
-            start += (n % 2) * delta;
-            delta *= 2;
-            n /= 2;
-        }
-        return start;
+        int k = Integer.highestOneBit(n);
+        return ((n - k) << 1) + 1;
     }
 }
