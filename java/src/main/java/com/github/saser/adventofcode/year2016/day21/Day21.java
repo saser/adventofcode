@@ -3,7 +3,6 @@ package com.github.saser.adventofcode.year2016.day21;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,77 +20,52 @@ public final class Day21 {
     }
 
     private static Result solve(Reader r, int part) {
-        var chars = (part == 1 ? "abcdefgh" : "fbgdceah").toCharArray();
+        var chars = "abcdefgh".toCharArray();
         var instructions = new BufferedReader(r)
                 .lines()
-                .collect(Collectors.toList());
-        apply(chars, instructions, part == 2);
+                .collect(Collectors.toUnmodifiableList());
+        apply(chars, instructions);
         return Result.ok(new String(chars));
     }
 
-    private static void apply(char[] chars, List<String> instructions, boolean reverse) {
+    private static void apply(char[] chars, List<String> instructions) {
         var swapPositionRE = Pattern.compile("swap position (\\d+) with position (\\d+)");
         var swapLetterRE = Pattern.compile("swap letter (\\w) with letter (\\w)");
         var rotateStepsRE = Pattern.compile("rotate (left|right) (\\d+) steps?");
         var rotateLetterRE = Pattern.compile("rotate based on position of letter (\\w)");
         var reverseRE = Pattern.compile("reverse positions (\\d+) through (\\d+)");
         var moveRE = Pattern.compile("move position (\\d+) to position (\\d+)");
-        if (reverse) {
-            Collections.reverse(instructions);
-        }
         for (var instruction : instructions) {
             Matcher matcher;
             matcher = swapPositionRE.matcher(instruction);
             if (matcher.matches()) {
                 var x = Integer.parseInt(matcher.group(1));
                 var y = Integer.parseInt(matcher.group(2));
-                if (reverse) {
-                    swap(chars, y, x);
-                } else {
-                    swap(chars, x, y);
-                }
+                swap(chars, x, y);
                 continue;
             }
             matcher = swapLetterRE.matcher(instruction);
             if (matcher.matches()) {
                 var x = find(chars, matcher.group(1).charAt(0));
                 var y = find(chars, matcher.group(2).charAt(0));
-                if (reverse) {
-                    swap(chars, y, x);
-                } else {
-                    swap(chars, x, y);
-                }
+                swap(chars, x, y);
                 continue;
             }
             matcher = rotateStepsRE.matcher(instruction);
             if (matcher.matches()) {
                 var right = matcher.group(1).equals("right");
                 var steps = Integer.parseInt(matcher.group(2));
-                if (reverse) {
-                    right = !right;
-                }
                 rotate(chars, right, steps);
                 continue;
             }
             matcher = rotateLetterRE.matcher(instruction);
             if (matcher.matches()) {
                 var index = find(chars, matcher.group(1).charAt(0));
-                int steps;
-                if (reverse) {
-                    if (index == 0) {
-                        steps = 1;
-                    } else if (index % 2 == 1) {
-                        steps = index / 2 + 1;
-                    } else {
-                        steps = 5 + index / 2;
-                    }
-                } else {
-                    steps = 1 + index;
-                    if (index >= 4) {
-                        steps++;
-                    }
+                var steps = 1 + index;
+                if (index >= 4) {
+                    steps++;
                 }
-                rotate(chars, !reverse, steps);
+                rotate(chars, true, steps);
                 continue;
             }
             matcher = reverseRE.matcher(instruction);
@@ -105,11 +79,7 @@ public final class Day21 {
             if (matcher.matches()) {
                 var x = Integer.parseInt(matcher.group(1));
                 var y = Integer.parseInt(matcher.group(2));
-                if (reverse) {
-                    move(chars, y, x);
-                } else {
-                    move(chars, x, y);
-                }
+                move(chars, x, y);
                 continue;
             }
             throw new IllegalArgumentException(String.format("invalid instruction: %s", instruction));
