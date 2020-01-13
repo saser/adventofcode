@@ -5,6 +5,7 @@ java_library(
     srcs = glob(["*.java"]),
     deps = [
         "//java/src/main/java/com/github/saser/adventofcode/geo:geo",
+        "//java/src/main/java/com/github/saser/adventofcode/tuple:tuple",
         "//java/src/main/java/com/github/saser/adventofcode:adventofcode",
     ],
 )
