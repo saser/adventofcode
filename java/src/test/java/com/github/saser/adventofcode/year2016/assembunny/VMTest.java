@@ -93,6 +93,65 @@ public class VMTest {
     }
 
     @Test
+    public void testTglOneArgument() {
+        var program = new String[] {
+                "tgl 1",
+                "inc a", // will become `dec a`, producing a = -1
+                "tgl 1",
+                "dec b", // will become `inc b`, producing b = 1
+                "tgl 1",
+                "tgl c", // will become `inc c`, producing c = 1
+                "tgl 1",
+                "out d", // will become `inc d`, producing d = 1
+        };
+        var vm = new VM(program);
+        vm.runAll();
+        Assert.assertEquals(-1, vm.a());
+        Assert.assertEquals(1, vm.b());
+        Assert.assertEquals(1, vm.c());
+        Assert.assertEquals(1, vm.d());
+    }
+
+    @Test
+    public void testTglTwoArguments() {
+        var program = new String[] {
+                "tgl 1",
+                "jnz 1 a", // will become `cpy 1 a`, producing a = 1
+                "tgl 1",
+                "cpy 1 2", // will become `jnz 1 2`...
+                "cpy 1 b", // which will skip this instruction...
+                "cpy 2 b", // producing b = 2
+        };
+        var vm = new VM(program);
+        vm.runAll();
+        Assert.assertEquals(1, vm.a());
+        Assert.assertEquals(2, vm.b());
+    }
+
+    @Test
+    public void testTglSelf() {
+        var program = new String[] {
+                "tgl a", // a == 0, so this will become `inc a`
+                "dec a", // the previous instruction should be skipped, producing a = -1
+        };
+        var vm = new VM(program);
+        vm.runAll();
+        Assert.assertEquals(-1, vm.a());
+    }
+
+    @Test
+    public void testTglIllegal() {
+        var program = new String[] {
+                "tgl 1",
+                "jnz 1 2", // will become `cpy 1 2`, which is illegal and should be skipped...
+                "cpy 1 a", // producing a = 1
+        };
+        var vm = new VM(program);
+        vm.runAll();
+        Assert.assertEquals(1, vm.a());
+    }
+
+    @Test
     public void testOutImmediate() {
         var vm = VM.from("out 1");
         var outputs = vm.runAll();
