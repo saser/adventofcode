@@ -29,7 +29,7 @@ public final class Day24 {
         var keys = findKeys(grid);
         var start = findStart(grid, keys);
         var distances = findDistances(grid, keys);
-        var steps = collectKeys(start, keys, distances);
+        var steps = collectKeys(start, keys, distances, part == 2);
         return Result.ok(Integer.toString(steps));
     }
 
@@ -112,7 +112,7 @@ public final class Day24 {
         return distances;
     }
 
-    private static int collectKeys(Point2D start, Set<Point2D> keys, Map<Point2D, Map<Point2D, Integer>> distances) {
+    private static int collectKeys(Point2D start, Set<Point2D> keys, Map<Point2D, Map<Point2D, Integer>> distances, boolean returnToStart) {
         var queue = new PriorityQueue<Tuple3<Point2D, Set<Point2D>, Integer>>(Comparator.comparing(tuple -> tuple.v3));
         queue.add(new Tuple3<>(start, Set.of(start), 0));
         var visited = new HashSet<Tuple2<Point2D, Set<Point2D>>>();
@@ -127,6 +127,9 @@ public final class Day24 {
             }
             visited.add(state);
             if (collected.containsAll(keys)) {
+                if (returnToStart) {
+                    steps += distances.get(point).get(start);
+                }
                 return steps;
             }
             for (var entry : distances.get(point).entrySet()) {
