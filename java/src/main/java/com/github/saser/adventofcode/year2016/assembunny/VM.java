@@ -97,6 +97,14 @@ public class VM {
         this.register("d", i);
     }
 
+    public void reset() {
+        this.pc = 0;
+        this.a(0);
+        this.b(0);
+        this.c(0);
+        this.d(0);
+    }
+
     public List<Integer> runAll() {
         var output = new ArrayList<Integer>();
         while (this.pc < this.program.length) {

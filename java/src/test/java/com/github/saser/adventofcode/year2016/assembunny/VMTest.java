@@ -195,6 +195,29 @@ public class VMTest {
     }
 
     @Test
+    public void testReset() {
+        var program = new String[] {
+                "cpy 1 a",
+                "cpy 2 b",
+                "cpy 3 c",
+                "cpy 4 d",
+        };
+        var vm = new VM(program);
+        vm.runAll();
+        Assert.assertEquals(1, vm.a());
+        Assert.assertEquals(2, vm.b());
+        Assert.assertEquals(3, vm.c());
+        Assert.assertEquals(4, vm.d());
+        Assert.assertEquals(4, vm.pc);
+        vm.reset();
+        Assert.assertEquals(0, vm.a());
+        Assert.assertEquals(0, vm.b());
+        Assert.assertEquals(0, vm.c());
+        Assert.assertEquals(0, vm.d());
+        Assert.assertEquals(0, vm.pc);
+    }
+
+    @Test
     public void testDay12Example() {
         var r = new InputStreamReader(this.getClass().getResourceAsStream("day12example"));
         var vm = VM.from(r);
