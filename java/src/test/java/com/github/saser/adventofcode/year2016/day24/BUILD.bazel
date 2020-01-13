@@ -1,0 +1,12 @@
+java_test(
+    name = "test",
+    srcs = glob(["*.java"]),
+    test_class = "com.github.saser.adventofcode.year2016.day24.Day24Test",
+    resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/day24:testdata"],
+    deps = [
+        "@maven//:junit_junit",
+        "//java/src/main/java/com/github/saser/adventofcode:adventofcode",
+        "//java/src/main/java/com/github/saser/adventofcode/year2016/day24:day24",
+    ],
+    data = ["//inputs:2016/24"],
+)
