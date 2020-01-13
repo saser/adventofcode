@@ -40,10 +40,4 @@ public class Day25Benchmark {
         Day25.part1(this.input);
         this.input.reset();
     }
-        
-    @Benchmark
-    public void part2() throws IOException {
-        Day25.part2(this.input);
-        this.input.reset();
-    }
 }
