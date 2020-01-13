@@ -1,9 +1,11 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
 cc_library(
     name = "intcode",
-    hdrs = ["intcode.h"],
     srcs = ["intcode.cc"],
-    deps = ["@abseil//absl/strings:strings"],
-    visibility = ["//visibility:public"]
+    hdrs = ["intcode.h"],
+    visibility = ["//visibility:public"],
+    deps = ["@abseil//absl/strings"],
 )
 
 cc_test(

@@ -1,6 +1,9 @@
+load("@rules_java//java:defs.bzl", "java_test")
+
 java_test(
     name = "test",
     srcs = glob(["*.java"]),
+    data = ["//inputs:2016/11"],
     resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/day11:testdata"],
     test_class = "com.github.saser.adventofcode.year2016.day11.Day11Test",
     deps = [
@@ -8,5 +11,4 @@ java_test(
         "//java/src/main/java/com/github/saser/adventofcode/year2016/day11",
         "@maven//:junit_junit",
     ],
-    data = ["//inputs:2016/11"],
 )

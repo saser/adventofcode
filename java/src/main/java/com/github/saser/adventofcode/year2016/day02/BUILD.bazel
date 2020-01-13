@@ -1,10 +1,12 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
 package(default_visibility = ["//visibility:public"])
 
 java_library(
     name = "day02",
     srcs = glob(["*.java"]),
     deps = [
-        "//java/src/main/java/com/github/saser/adventofcode/geo:geo",
-        "//java/src/main/java/com/github/saser/adventofcode:adventofcode",
+        "//java/src/main/java/com/github/saser/adventofcode",
+        "//java/src/main/java/com/github/saser/adventofcode/geo",
     ],
 )

@@ -8,6 +8,6 @@ def java_dependencies():
             "org.openjdk.jmh:jmh-generator-annprocess:1.22",
         ],
         repositories = [
-            "https://repo1.maven.org/maven2"
+            "https://repo1.maven.org/maven2",
         ],
     )
