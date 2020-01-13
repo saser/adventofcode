@@ -93,7 +93,7 @@ public class VMTest {
 
     @Test
     public void testSetRegisters() {
-        var vm = new VM(new String[0], 0, 0, 0, 0, 0);
+        var vm = new VM(new String[0][0], 0, 0, 0, 0, 0);
         vm.a(1);
         Assert.assertEquals(1, vm.a());
         vm.b(2);
