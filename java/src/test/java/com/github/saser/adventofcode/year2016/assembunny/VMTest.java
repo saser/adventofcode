@@ -111,4 +111,12 @@ public class VMTest {
         vm.runAll();
         Assert.assertEquals(42, vm.a());
     }
+
+    @Test
+    public void testDay23Example() {
+        var r = new InputStreamReader(this.getClass().getResourceAsStream("day23example"));
+        var vm = VM.from(r);
+        vm.runAll();
+        Assert.assertEquals(3, vm.a());
+    }
 }
