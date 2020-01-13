@@ -6,14 +6,6 @@ import com.github.saser.adventofcode.Result;
 import com.github.saser.adventofcode.year2016.assembunny.VM;
 
 public final class Day25 {
-    public static Result part1(Reader r) {
-        return solve(r, 1);
-    }
-
-    public static Result part2(Reader r) {
-        return solve(r, 2);
-    }
-
     // My initial attempt consisted of trying to find a loop in the states of
     // the VM, based on the pattern `{0, 1}`. However, I expected the loop to be
     // exactly as long as the pattern, i.e., 2 states.
@@ -35,7 +27,7 @@ public final class Day25 {
     // simply start by setting `a` to zero, and as long as a is less than
     // `bound`, we shift `a` left two times, and add `10` as the new least
     // significant bits. When we have found `a`, the answer is `a - bound`.
-    private static Result solve(Reader r, int part) {
+    public static Result part1(Reader r) {
         var vm = VM.from(r);
         for (var i = 0; i < 3; i++) {
             vm.run();
