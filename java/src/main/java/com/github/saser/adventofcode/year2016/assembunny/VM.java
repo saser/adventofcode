@@ -21,10 +21,6 @@ public class VM {
         this(program, 0, 0, 0, 0, 0);
     }
 
-    public VM() {
-        this(new String[0]);
-    }
-
     public static VM from(Reader r) {
         return new VM(new BufferedReader(r).lines().toArray(String[]::new));
     }
