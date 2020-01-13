@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class VM {
@@ -11,14 +12,14 @@ public class VM {
     public int pc;
     public int[] registers;
 
-    public VM(String[] program, int pc, int a, int b, int c, int d) {
-        this.program = splitProgram(program);
+    public VM(String[][] program, int pc, int a, int b, int c, int d) {
+        this.program = program;
         this.pc = pc;
         this.registers = new int[] {a, b, c, d};
     }
 
     public VM(String[] program) {
-        this(program, 0, 0, 0, 0, 0);
+        this(splitProgram(program), 0, 0, 0, 0, 0);
     }
 
     public static VM from(Reader r) {
@@ -33,6 +34,33 @@ public class VM {
         return Arrays.stream(program)
                 .map(instruction -> instruction.split(" "))
                 .toArray(String[][]::new);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VM vm = (VM) o;
+        return pc == vm.pc &&
+                Arrays.equals(program, vm.program) &&
+                Arrays.equals(registers, vm.registers);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(pc);
+        result = 31 * result + Arrays.hashCode(program);
+        result = 31 * result + Arrays.hashCode(registers);
+        return result;
+    }
+
+    @Override
+    public VM clone() {
+        var program = new String[this.program.length][];
+        for (var i = 0; i < program.length; i++) {
+            program[i] = this.program[i].clone();
+        }
+        return new VM(program, this.pc, this.a(), this.b(), this.c(), this.d());
     }
 
     public int a() {
