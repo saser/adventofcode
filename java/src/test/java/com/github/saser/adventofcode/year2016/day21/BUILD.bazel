@@ -1,11 +1,13 @@
+load("@rules_java//java:defs.bzl", "java_test")
+
 java_test(
     name = "test",
     srcs = glob(["*.java"]),
+    data = ["//inputs:2016/21"],
     test_class = "com.github.saser.adventofcode.year2016.day21.Day21Test",
     deps = [
+        "//java/src/main/java/com/github/saser/adventofcode",
+        "//java/src/main/java/com/github/saser/adventofcode/year2016/day21",
         "@maven//:junit_junit",
-        "//java/src/main/java/com/github/saser/adventofcode:adventofcode",
-        "//java/src/main/java/com/github/saser/adventofcode/year2016/day21:day21",
     ],
-    data = ["//inputs:2016/21"],
 )

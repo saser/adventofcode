@@ -1,19 +1,21 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+
 java_library(
     name = "benchmark_library",
     srcs = glob(["*.java"]),
-    deps = [
-        "@maven//:org_openjdk_jmh_jmh_core",
-        "//java/src/main/java/com/github/saser/adventofcode/year2016/day22:day22",
-    ],
-    plugins = ["//java/src/benchmark:annotation_processor"],
     data = ["//inputs:2016/22"],
+    plugins = ["//java/src/benchmark:annotation_processor"],
+    deps = [
+        "//java/src/main/java/com/github/saser/adventofcode/year2016/day22",
+        "@maven//:org_openjdk_jmh_jmh_core",
+    ],
 )
 
 java_binary(
     name = "benchmark",
     main_class = "org.openjdk.jmh.Main",
     runtime_deps = [
-        "@maven//:org_openjdk_jmh_jmh_core",
         ":benchmark_library",
+        "@maven//:org_openjdk_jmh_jmh_core",
     ],
 )

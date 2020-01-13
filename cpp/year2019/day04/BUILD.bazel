@@ -1,28 +1,30 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+
 cc_library(
     name = "day04",
-    hdrs = ["day04.h"],
     srcs = ["day04.cc"],
+    hdrs = ["day04.h"],
     deps = [
-        "@abseil//absl/strings:strings",
-        "//cpp:adventofcode",
         ":internal",
+        "//cpp:adventofcode",
+        "@abseil//absl/strings",
     ],
 )
 
 cc_test(
     name = "test",
     srcs = ["test.cc"],
+    data = ["//inputs:2019/04"],
     deps = [
         ":day04",
         "@googletest//:gtest_main",
     ],
-    data = ["//inputs:2019/04"],
 )
 
 cc_library(
     name = "internal",
-    hdrs = ["internal.h"],
     srcs = ["internal.cc"],
+    hdrs = ["internal.h"],
 )
 
 cc_test(
@@ -37,9 +39,9 @@ cc_test(
 cc_binary(
     name = "benchmark",
     srcs = ["benchmark.cc"],
+    data = ["//inputs:2019/04"],
     deps = [
         ":day04",
         "@googlebenchmark//:benchmark_main",
     ],
-    data = ["//inputs:2019/04"],
 )

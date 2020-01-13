@@ -1,26 +1,28 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+
 cc_library(
     name = "day14",
-    hdrs = ["day14.h"],
     srcs = ["day14.cc"],
+    hdrs = ["day14.h"],
     deps = ["//cpp:adventofcode"],
 )
 
 cc_test(
     name = "test",
     srcs = ["test.cc"],
+    data = glob(["testdata/*"]) + ["//inputs:2019/14"],
     deps = [
         ":day14",
         "@googletest//:gtest_main",
     ],
-    data = glob(["testdata/*"]) + ["//inputs:2019/14"],
 )
 
 cc_binary(
     name = "benchmark",
     srcs = ["benchmark.cc"],
+    data = ["//inputs:2019/14"],
     deps = [
         ":day14",
         "@googlebenchmark//:benchmark_main",
     ],
-    data = ["//inputs:2019/14"],
 )

@@ -1,12 +1,14 @@
+load("@rules_java//java:defs.bzl", "java_test")
+
 java_test(
     name = "test",
     srcs = glob(["*.java"]),
-    test_class = "com.github.saser.adventofcode.year2016.day08.Day08Test",
-    resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/day08:testdata"],
-    deps = [
-        "@maven//:junit_junit",
-        "//java/src/main/java/com/github/saser/adventofcode:adventofcode",
-        "//java/src/main/java/com/github/saser/adventofcode/year2016/day08:day08",
-    ],
     data = ["//inputs:2016/08"],
+    resources = ["//java/src/test/resources/com/github/saser/adventofcode/year2016/day08:testdata"],
+    test_class = "com.github.saser.adventofcode.year2016.day08.Day08Test",
+    deps = [
+        "//java/src/main/java/com/github/saser/adventofcode",
+        "//java/src/main/java/com/github/saser/adventofcode/year2016/day08",
+        "@maven//:junit_junit",
+    ],
 )
