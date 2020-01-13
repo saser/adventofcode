@@ -3,7 +3,9 @@ package com.github.saser.adventofcode.year2016.assembunny;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -95,13 +97,15 @@ public class VM {
         this.register("d", i);
     }
 
-    public void runAll() {
+    public List<Integer> runAll() {
+        var output = new ArrayList<Integer>();
         while (this.pc < this.program.length) {
-            this.run();
+            this.run().ifPresent(output::add);
         }
+        return output;
     }
 
-    public void run() {
+    public Optional<Integer> run() {
         var instruction = this.program[this.pc];
         var op = instruction[0];
         var param1 = instruction[1];
@@ -113,6 +117,7 @@ public class VM {
             value2 = Optional.of(this.valueOf(param2.get()));
         }
         var delta = 1;
+        var out = Optional.<Integer>empty();
         switch (op) {
             case "cpy":
                 try {
@@ -152,10 +157,14 @@ public class VM {
                 }
                 break;
             }
+            case "out":
+                out = Optional.of(value1);
+                break;
             default:
                 throw new IllegalArgumentException(String.format("invalid op: %s", op));
         }
         this.pc += delta;
+        return out;
     }
 
     private int registerOffset(String x) {

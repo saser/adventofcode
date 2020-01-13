@@ -1,6 +1,7 @@
 package com.github.saser.adventofcode.year2016.assembunny;
 
 import java.io.InputStreamReader;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -89,6 +90,36 @@ public class VMTest {
         var vm = new VM(program);
         vm.runAll();
         Assert.assertEquals(2, vm.a());
+    }
+
+    @Test
+    public void testOutImmediate() {
+        var vm = VM.from("out 1");
+        var outputs = vm.runAll();
+        Assert.assertEquals(List.of(1), outputs);
+    }
+
+    @Test
+    public void testOutRegister() {
+        var program = new String[] {
+                "cpy 1 a",
+                "out a",
+        };
+        var vm = new VM(program);
+        var outputs = vm.runAll();
+        Assert.assertEquals(List.of(1), outputs);
+    }
+
+    @Test
+    public void testOutMultiple() {
+        var program = new String[] {
+                "out 1",
+                "out 2",
+                "out 3",
+        };
+        var vm = new VM(program);
+        var outputs = vm.runAll();
+        Assert.assertEquals(List.of(1, 2, 3), outputs);
     }
 
     @Test
