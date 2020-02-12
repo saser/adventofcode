@@ -24,7 +24,26 @@ fn solve(r: &mut dyn Read, part: Part) -> Result<String, String> {
     if part == Part::One {
         return Ok(outs0.back().unwrap().to_string());
     }
-    Err("not implemented yet".to_string())
+    let mut vm0_sent = outs0.len();
+    let mut vm1 = VM::new(&instructions);
+    *vm1.register('p') = 1;
+    vm1.inputs.append(&mut outs0);
+    let mut vm1_sent = 0;
+    let mut vm0_running = false;
+    loop {
+        let (current, sent, next) = match vm0_running {
+            true => (&mut vm0, &mut vm0_sent, &mut vm1),
+            false => (&mut vm1, &mut vm1_sent, &mut vm0),
+        };
+        let mut outs = current.run();
+        if outs.len() == 0 {
+            break;
+        }
+        *sent += outs.len();
+        next.inputs.append(&mut outs);
+        vm0_running = !vm0_running;
+    }
+    Ok(vm1_sent.to_string())
 }
 
 struct VM {
@@ -67,12 +86,10 @@ impl VM {
             Instruction::Mul(op1, op2) => *self.must_register(op1) *= self.eval_op(op2),
             Instruction::Mod(op1, op2) => *self.must_register(op1) %= self.eval_op(op2),
             Instruction::Rcv(op) => {
-                if self.eval_op(op) != 0 {
-                    match self.inputs.pop_front() {
-                        Some(i) => *self.must_register(op) = i,
-                        None => return None,
-                    };
-                }
+                match self.inputs.pop_front() {
+                    Some(i) => *self.must_register(op) = i,
+                    None => return None,
+                };
             }
             Instruction::Jgz(op1, op2) => {
                 if self.eval_op(op1) > 0 {
@@ -173,14 +190,14 @@ mod tests {
     mod part1 {
         use super::*;
 
-        test!(example, file "testdata/day18/ex", "4", part1);
+        test!(example, file "testdata/day18/p1ex", "4", part1);
         test!(actual, file "../../../inputs/2017/18", "3188", part1);
     }
 
-    // mod part2 {
-    //     use super::*;
+    mod part2 {
+        use super::*;
 
-    //     test!(example, "", "", part2);
-    //     test!(actual, file "../../../inputs/2017/18", "", part2);
-    // }
+        test!(example, file "testdata/day18/p2ex", "3", part2);
+        test!(actual, file "../../../inputs/2017/18", "7112", part2);
+    }
 }
