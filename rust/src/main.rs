@@ -98,6 +98,7 @@ fn imain() -> i32 {
         (2017, 18, 2) => Ok(aoc::year2017::day18::part2),
         (2017, 19, 1) => Ok(aoc::year2017::day19::part1),
         (2017, 19, 2) => Ok(aoc::year2017::day19::part2),
+        (2017, 20, 1) => Ok(aoc::year2017::day20::part1),
         // Year 2018.
         (2018, 1, 1) => Ok(aoc::year2018::day01::part1),
         (2018, 1, 2) => Ok(aoc::year2018::day01::part2),
