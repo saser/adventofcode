@@ -40,7 +40,7 @@ func imain() int {
 		fmt.Println("a year must be specified with the -year flag")
 		return 1
 	}
-	if year < 2015 || year > 2019 {
+	if year < 2015 || year > 2020 {
 		fmt.Printf("invalid year %d: the year must be a year on which an AoC event was held\n", year)
 		return 1
 	}
