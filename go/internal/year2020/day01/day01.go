@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"sort"
 	"strconv"
 )
 
@@ -28,10 +27,10 @@ func solve(r io.Reader, part int) (string, error) {
 		}
 		ints = append(ints, i)
 	}
-	sort.Ints(ints)
+	bools := buildBools(ints)
 	switch part {
 	case 1:
-		n1, n2, ok := twoSum(2020, ints)
+		n1, n2, ok := twoSum(2020, ints, bools)
 		if !ok {
 			break
 		}
@@ -40,7 +39,7 @@ func solve(r io.Reader, part int) (string, error) {
 		for i := 0; i < len(ints); i++ {
 			n1 := ints[i]
 			target := 2020 - n1
-			n2, n3, ok := twoSum(target, ints[i+1:])
+			n2, n3, ok := twoSum(target, ints[i+1:], bools)
 			if !ok {
 				continue
 			}
@@ -50,14 +49,23 @@ func solve(r io.Reader, part int) (string, error) {
 	return "", fmt.Errorf("part %v: no solution found", part)
 }
 
-func twoSum(target int, ints []int) (int, int, bool) {
-	i, j := 0, len(ints)-1
-	for sum := ints[i] + ints[j]; i < j && sum != target; sum = ints[i] + ints[j] {
-		if sum < target {
-			i++
-		} else {
-			j--
+func buildBools(ints []int) []bool {
+	bools := make([]bool, 2020)
+	for _, i := range ints {
+		bools[i] = true
+	}
+	return bools
+}
+
+func twoSum(target int, ints []int, bools []bool) (int, int, bool) {
+	for _, i := range ints {
+		idx := target - i
+		if idx < 0 {
+			continue
+		}
+		if bools[idx] {
+			return i, idx, true
 		}
 	}
-	return ints[i], ints[j], i < j
+	return 0, 0, false
 }
