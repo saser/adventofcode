@@ -17,9 +17,6 @@ func Part2(r io.Reader) (string, error) {
 }
 
 func solve(r io.Reader, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
 	var ints []int
@@ -32,14 +29,35 @@ func solve(r io.Reader, part int) (string, error) {
 		ints = append(ints, i)
 	}
 	sort.Ints(ints)
+	switch part {
+	case 1:
+		n1, n2, ok := twoSum(2020, ints)
+		if !ok {
+			break
+		}
+		return fmt.Sprint(n1 * n2), nil
+	case 2:
+		for i := 0; i < len(ints); i++ {
+			n1 := ints[i]
+			target := 2020 - n1
+			n2, n3, ok := twoSum(target, ints[i+1:])
+			if !ok {
+				continue
+			}
+			return fmt.Sprint(n1 * n2 * n3), nil
+		}
+	}
+	return "", fmt.Errorf("part %v: no solution found", part)
+}
+
+func twoSum(target int, ints []int) (int, int, bool) {
 	i, j := 0, len(ints)-1
-	for sum := ints[i] + ints[j]; sum != 2020; sum = ints[i] + ints[j] {
-		if sum < 2020 {
+	for sum := ints[i] + ints[j]; i < j && sum != target; sum = ints[i] + ints[j] {
+		if sum < target {
 			i++
 		} else {
 			j--
 		}
 	}
-	product := ints[i] * ints[j]
-	return fmt.Sprint(product), nil
+	return ints[i], ints[j], i < j
 }
