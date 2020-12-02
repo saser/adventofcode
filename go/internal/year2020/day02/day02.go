@@ -63,7 +63,7 @@ func parse(s string) (entry, error) {
 	}, nil
 }
 
-func (e entry) Valid() bool {
+func (e entry) ValidCount() bool {
 	letterCount := 0
 	for _, r := range e.Password {
 		if r == e.Letter {
@@ -71,6 +71,10 @@ func (e entry) Valid() bool {
 		}
 	}
 	return letterCount >= e.Low && letterCount <= e.High
+}
+
+func (e entry) ValidPosition() bool {
+	return (rune(e.Password[e.Low-1]) == e.Letter) != (rune(e.Password[e.High-1]) == e.Letter)
 }
 
 func (e *entry) String() string {
@@ -86,9 +90,6 @@ func Part2(r io.Reader) (string, error) {
 }
 
 func solve(r io.Reader, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
 	validCount := 0
@@ -97,7 +98,10 @@ func solve(r io.Reader, part int) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("part %v: %w", part, err)
 		}
-		if e.Valid() {
+		switch {
+		case part == 1 && e.ValidCount():
+			validCount++
+		case part == 2 && e.ValidPosition():
 			validCount++
 		}
 	}
