@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -37,7 +38,7 @@ type entry struct {
 	Password  string
 }
 
-func parse(s string) (entry, error) {
+func parseRegexp(s string) (entry, error) {
 	wrap := func(err error) error {
 		return fmt.Errorf("parse: invalid entry %q: %w", s, err)
 	}
@@ -55,6 +56,31 @@ func parse(s string) (entry, error) {
 	letterS := matches[letterIndex]
 	letter := rune(letterS[0])
 	password := matches[passwordIndex]
+	return entry{
+		Low:      low,
+		High:     high,
+		Letter:   letter,
+		Password: password,
+	}, nil
+}
+
+// parseManual is ugly as hell, but it runs about twice as fast as
+// parseRegexp in my benchmarks.
+func parseManual(s string) (entry, error) {
+	split1 := strings.Split(s, ": ")
+	policy := split1[0]
+	split2 := strings.Split(policy, " ")
+	bounds := strings.Split(split2[0], "-")
+	low, err := strconv.Atoi(bounds[0])
+	if err != nil {
+		return entry{}, err
+	}
+	high, err := strconv.Atoi(bounds[1])
+	if err != nil {
+		return entry{}, err
+	}
+	letter := rune(split2[1][0])
+	password := split1[1]
 	return entry{
 		Low:      low,
 		High:     high,
@@ -94,7 +120,7 @@ func solve(r io.Reader, part int) (string, error) {
 	sc.Split(bufio.ScanLines)
 	validCount := 0
 	for sc.Scan() {
-		e, err := parse(sc.Text())
+		e, err := parseManual(sc.Text())
 		if err != nil {
 			return "", fmt.Errorf("part %v: %w", part, err)
 		}

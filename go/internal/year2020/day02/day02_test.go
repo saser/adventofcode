@@ -4,12 +4,11 @@ import (
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
-	"github.com/stretchr/testify/assert"
 )
 
 const inputFile = "../testdata/02"
 
-func Test_parse(t *testing.T) {
+func Test_parsers(t *testing.T) {
 	for _, tt := range []struct {
 		s    string
 		want entry
@@ -42,9 +41,24 @@ func Test_parse(t *testing.T) {
 			},
 		},
 	} {
-		got, err := parse(tt.s)
-		assert.NoError(t, err)
-		assert.Equal(t, tt.want, got)
+		{
+			got, err := parseRegexp(tt.s)
+			if err != nil {
+				t.Errorf("parseRegexp(%q) err = %v", tt.s, err)
+			}
+			if got != tt.want {
+				t.Errorf("parseRegexp(%q) entry = %v; want %v", tt.s, got, tt.want)
+			}
+		}
+		{
+			got, err := parseManual(tt.s)
+			if err != nil {
+				t.Errorf("parseManual(%q) err = %v", tt.s, err)
+			}
+			if got != tt.want {
+				t.Errorf("parseManual(%q) entry = %v; want %v", tt.s, got, tt.want)
+			}
+		}
 	}
 }
 
