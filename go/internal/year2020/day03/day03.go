@@ -1,9 +1,10 @@
 package day03
 
 import (
-	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 )
 
 type slope struct {
@@ -17,21 +18,7 @@ func Part1(r io.Reader) (string, error) {
 func Part2(r io.Reader) (string, error) {
 	return solve(r, 2)
 }
-
 func solve(r io.Reader, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	var grid [][]bool
-	for sc.Scan() {
-		line := sc.Text()
-		row := make([]bool, len(line))
-		for i, r := range line {
-			if r == '#' {
-				row[i] = true
-			}
-		}
-		grid = append(grid, row)
-	}
 	var slopes []slope
 	switch part {
 	case 1:
@@ -47,9 +34,14 @@ func solve(r io.Reader, part int) (string, error) {
 			{Right: 1, Down: 2},
 		}
 	}
+	grid, err := ioutil.ReadAll(r)
+	if err != nil {
+		return "", fmt.Errorf("part %v: %w", part, err)
+	}
+	colCount := bytes.IndexByte(grid, '\n')
 	treeCounts := make([]int, len(slopes))
 	for i, s := range slopes {
-		treeCounts[i] = countTrees(grid, s)
+		treeCounts[i] = countTrees(grid, colCount, s)
 	}
 	return fmt.Sprint(product(treeCounts)), nil
 }
@@ -69,12 +61,25 @@ func product(ints []int) int {
 	}
 }
 
-func countTrees(grid [][]bool, s slope) int {
-	col := 0
+func countTrees(grid []byte, colCount int, s slope) int {
 	treeCount := 0
-	for row := s.Down; row < len(grid); row += s.Down {
-		col = (col + s.Right) % len(grid[0])
-		if grid[row][col] {
+	skipRow := colCount + 1 // pass over all columns, and the newline
+	row, col := 0, 0
+	i := 0
+	for {
+		i += skipRow*s.Down + s.Right
+		row += s.Down
+		newCol := (col + s.Right) % colCount
+		if newCol < col {
+			i -= skipRow - 1 // back up one line, and take the newline into account
+		}
+		col = newCol
+
+		if i >= len(grid) {
+			break
+		}
+
+		if grid[i] == '#' {
 			treeCount++
 		}
 	}
