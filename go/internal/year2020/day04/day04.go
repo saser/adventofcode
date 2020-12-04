@@ -5,28 +5,18 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
-var (
-	yearRE  = regexp.MustCompile(`^\d{4}$`)
-	hgtRE   = regexp.MustCompile(`^(?P<n>\d+)(?P<unit>(in|cm))$`)
-	hgtN    = hgtRE.SubexpIndex("n")
-	hgtUnit = hgtRE.SubexpIndex("unit")
-	hclRE   = regexp.MustCompile(`^#[0-9a-f]{6}$`)
-	eclRE   = regexp.MustCompile(`^(amb|blu|brn|gry|grn|hzl|oth)$`)
-	pidRE   = regexp.MustCompile(`^\d{9}$`)
-)
-
-func init() {
-	if hgtN < 0 {
-		panic("invalid hgt regex: group `n` not found")
-	}
-	if hgtUnit < 0 {
-		panic("invalid hgt regex: group `unit` not found")
-	}
+var ecls = map[string]struct{}{
+	"amb": {},
+	"blu": {},
+	"brn": {},
+	"gry": {},
+	"grn": {},
+	"hzl": {},
+	"oth": {},
 }
 
 type passport struct {
@@ -36,34 +26,69 @@ type passport struct {
 	Pid, Cid      string
 }
 
-func readYear(s string) (int, error) {
-	if !yearRE.MatchString(s) {
-		return 0, fmt.Errorf("invalid year: %q", s)
+func validYear(s string, low, high int) bool {
+	year, err := strconv.Atoi(s)
+	if err != nil {
+		return false
 	}
-	return strconv.Atoi(s)
+	return year >= low && year <= high
 }
 
-func validateYear(s string, low, high int) error {
-	year, err := readYear(s)
+func validHgt(s string) bool {
+	cm := strings.Contains(s, "cm")
+	in := strings.Contains(s, "in")
+	if !cm && !in {
+		return false
+	}
+	var (
+		n, low, high int
+		unit         string
+	)
+	switch {
+	case cm:
+		unit = "cm"
+		low, high = 150, 193
+	case in:
+		unit = "in"
+		low, high = 59, 76
+	}
+	n, err := strconv.Atoi(strings.ReplaceAll(s, unit, ""))
 	if err != nil {
-		return err
+		return false
 	}
-	if year < low || year > high {
-		return fmt.Errorf("invalid year %v: must be in the range [%v, %v]", year, low, high)
-	}
-	return nil
+	return n >= low && n <= high
 }
 
-func readHgt(s string) (int, string, error) {
-	matches := hgtRE.FindStringSubmatch(s)
-	if matches == nil {
-		return 0, "", fmt.Errorf("invalid hgt: %q", s)
+func validHcl(s string) bool {
+	if len(s) != 7 {
+		return false
 	}
-	n, err := strconv.Atoi(matches[hgtN])
-	if err != nil {
-		return 0, "", fmt.Errorf("invalid hgt: %q: %w", s, err)
+	if s[0] != '#' {
+		return false
 	}
-	return n, matches[hgtUnit], nil
+	for _, r := range s[1:] {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
+func validEcl(s string) bool {
+	_, ok := ecls[s]
+	return ok
+}
+
+func validPid(s string) bool {
+	if len(s) != 9 {
+		return false
+	}
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 func (p *passport) ReadLine(line string) error {
@@ -104,42 +129,31 @@ func (p *passport) Validate(strict bool) error {
 		return nil
 	}
 	// byr
-	if err := validateYear(p.Byr, 1920, 2002); err != nil {
-		return fmt.Errorf("invalid byr %q: %w", p.Byr, err)
+	if !validYear(p.Byr, 1920, 2002) {
+		return fmt.Errorf("invalid byr %q", p.Byr)
 	}
 	// iyr
-	if err := validateYear(p.Iyr, 2010, 2020); err != nil {
-		return fmt.Errorf("invalid iyr %q: %w", p.Iyr, err)
+	if !validYear(p.Iyr, 2010, 2020) {
+		return fmt.Errorf("invalid iyr %q", p.Iyr)
 	}
 	// eyr
-	if err := validateYear(p.Eyr, 2020, 2030); err != nil {
-		return fmt.Errorf("invalid eyr %q: %w", p.Eyr, err)
+	if !validYear(p.Eyr, 2020, 2030) {
+		return fmt.Errorf("invalid eyr %q", p.Eyr)
 	}
 	// hgt
-	n, unit, err := readHgt(p.Hgt)
-	if err != nil {
-		return fmt.Errorf("invalid hgt %q: %w", p.Hgt, err)
-	}
-	var low, high int
-	switch unit {
-	case "cm":
-		low, high = 150, 193
-	case "in":
-		low, high = 59, 76
-	}
-	if n < low || n > high {
-		return fmt.Errorf("invalid hgt %q: %s %v must be in range [%v, %v]", p.Hgt, unit, n, low, high)
+	if !validHgt(p.Hgt) {
+		return fmt.Errorf("invalid hgt: %q", p.Hgt)
 	}
 	// hcl
-	if !hclRE.MatchString(p.Hcl) {
+	if !validHcl(p.Hcl) {
 		return fmt.Errorf("invalid hcl: %q", p.Hcl)
 	}
 	// ecl
-	if !eclRE.MatchString(p.Ecl) {
+	if !validEcl(p.Ecl) {
 		return fmt.Errorf("invalid ecl: %q", p.Ecl)
 	}
 	// pid
-	if !pidRE.MatchString(p.Pid) {
+	if !validPid(p.Pid) {
 		return fmt.Errorf("invalid pid: %q", p.Pid)
 	}
 	return nil
