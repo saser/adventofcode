@@ -10,7 +10,7 @@ const inputFile = "../testdata/04"
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, ""),
+		testcase.FromFile(t, inputFile, "237"),
 		testcase.FromFile(t, "testdata/example", "2"),
 	} {
 		testcase.Run(t, tc, Part1)
