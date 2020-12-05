@@ -3,6 +3,7 @@ package testcase
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -49,6 +50,14 @@ func (tc TestCase2) Benchmark(b *testing.B, sln solution.Solution2) {
 	}
 	doNotOptimizeAnswer = got
 	doNotOptimizeError = err
+}
+
+func ReadFile(filename string) string {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
 }
 
 var resultString string
