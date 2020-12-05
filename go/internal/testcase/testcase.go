@@ -20,38 +20,43 @@ var (
 type Solution func(string) (string, error)
 
 type TestCase2 struct {
+	Name  string
 	Input string
 	Want  string
 }
 
 func (tc TestCase2) Test(t *testing.T, sln Solution) {
 	t.Helper()
-	got, err := sln(tc.Input)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	if got != tc.Want {
-		t.Errorf("answer = %q; want %q", got, tc.Want)
-	}
+	t.Run(tc.Name, func(t *testing.T) {
+		got, err := sln(tc.Input)
+		if err != nil {
+			t.Fatalf("error: %v", err)
+		}
+		if got != tc.Want {
+			t.Errorf("answer = %q; want %q", got, tc.Want)
+		}
+	})
 }
 
 func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 	b.Helper()
-	var (
-		got string
-		err error
-	)
-	for i := 0; i < b.N; i++ {
-		got, err = sln(tc.Input)
-		if err != nil {
-			b.Fatalf("error: %v", err)
+	b.Run(tc.Name, func(b *testing.B) {
+		var (
+			got string
+			err error
+		)
+		for i := 0; i < b.N; i++ {
+			got, err = sln(tc.Input)
+			if err != nil {
+				b.Fatalf("error: %v", err)
+			}
+			if got != tc.Want {
+				b.Fatalf("answer = %q; want %q", got, tc.Want)
+			}
 		}
-		if got != tc.Want {
-			b.Fatalf("answer = %q; want %q", got, tc.Want)
-		}
-	}
-	doNotOptimizeAnswer = got
-	doNotOptimizeError = err
+		doNotOptimizeAnswer = got
+		doNotOptimizeError = err
+	})
 }
 
 func ReadFile(filename string) string {
