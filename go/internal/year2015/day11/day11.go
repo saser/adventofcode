@@ -1,32 +1,26 @@
 package day11
 
 import (
-	"bufio"
-	"errors"
-	"io"
 	"strings"
 )
 
-const digits = "abcdefghijklmnopqrstuvwxyz"
-const base = len(digits)
+const (
+	digits = "abcdefghijklmnopqrstuvwxyz"
+	base   = len(digits)
+)
 
 type requirement func(string) bool
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, count int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	if !sc.Scan() {
-		return "", errors.New("year 2015, day 11, part 1: invalid input")
-	}
-	password := sc.Text()
+func solve(input string, count int) (string, error) {
+	password := strings.TrimSpace(input)
 	requirements := []requirement{
 		hasIncreasing,
 		hasNoIOL,

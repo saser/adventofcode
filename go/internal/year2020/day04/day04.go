@@ -3,8 +3,6 @@ package day04
 import (
 	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"strconv"
 	"strings"
 )
@@ -159,20 +157,15 @@ func (p *passport) Validate(strict bool) error {
 	return nil
 }
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", fmt.Errorf("part %v: %w", part, err)
-	}
-	input := string(data)
+func solve(input string, part int) (string, error) {
 	rawPassports := strings.Split(input, "\n\n")
 	validCount := 0
 	for _, raw := range rawPassports {

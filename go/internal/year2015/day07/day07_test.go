@@ -8,6 +8,11 @@ import (
 
 const inputFile = "../testdata/07"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "3176")
+	tcPart2 = testcase.NewFile("input", inputFile, "14710")
+)
+
 func TestPart1(t *testing.T) {
 	// Slightly modified from the example given in the description: wire `d` was renamed to `a` in order to have some
 	// value to test against.
@@ -20,27 +25,25 @@ y RSHIFT 2 -> g
 NOT x -> h
 NOT y -> i`
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example", example, "72"),
-		testcase.FromFile(t, inputFile, "3176"),
+		testcase.New("example", example, "72"),
+		tcPart1,
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, "14710"),
+		tcPart2,
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

@@ -1,23 +1,21 @@
 package day21
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	boss, err := parse(r)
+func solve(input string, part int) (string, error) {
+	boss, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 21, part %d: %w", part, err)
 	}
@@ -50,21 +48,16 @@ func solve(r io.Reader, part int) (string, error) {
 	return fmt.Sprint(answer), nil
 }
 
-func parse(r io.Reader) (character, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	lines := make([]string, 0)
-	for sc.Scan() {
-		lines = append(lines, sc.Text())
-	}
-	values := make([]int, 0, len(lines))
-	for _, line := range lines {
+func parse(input string) (character, error) {
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	values := make([]int, len(lines))
+	for i, line := range lines {
 		parts := strings.Split(line, ": ")
 		value, err := strconv.Atoi(parts[1])
 		if err != nil {
 			return character{}, fmt.Errorf("parse: %w", err)
 		}
-		values = append(values, value)
+		values[i] = value
 	}
 	boss := character{
 		hitpoints: values[0],

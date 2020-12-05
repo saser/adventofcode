@@ -1,47 +1,40 @@
 package day18
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-
-	"github.com/Saser/adventofcode/internal/solution"
+	"strings"
 )
 
-const (
+var (
 	Iterations = 100
 	GridSize   = 100
 )
 
-func Part1(iterations int, gridSize int) solution.Solution {
-	return solve(iterations, gridSize, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(iterations int, gridSize int) solution.Solution {
-	return solve(iterations, gridSize, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(iterations int, gridSize int, part int) solution.Solution {
-	return func(r io.Reader) (string, error) {
-		grid, err := parse(r, gridSize)
-		if err != nil {
-			return "", fmt.Errorf("year 2015, day 18, part 1: %w", err)
-		}
-		grid.part = part
-		for i := 0; i < iterations; i++ {
-			grid.step()
-		}
-		return fmt.Sprint(grid.countOn()), nil
+func solve(input string, part int) (string, error) {
+	grid, err := parse(input)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 18, part 1: %w", err)
 	}
+	grid.part = part
+	for i := 0; i < Iterations; i++ {
+		grid.step()
+	}
+	return fmt.Sprint(grid.countOn()), nil
 }
 
-func parse(r io.Reader, gridSize int) (*grid, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	g := make([][]bool, 0, gridSize)
-	for sc.Scan() {
-		row := make([]bool, 0, gridSize)
-		for _, r := range sc.Text() {
+func parse(input string) (*grid, error) {
+	g := make([][]bool, 0, GridSize)
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		row := make([]bool, 0, GridSize)
+		for _, r := range line {
 			var state bool
 			switch r {
 			case '.':
@@ -55,10 +48,9 @@ func parse(r io.Reader, gridSize int) (*grid, error) {
 		}
 		g = append(g, row)
 	}
-	grid := &grid{
+	return &grid{
 		g: g,
-	}
-	return grid, nil
+	}, nil
 }
 
 func neighbors(row, col int) [8][2]int {

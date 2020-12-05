@@ -1,22 +1,21 @@
 package day24
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
+	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	items, err := parse(r)
+func solve(input string, part int) (string, error) {
+	items, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 24, part %d: %w", part, err)
 	}
@@ -33,16 +32,15 @@ func solve(r io.Reader, part int) (string, error) {
 	return fmt.Sprint(qe), nil
 }
 
-func parse(r io.Reader) ([]uint64, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	var weights []uint64
-	for sc.Scan() {
-		weight, err := strconv.ParseUint(sc.Text(), 10, 64)
+func parse(input string) ([]uint64, error) {
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	weights := make([]uint64, len(lines))
+	for i, line := range lines {
+		weight, err := strconv.ParseUint(line, 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}
-		weights = append(weights, weight)
+		weights[i] = weight
 	}
 	return weights, nil
 }

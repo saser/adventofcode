@@ -8,36 +8,39 @@ import (
 
 const inputFile = "../testdata/08"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "1342")
+	tcPart2 = testcase.NewFile("input", inputFile, "2074")
+)
+
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", `""`, "2"),
-		testcase.FromString("example2", `"abc"`, "2"),
-		testcase.FromString("example3", `"aaa\"aaa"`, "3"),
-		testcase.FromString("example4", `"\x27"`, "5"),
-		testcase.FromFile(t, inputFile, "1342"),
+		testcase.New("example1", `""`, "2"),
+		testcase.New("example2", `"abc"`, "2"),
+		testcase.New("example3", `"aaa\"aaa"`, "3"),
+		testcase.New("example4", `"\x27"`, "5"),
+		tcPart1,
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", `""`, "4"),
-		testcase.FromString("example2", `"abc"`, "4"),
-		testcase.FromString("example3", `"aaa\"aaa"`, "6"),
-		testcase.FromString("example4", `"\x27"`, "5"),
-		testcase.FromFile(t, inputFile, "2074"),
+		testcase.New("example1", `""`, "4"),
+		testcase.New("example2", `"abc"`, "4"),
+		testcase.New("example3", `"aaa\"aaa"`, "6"),
+		testcase.New("example4", `"\x27"`, "5"),
+		tcPart2,
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

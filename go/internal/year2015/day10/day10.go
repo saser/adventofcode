@@ -1,27 +1,20 @@
 package day10
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	br := bufio.NewReader(r)
-	line, err := br.ReadString('\n')
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 10, part 1: %w", err)
-	}
-	answer := strings.TrimSpace(line)
+func solve(input string, part int) (string, error) {
+	answer := strings.TrimSpace(input)
 	var times int
 	switch part {
 	case 1:

@@ -8,21 +8,25 @@ import (
 
 const inputFile = "../testdata/09"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "251")
+	tcPart2 = testcase.NewFile("input", inputFile, "898")
+)
+
 func TestPart1(t *testing.T) {
 	example := `London to Dublin = 464
 London to Belfast = 518
 Dublin to Belfast = 141`
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example", example, "605"),
-		testcase.FromFile(t, inputFile, "251"),
+		testcase.New("example", example, "605"),
+		testcase.NewFile(inputFile, inputFile, "251"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
@@ -30,14 +34,13 @@ func TestPart2(t *testing.T) {
 London to Belfast = 518
 Dublin to Belfast = 141`
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example", example, "982"),
-		testcase.FromFile(t, inputFile, "898"),
+		testcase.New("example", example, "982"),
+		testcase.NewFile(inputFile, inputFile, "898"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

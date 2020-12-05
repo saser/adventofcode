@@ -1,9 +1,7 @@
 package day02
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -107,20 +105,18 @@ func (e *entry) String() string {
 	return fmt.Sprintf("%d-%d %s: %s", e.Low, e.High, string(e.Letter), e.Password)
 }
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
+func solve(input string, part int) (string, error) {
 	validCount := 0
-	for sc.Scan() {
-		e, err := parseManual(sc.Text())
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		e, err := parseManual(line)
 		if err != nil {
 			return "", fmt.Errorf("part %v: %w", part, err)
 		}

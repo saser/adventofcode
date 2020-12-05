@@ -8,33 +8,36 @@ import (
 
 const inputFile = "../testdata/06"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "569999")
+	tcPart2 = testcase.NewFile("input", inputFile, "17836115")
+)
+
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", "turn on 0,0 through 999,999", "1000000"),
-		testcase.FromString("example2", "toggle 0,0 through 999,0", "1000"),
-		testcase.FromString("example3", "turn off 499,499 through 500,500", "0"),
-		testcase.FromFile(t, inputFile, "569999"),
+		testcase.New("example1", "turn on 0,0 through 999,999", "1000000"),
+		testcase.New("example2", "toggle 0,0 through 999,0", "1000"),
+		testcase.New("example3", "turn off 499,499 through 500,500", "0"),
+		tcPart1,
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", "turn on 0,0 through 0,0", "1"),
-		testcase.FromString("example2", "toggle 0,0 through 999,999", "2000000"),
-		testcase.FromFile(t, inputFile, "17836115"),
+		testcase.New("example1", "turn on 0,0 through 0,0", "1"),
+		testcase.New("example2", "toggle 0,0 through 999,999", "2000000"),
+		tcPart2,
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

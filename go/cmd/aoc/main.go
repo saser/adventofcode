@@ -4,9 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 
-	"github.com/Saser/adventofcode/internal/solution"
+	"github.com/Saser/adventofcode/internal/testcase"
 	year2015day01 "github.com/Saser/adventofcode/internal/year2015/day01"
 	year2015day02 "github.com/Saser/adventofcode/internal/year2015/day02"
 	year2015day03 "github.com/Saser/adventofcode/internal/year2015/day03"
@@ -42,12 +43,12 @@ var (
 )
 
 type Day struct {
-	One solution.Solution
-	Two solution.Solution
+	One testcase.Solution
+	Two testcase.Solution
 }
 
 var solutions = map[uint]map[uint]Day{
-	2015: map[uint]Day{
+	2015: {
 		1:  {One: year2015day01.Part1, Two: year2015day01.Part2},
 		2:  {One: year2015day02.Part1, Two: year2015day02.Part2},
 		3:  {One: year2015day03.Part1, Two: year2015day03.Part2},
@@ -64,8 +65,8 @@ var solutions = map[uint]map[uint]Day{
 		14: {One: year2015day14.Part1, Two: year2015day14.Part2},
 		15: {One: year2015day15.Part1, Two: year2015day15.Part2},
 		16: {One: year2015day16.Part1, Two: year2015day16.Part2},
-		17: {One: year2015day17.Part1(year2015day17.Target), Two: year2015day17.Part2(year2015day17.Target)},
-		18: {One: year2015day18.Part1(year2015day18.Iterations, year2015day18.GridSize), Two: year2015day18.Part2(year2015day18.Iterations, year2015day18.GridSize)},
+		17: {One: year2015day17.Part1, Two: year2015day17.Part2},
+		18: {One: year2015day18.Part1, Two: year2015day18.Part2},
 		19: {One: year2015day19.Part1, Two: year2015day19.Part2},
 		20: {One: year2015day20.Part1, Two: year2015day20.Part2},
 		21: {One: year2015day21.Part1, Two: year2015day21.Part2},
@@ -109,7 +110,7 @@ func imain() (exitCode int) {
 	if part != 1 && part != 2 {
 		fmt.Printf("Invalid part: %d\n", part)
 	}
-	var sol solution.Solution
+	var sol testcase.Solution
 	if part == 1 {
 		sol = perPart.One
 	} else {
@@ -138,7 +139,12 @@ func imain() (exitCode int) {
 			}
 		}()
 	}
-	answer, err := sol(in)
+	data, err := ioutil.ReadAll(in)
+	if err != nil {
+		fmt.Printf("Failed to read input: %v\n", err)
+		return 2
+	}
+	answer, err := sol(string(data))
 	if err != nil {
 		fmt.Printf("Error while running solution: %v\n", err)
 		return 3

@@ -1,17 +1,16 @@
 package day05
 
 import (
-	"bufio"
 	"fmt"
-	"io"
+	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
 func parse(s string) int {
@@ -25,14 +24,12 @@ func parse(s string) int {
 	return n
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
+func solve(input string, part int) (string, error) {
 	min := (1 << 10) - 1
 	max := 0
 	sum := 0
-	for sc.Scan() {
-		n := parse(sc.Text())
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		n := parse(line)
 		if n < min {
 			min = n
 		}

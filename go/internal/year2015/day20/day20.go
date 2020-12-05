@@ -1,28 +1,21 @@
 package day20
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
+	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(r io.Reader, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	if ok := sc.Scan(); !ok {
-		return "", fmt.Errorf("year 2015, day 20, part %d: %w", part, sc.Err())
-	}
-	line := sc.Text()
-	target, err := strconv.Atoi(line)
+func solve(input string, part int) (string, error) {
+	target, err := strconv.Atoi(strings.TrimSpace(input))
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 20, part %d: %w", part, err)
 	}
@@ -49,7 +42,7 @@ func firstHouse(target int, presents int, maxHouses int) (int, bool) {
 		limit = 1
 	}
 	housesLeft := make([]int, limit+1)
-	for i, _ := range housesLeft {
+	for i := range housesLeft {
 		housesLeft[i] = maxHouses
 	}
 outer:
