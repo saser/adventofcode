@@ -59,12 +59,25 @@ func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 	})
 }
 
-func ReadFile(filename string) string {
+func New(name, input, want string) TestCase2 {
+	return TestCase2{
+		Name:  name,
+		Input: input,
+		Want:  want,
+	}
+}
+
+func NewFile(name, filename, want string) TestCase2 {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
-	return string(data)
+	input := string(data)
+	return TestCase2{
+		Name:  name,
+		Input: input,
+		Want:  want,
+	}
 }
 
 var resultString string
