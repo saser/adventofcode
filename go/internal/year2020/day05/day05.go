@@ -15,9 +15,6 @@ func Part2(r io.Reader) (string, error) {
 }
 
 func parse(s string) int {
-	if len(s) != 10 {
-		panic(fmt.Sprintf("invalid string: %q", s))
-	}
 	n := 0
 	for _, r := range s {
 		n = n << 1
