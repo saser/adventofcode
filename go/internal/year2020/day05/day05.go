@@ -14,11 +14,11 @@ func Part2(r io.Reader) (string, error) {
 	return solve(r, 2)
 }
 
-func parse(s string) int16 {
+func parse(s string) int {
 	if len(s) != 10 {
 		panic(fmt.Sprintf("invalid string: %q", s))
 	}
-	n := int16(0)
+	n := 0
 	for _, r := range s {
 		n = n << 1
 		if r == 'B' || r == 'R' {
@@ -29,16 +29,26 @@ func parse(s string) int16 {
 }
 
 func solve(r io.Reader, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	sc := bufio.NewScanner(r)
 	sc.Split(bufio.ScanLines)
-	var max int16
+	min := (1 << 10) - 1
+	max := 0
+	sum := 0
 	for sc.Scan() {
-		if n := parse(sc.Text()); n > max {
+		n := parse(sc.Text())
+		if n < min {
+			min = n
+		}
+		if n > max {
 			max = n
 		}
+		sum += n
 	}
-	return fmt.Sprint(max), nil
+	if part == 1 {
+		return fmt.Sprint(max), nil
+	} else {
+		total := ((max - min + 1) * (min + max)) / 2
+		missing := total - sum
+		return fmt.Sprint(missing), nil
+	}
 }

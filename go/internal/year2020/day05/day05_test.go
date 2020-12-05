@@ -11,7 +11,7 @@ const inputFile = "../testdata/05"
 func Test_parse(t *testing.T) {
 	for _, tt := range []struct {
 		s    string
-		want int16
+		want int
 	}{
 		{s: "FBFBBFFRLR", want: (44 << 3) + 5},
 		{s: "BFFFBBFRRR", want: (70 << 3) + 7},
@@ -43,7 +43,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, ""),
+		testcase.FromFile(t, inputFile, "517"),
 	} {
 		testcase.Run(t, tc, Part2)
 	}
