@@ -20,38 +20,38 @@ var (
 type Solution func(string) (string, error)
 
 type TestCase2 struct {
-	Name  string
-	Input string
-	Want  string
+	name  string
+	input string
+	want  string
 }
 
 func (tc TestCase2) Test(t *testing.T, sln Solution) {
 	t.Helper()
-	t.Run(tc.Name, func(t *testing.T) {
-		got, err := sln(tc.Input)
+	t.Run(tc.name, func(t *testing.T) {
+		got, err := sln(tc.input)
 		if err != nil {
 			t.Fatalf("error: %v", err)
 		}
-		if got != tc.Want {
-			t.Errorf("answer = %q; want %q", got, tc.Want)
+		if got != tc.want {
+			t.Errorf("answer = %q; want %q", got, tc.want)
 		}
 	})
 }
 
 func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 	b.Helper()
-	b.Run(tc.Name, func(b *testing.B) {
+	b.Run(tc.name, func(b *testing.B) {
 		var (
 			got string
 			err error
 		)
 		for i := 0; i < b.N; i++ {
-			got, err = sln(tc.Input)
+			got, err = sln(tc.input)
 			if err != nil {
 				b.Fatalf("error: %v", err)
 			}
-			if got != tc.Want {
-				b.Fatalf("answer = %q; want %q", got, tc.Want)
+			if got != tc.want {
+				b.Fatalf("answer = %q; want %q", got, tc.want)
 			}
 		}
 		doNotOptimizeAnswer = got
@@ -61,9 +61,9 @@ func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 
 func New(name, input, want string) TestCase2 {
 	return TestCase2{
-		Name:  name,
-		Input: input,
-		Want:  want,
+		name:  name,
+		input: input,
+		want:  want,
 	}
 }
 
@@ -74,9 +74,9 @@ func NewFile(name, filename, want string) TestCase2 {
 	}
 	input := string(data)
 	return TestCase2{
-		Name:  name,
-		Input: input,
-		Want:  want,
+		name:  name,
+		input: input,
+		want:  want,
 	}
 }
 
