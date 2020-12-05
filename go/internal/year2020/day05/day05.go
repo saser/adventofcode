@@ -44,7 +44,7 @@ func solve(r io.Reader, part int) (string, error) {
 	if part == 1 {
 		return fmt.Sprint(max), nil
 	} else {
-		total := ((max - min + 1) * (min + max)) / 2
+		total := ((max - min + 1) * (min + max)) / 2 // arithmetic sum formula
 		missing := total - sum
 		return fmt.Sprint(missing), nil
 	}
