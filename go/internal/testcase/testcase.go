@@ -11,6 +11,46 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	doNotOptimizeAnswer string
+	doNotOptimizeError  error
+)
+
+type TestCase2 struct {
+	Input string
+	Want  string
+}
+
+func (tc TestCase2) Test(t *testing.T, sln solution.Solution2) {
+	t.Helper()
+	got, err := sln(tc.Input)
+	if err != nil {
+		t.Fatalf("error: %v", err)
+	}
+	if got != tc.Want {
+		t.Errorf("answer = %q; want %q", got, tc.Want)
+	}
+}
+
+func (tc TestCase2) Benchmark(b *testing.B, sln solution.Solution2) {
+	b.Helper()
+	var (
+		got string
+		err error
+	)
+	for i := 0; i < b.N; i++ {
+		got, err = sln(tc.Input)
+		if err != nil {
+			b.Fatalf("error: %v", err)
+		}
+		if got != tc.Want {
+			b.Fatalf("answer = %q; want %q", got, tc.Want)
+		}
+	}
+	doNotOptimizeAnswer = got
+	doNotOptimizeError = err
+}
+
 var resultString string
 var resultErr error
 
