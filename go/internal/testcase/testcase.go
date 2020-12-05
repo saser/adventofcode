@@ -17,12 +17,14 @@ var (
 	doNotOptimizeError  error
 )
 
+type Solution func(string) (string, error)
+
 type TestCase2 struct {
 	Input string
 	Want  string
 }
 
-func (tc TestCase2) Test(t *testing.T, sln solution.Solution2) {
+func (tc TestCase2) Test(t *testing.T, sln Solution) {
 	t.Helper()
 	got, err := sln(tc.Input)
 	if err != nil {
@@ -33,7 +35,7 @@ func (tc TestCase2) Test(t *testing.T, sln solution.Solution2) {
 	}
 }
 
-func (tc TestCase2) Benchmark(b *testing.B, sln solution.Solution2) {
+func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 	b.Helper()
 	var (
 		got string
