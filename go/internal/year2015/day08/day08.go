@@ -1,8 +1,8 @@
 package day08
 
 import (
-	"bufio"
 	"fmt"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -14,8 +14,6 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	s := 0
 	var diff func(string) int
 	switch part {
@@ -24,8 +22,11 @@ func solve(input string, part int) (string, error) {
 	case 2:
 		diff = diffEncoded
 	}
-	for sc.Scan() {
-		s += diff(sc.Text())
+	for _, line := range strings.Split(input, "\n") {
+		if line == "" {
+			continue
+		}
+		s += diff(line)
 	}
 	return fmt.Sprint(s), nil
 }
