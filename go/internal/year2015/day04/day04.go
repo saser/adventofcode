@@ -1,7 +1,6 @@
 package day04
 
 import (
-	"bufio"
 	"crypto/md5"
 	"encoding/binary"
 	"fmt"
@@ -16,14 +15,13 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, limit uint32) (string, error) {
-	br := bufio.NewReader(r)
-	prefix, _, err := br.ReadLine()
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 04, part 1: %w", err)
+	end := len(input) - 1
+	if input[end] == '\n' {
+		input = input[:len(input)-1]
 	}
 	i := 1
 	for {
-		s := fmt.Sprintf("%s%d", prefix, i)
+		s := fmt.Sprintf("%s%d", input, i)
 		sum := md5.Sum([]byte(s))
 		v := binary.BigEndian.Uint32(sum[:4])
 		if v <= limit {
