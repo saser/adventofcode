@@ -2,7 +2,6 @@ package day06
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 )
 
@@ -30,11 +29,6 @@ func parse(paragraph string) (int, [26]int) {
 }
 
 func solve(input string, part int) (string, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", fmt.Errorf("part %v: %w", part, err)
-	}
-	input := string(data)
 	anyone := 0
 	everyone := 0
 	for _, paragraph := range strings.Split(input, "\n\n") {
