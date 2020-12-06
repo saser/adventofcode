@@ -1,7 +1,6 @@
 package day03
 
 import (
-	"bufio"
 	"fmt"
 
 	"github.com/Saser/adventofcode/internal/geo"
@@ -21,25 +20,19 @@ func solve(input string, part int) (string, error) {
 	travelers := make([]geo.Point, part)
 	currentTraveler := 0
 	visited := map[geo.Point]struct{}{
-		geo.Point{X: 0, Y: 0}: struct{}{},
+		{X: 0, Y: 0}: {},
 	}
-
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanRunes)
-	for sc.Scan() {
-		tok := sc.Text()
+	for _, r := range input {
 		var direction int
-		switch tok {
-		case "^":
+		switch r {
+		case '^':
 			direction = geo.North
-		case ">":
+		case '>':
 			direction = geo.East
-		case "v":
+		case 'v':
 			direction = geo.South
-		case "<":
+		case '<':
 			direction = geo.West
-		default:
-			return "", fmt.Errorf("invalid direction: %s", tok)
 		}
 		travelers[currentTraveler].Step(direction)
 		visited[travelers[currentTraveler]] = struct{}{}
