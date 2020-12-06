@@ -1,8 +1,6 @@
 package day11
 
 import (
-	"bufio"
-	"errors"
 	"strings"
 )
 
@@ -22,12 +20,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, count int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	if !sc.Scan() {
-		return "", errors.New("year 2015, day 11, part 1: invalid input")
-	}
-	password := sc.Text()
+	password := strings.TrimSpace(input)
 	requirements := []requirement{
 		hasIncreasing,
 		hasNoIOL,
