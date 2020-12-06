@@ -1,11 +1,10 @@
 package day09
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/Saser/adventofcode/internal/permutations"
 )
@@ -19,12 +18,12 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	distances, err := parse(r)
+	distances, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 09, part 1: %w", err)
 	}
 	places := make([]string, 0, len(distances))
-	for k, _ := range distances {
+	for k := range distances {
 		places = append(places, k)
 	}
 	routes := permutations.Strings(places)
@@ -51,17 +50,16 @@ func solve(input string, part int) (string, error) {
 	return fmt.Sprint(answer), nil
 }
 
-func parse(r io.Reader) (map[string]map[string]int, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-
+func parse(input string) (map[string]map[string]int, error) {
 	re, err := regexp.Compile(`^(\w+) to (\w+) = (\d+)$`)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
 	distances := make(map[string]map[string]int)
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(input, "\n") {
+		if line == "" {
+			continue
+		}
 		matches := re.FindStringSubmatch(line)
 		if matches == nil {
 			return nil, fmt.Errorf("parse: invalid line: %s", line)
