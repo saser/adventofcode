@@ -1,9 +1,7 @@
 package day19
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strings"
 	"unicode"
@@ -18,7 +16,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	replacements, molecule, err := parse(r)
+	replacements, molecule, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 19, part %d: %w", part, err)
 	}
@@ -32,8 +30,8 @@ func solve(input string, part int) (string, error) {
 	}
 }
 
-func parse(r io.Reader) (map[string][][]string, []string, error) {
-	replacements, molecule, err := parseMappings(r)
+func parse(input string) (map[string][][]string, []string, error) {
+	replacements, molecule, err := parseMappings(input)
 	if err != nil {
 		return nil, nil, fmt.Errorf("parse: %w", err)
 	}
@@ -41,17 +39,14 @@ func parse(r io.Reader) (map[string][][]string, []string, error) {
 	return refined, splitMolecule(molecule), nil
 }
 
-func parseMappings(r io.Reader) (map[string][]string, string, error) {
+func parseMappings(input string) (map[string][]string, string, error) {
 	re, err := regexp.Compile(`^(\w+) => (\w+)$`)
 	if err != nil {
 		return nil, "", fmt.Errorf("parse mappings: %w", err)
 	}
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	replacements := make(map[string][]string)
 	var molecule string
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
 		matches := re.FindStringSubmatch(line)
 		if matches == nil {
 			if line == "" {
@@ -119,7 +114,7 @@ func distinctReplacements(molecule []string, replacements map[string][][]string)
 		}
 	}
 	distinctMolecules := make([][]string, 0, len(distinct))
-	for k, _ := range distinct {
+	for k := range distinct {
 		distinctMolecules = append(distinctMolecules, splitMolecule(k))
 	}
 	return distinctMolecules

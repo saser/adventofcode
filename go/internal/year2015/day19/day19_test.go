@@ -6,19 +6,18 @@ import (
 	"github.com/Saser/adventofcode/internal/testcase"
 )
 
-const (
-	part1Example1File = "testdata/part1example1"
-	part1Example2File = "testdata/part1example2"
-	part2Example1File = "testdata/part2example1"
-	part2Example2File = "testdata/part2example2"
-	inputFile         = "../testdata/19"
+const inputFile = "../testdata/19"
+
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "518")
+	tcPart2 = testcase.NewFile("input", inputFile, "200")
 )
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(part1Example1File, part1Example1File, "4"),
-		testcase.NewFile(part1Example2File, part1Example2File, "7"),
-		testcase.NewFile(inputFile, inputFile, "518"),
+		testcase.NewFile("example1", "testdata/part1example1", "4"),
+		testcase.NewFile("example2", "testdata/part1example2", "7"),
+		tcPart1,
 	} {
 		tc.Test(t, Part1)
 	}
@@ -33,9 +32,9 @@ func TestPart2(t *testing.T) {
 	// input: in the actual input, all productions from "e" are to two other tokens, while in the example input the
 	// productions from "e" are to one other token.
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(part2Example1File, part2Example1File, "2"),
-		testcase.NewFile(part2Example2File, part2Example2File, "5"),
-		testcase.NewFile(inputFile, inputFile, "200"),
+		testcase.NewFile("example1", "testdata/part2example1", "2"),
+		testcase.NewFile("example2", "testdata/part2example2", "5"),
+		tcPart2,
 	} {
 		tc.Test(t, Part2)
 	}
