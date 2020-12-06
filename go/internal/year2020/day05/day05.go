@@ -1,8 +1,8 @@
 package day05
 
 import (
-	"bufio"
 	"fmt"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -25,13 +25,11 @@ func parse(s string) int {
 }
 
 func solve(input string, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	min := (1 << 10) - 1
 	max := 0
 	sum := 0
-	for sc.Scan() {
-		n := parse(sc.Text())
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		n := parse(line)
 		if n < min {
 			min = n
 		}
