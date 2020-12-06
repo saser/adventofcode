@@ -9,13 +9,12 @@ import (
 const inputFile = "../testdata/23"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "307")
+	tcPart2 = testcase.NewFile("input", inputFile, "160")
 )
 
 func TestPart1(t *testing.T) {
-	tc := testcase.NewFile(inputFile, inputFile, "307")
-	tc.Test(t, Part1)
+	tcPart1.Test(t, Part1)
 }
 
 func BenchmarkPart1(b *testing.B) {
@@ -23,8 +22,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	tc := testcase.NewFile(inputFile, inputFile, "160")
-	tc.Test(t, Part2)
+	tcPart2.Test(t, Part2)
 }
 
 func BenchmarkPart2(b *testing.B) {

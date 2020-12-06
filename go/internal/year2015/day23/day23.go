@@ -1,9 +1,7 @@
 package day23
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strings"
 )
 
@@ -16,13 +14,11 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	a := parse(r, part == 2)
+	a := parse(input, part == 2)
 	return fmt.Sprint(collatz(a)), nil
 }
 
-func parse(r io.Reader, skip bool) uint {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
+func parse(input string, skip bool) uint {
 	a := uint(0)
 	skips := 1
 	if skip {
@@ -30,8 +26,7 @@ func parse(r io.Reader, skip bool) uint {
 		skips = 2
 	}
 loop:
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
 		if skips > 0 {
 			jumps := []string{"jmp", "jio"}
 			for _, jump := range jumps {
