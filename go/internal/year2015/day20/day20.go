@@ -1,9 +1,9 @@
 package day20
 
 import (
-	"bufio"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -15,13 +15,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	if ok := sc.Scan(); !ok {
-		return "", fmt.Errorf("year 2015, day 20, part %d: %w", part, sc.Err())
-	}
-	line := sc.Text()
-	target, err := strconv.Atoi(line)
+	target, err := strconv.Atoi(strings.TrimSpace(input))
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 20, part %d: %w", part, err)
 	}
@@ -48,7 +42,7 @@ func firstHouse(target int, presents int, maxHouses int) (int, bool) {
 		limit = 1
 	}
 	housesLeft := make([]int, limit+1)
-	for i, _ := range housesLeft {
+	for i := range housesLeft {
 		housesLeft[i] = maxHouses
 	}
 outer:
