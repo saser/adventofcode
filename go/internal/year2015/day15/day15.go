@@ -1,11 +1,10 @@
 package day15
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -17,7 +16,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	ingredientMap, err := parse(r)
+	ingredientMap, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 15, part %d: %w", part, err)
 	}
@@ -43,16 +42,13 @@ type ingredient struct {
 	calories   int
 }
 
-func parse(r io.Reader) (map[string]ingredient, error) {
+func parse(input string) (map[string]ingredient, error) {
 	re, err := regexp.Compile(`^(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)$`)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	m := make(map[string]ingredient)
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
 		matches := re.FindStringSubmatch(line)
 		if matches == nil {
 			return nil, fmt.Errorf("parse: invalid line: %s", line)
