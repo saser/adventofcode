@@ -1,11 +1,9 @@
 package day22
 
 import (
-	"bufio"
 	"container/heap"
 	"errors"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 )
@@ -19,7 +17,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	boss, err := parse(r)
+	boss, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 22, part %d: %w", part, err)
 	}
@@ -46,17 +44,16 @@ type playerStats struct {
 	mana      int
 }
 
-func parse(r io.Reader) (bossStats, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	var values []int
-	for sc.Scan() {
-		parts := strings.Split(sc.Text(), ": ")
+func parse(input string) (bossStats, error) {
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	values := make([]int, len(lines))
+	for i, line := range lines {
+		parts := strings.Split(line, ": ")
 		v, err := strconv.Atoi(parts[1])
 		if err != nil {
 			return bossStats{}, fmt.Errorf("parse: %w", err)
 		}
-		values = append(values, v)
+		values[i] = v
 	}
 	return bossStats{
 		hitpoints: values[0],
