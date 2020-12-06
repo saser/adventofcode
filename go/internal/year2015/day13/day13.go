@@ -1,11 +1,10 @@
 package day13
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/Saser/adventofcode/internal/permutations"
 )
@@ -19,12 +18,12 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	m, err := parse(r)
+	m, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 13, part 1: %w", err)
 	}
 	names := make([]string, 0, len(m))
-	for name, _ := range m {
+	for name := range m {
 		names = append(names, name)
 	}
 	maxScore := 0
@@ -72,12 +71,13 @@ func parsePreference(s string) (preference, error) {
 	return p, nil
 }
 
-func parse(r io.Reader) (map[string]map[string]int, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
+func parse(input string) (map[string]map[string]int, error) {
 	m := make(map[string]map[string]int)
-	for sc.Scan() {
-		p, err := parsePreference(sc.Text())
+	for _, line := range strings.Split(input, "\n") {
+		if line == "" {
+			continue
+		}
+		p, err := parsePreference(line)
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}

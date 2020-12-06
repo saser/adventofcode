@@ -1,7 +1,7 @@
 package day13
 
 import (
-	"os"
+	"io/ioutil"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
@@ -11,6 +11,11 @@ import (
 const (
 	exampleFile = "testdata/example"
 	inputFile   = "../testdata/13"
+)
+
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "618")
+	tcPart2 = testcase.NewFile("input", inputFile, "601")
 )
 
 func Test_parsePreference(t *testing.T) {
@@ -47,9 +52,9 @@ func Test_parsePreference(t *testing.T) {
 }
 
 func Test_parse(t *testing.T) {
-	file, err := os.Open(exampleFile)
+	data, err := ioutil.ReadFile(exampleFile)
 	require.NoError(t, err)
-	m, err := parse(file)
+	m, err := parse(string(data))
 	require.NoError(t, err)
 	expected := map[string]map[string]int{
 		"Alice": map[string]int{
@@ -77,9 +82,9 @@ func Test_parse(t *testing.T) {
 }
 
 func Test_score(t *testing.T) {
-	file, err := os.Open(exampleFile)
+	data, err := ioutil.ReadFile(exampleFile)
 	require.NoError(t, err)
-	m, err := parse(file)
+	m, err := parse(string(data))
 	require.NoError(t, err)
 	names := []string{"Alice", "Bob", "Carol", "David"}
 	require.Equal(t, 330, score(names, m, 1))
@@ -88,7 +93,7 @@ func Test_score(t *testing.T) {
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
 		testcase.NewFile(exampleFile, exampleFile, "330"),
-		testcase.NewFile(inputFile, inputFile, "618"),
+		tcPart1,
 	} {
 		tc.Test(t, Part1)
 	}
@@ -100,7 +105,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(inputFile, inputFile, "601"),
+		tcPart2,
 	} {
 		tc.Test(t, Part2)
 	}
