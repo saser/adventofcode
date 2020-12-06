@@ -12,34 +12,45 @@ const (
 	inputFile     = "../testdata/17"
 )
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "1304")
+	tcPart2 = testcase.NewFile("input", inputFile, "18")
+)
+
 func TestPart1(t *testing.T) {
 	for _, tt := range []struct {
-		tc  testcase.TestCase2
-		sol testcase.Solution
+		tc     testcase.TestCase2
+		target int
 	}{
-		{tc: testcase.NewFile(exampleFile, exampleFile, "4"), sol: Part1(exampleTarget)},
-		{tc: testcase.NewFile(inputFile, inputFile, "1304"), sol: Part1(Target)},
+		{tc: testcase.NewFile("example", exampleFile, "4"), target: exampleTarget},
+		{tc: tcPart1, target: Target},
 	} {
-		tt.tc.Test(t, tt.sol)
+		reset := Target
+		Target = tt.target
+		tt.tc.Test(t, Part1)
+		Target = reset
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	testcase.Bench(b, tc, Part1(Target))
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
 	for _, tt := range []struct {
-		tc  testcase.TestCase2
-		sol testcase.Solution
+		tc     testcase.TestCase2
+		target int
 	}{
-		{tc: testcase.NewFile(exampleFile, exampleFile, "3"), sol: Part2(exampleTarget)},
-		{tc: testcase.NewFile(inputFile, inputFile, "18"), sol: Part2(Target)},
+		{tc: testcase.NewFile("example", exampleFile, "3"), target: exampleTarget},
+		{tc: tcPart2, target: Target},
 	} {
-		tt.tc.Test(t, tt.sol)
+		reset := Target
+		Target = tt.target
+		tt.tc.Test(t, Part2)
+		Target = reset
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	testcase.Bench(b, tc, Part2(Target))
+	tcPart2.Benchmark(b, Part2)
 }

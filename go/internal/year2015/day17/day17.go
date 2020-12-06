@@ -1,60 +1,54 @@
 package day17
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
-
-	"github.com/Saser/adventofcode/internal/solution"
+	"strings"
 )
 
-const Target = 150
+var Target = 150
 
-func Part1(target int) solution.Solution {
-	return solve(target, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(target int) solution.Solution {
-	return solve(target, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
 
-func solve(target int, part int) solution.Solution {
-	return func(r io.Reader) (string, error) {
-		parts, err := parse(r)
-		if err != nil {
-			return "", fmt.Errorf("year 2015, day 17, part %d: %w", part, err)
-		}
-		proper := combinations(target, parts)
-		if part == 1 {
-			return fmt.Sprint(len(proper)), nil
-		}
-		count := 0
-		minCombination := len(proper[0])
-		for _, combination := range proper {
-			n := len(combination)
-			switch {
-			case n == minCombination:
-				count++
-			case n < minCombination:
-				count = 1
-				minCombination = n
-			}
-		}
-		return fmt.Sprint(count), nil
+func solve(input string, part int) (string, error) {
+	parts, err := parse(input)
+	if err != nil {
+		return "", fmt.Errorf("year 2015, day 17, part %d: %w", part, err)
 	}
+	proper := combinations(Target, parts)
+	if part == 1 {
+		return fmt.Sprint(len(proper)), nil
+	}
+	count := 0
+	minCombination := len(proper[0])
+	for _, combination := range proper {
+		n := len(combination)
+		switch {
+		case n == minCombination:
+			count++
+		case n < minCombination:
+			count = 1
+			minCombination = n
+		}
+	}
+	return fmt.Sprint(count), nil
 }
 
-func parse(r io.Reader) ([]int, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	parts := make([]int, 0)
-	for sc.Scan() {
-		part, err := strconv.Atoi(sc.Text())
+func parse(input string) ([]int, error) {
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	parts := make([]int, len(lines))
+	for i, line := range lines {
+		part, err := strconv.Atoi(line)
 		if err != nil {
-			return nil, fmt.Errorf("parse: invalid line: %s", sc.Text())
+			return nil, fmt.Errorf("parse: invalid line: %s", line)
 		}
-		parts = append(parts, part)
+		parts[i] = part
 	}
 	return parts, nil
 }
