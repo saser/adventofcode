@@ -9,8 +9,8 @@ import (
 const inputFile = "../testdata/07"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "3176")
+	tcPart2 = testcase.NewFile("input", inputFile, "14710")
 )
 
 func TestPart1(t *testing.T) {
@@ -26,7 +26,7 @@ NOT x -> h
 NOT y -> i`
 	for _, tc := range []testcase.TestCase2{
 		testcase.New("example", example, "72"),
-		testcase.NewFile(inputFile, inputFile, "3176"),
+		tcPart1,
 	} {
 		tc.Test(t, Part1)
 	}
@@ -38,7 +38,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(inputFile, inputFile, "14710"),
+		tcPart2,
 	} {
 		tc.Test(t, Part2)
 	}

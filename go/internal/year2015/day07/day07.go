@@ -1,9 +1,7 @@
 package day07
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -18,7 +16,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	wires, err := parse(r)
+	wires, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 07, part 1: %w", err)
 	}
@@ -43,33 +41,29 @@ func solve(input string, part int) (string, error) {
 	return fmt.Sprint(v), nil
 }
 
-func parse(r io.Reader) (_ map[string]wire, rErr error) {
-	defer func() {
-		if rErr != nil {
-			rErr = fmt.Errorf("parse: %w", rErr)
-		}
-	}()
+func parse(input string) (map[string]wire, error) {
+	wrap := func(err error) error { return fmt.Errorf("parse: %w", err) }
 	nonaryRE, err := regexp.Compile(`^(\w+)$`)
 	if err != nil {
-		return nil, err
+		return nil, wrap(err)
 	}
 	shiftRE, err := regexp.Compile(`^(\w+) (L|R)SHIFT (\d+)$`)
 	if err != nil {
-		return nil, err
+		return nil, wrap(err)
 	}
 	notRE, err := regexp.Compile(`^NOT (\w+)$`)
 	if err != nil {
-		return nil, err
+		return nil, wrap(err)
 	}
 	binaryRE, err := regexp.Compile(`^(\w+) (AND|OR) (\w+)$`)
 	if err != nil {
-		return nil, err
+		return nil, wrap(err)
 	}
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	wires := make(map[string]wire)
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(input, "\n") {
+		if line == "" {
+			continue
+		}
 		parts := strings.Split(line, " -> ")
 		spec := parts[0]
 		name := parts[1]
@@ -82,7 +76,7 @@ func parse(r io.Reader) (_ map[string]wire, rErr error) {
 			r := matches[1]
 			d, err := strconv.Atoi(matches[3])
 			if err != nil {
-				return nil, err
+				return nil, wrap(err)
 			}
 			var op unaryOp
 			switch matches[2] {
@@ -116,7 +110,7 @@ func parse(r io.Reader) (_ map[string]wire, rErr error) {
 				op: op,
 			}
 		} else {
-			return nil, fmt.Errorf("could not parse spec: %s", spec)
+			return nil, wrap(fmt.Errorf("could not parse spec: %s", spec))
 		}
 		wires[name] = w
 	}
