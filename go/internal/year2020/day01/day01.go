@@ -1,9 +1,9 @@
 package day01
 
 import (
-	"bufio"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -15,16 +15,14 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	var ints []int
-	for sc.Scan() {
-		line := sc.Text()
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	ints := make([]int, len(lines))
+	for idx, line := range lines {
 		i, err := strconv.Atoi(line)
 		if err != nil {
 			return "", fmt.Errorf("part %v: %w", part, err)
 		}
-		ints = append(ints, i)
+		ints[idx] = i
 	}
 	bools := buildBools(ints)
 	switch part {
