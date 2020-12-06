@@ -1,10 +1,8 @@
 package day16
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,7 +17,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	sues, err := parse(r)
+	sues, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 16, part %d: %w", part, err)
 	}
@@ -103,7 +101,7 @@ func (s *sue) matches(query sue, part int) bool {
 	return true
 }
 
-func parse(r io.Reader) ([]sue, error) {
+func parse(input string) ([]sue, error) {
 	outerRE, err := regexp.Compile(`^Sue (\d+): (.+)$`)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
@@ -112,11 +110,8 @@ func parse(r io.Reader) ([]sue, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	sues := make([]sue, 500)
-	for sc.Scan() {
-		line := sc.Text()
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
 		outerMatches := outerRE.FindStringSubmatch(line)
 		if outerMatches == nil {
 			return nil, fmt.Errorf("parse: invalid line: %s", line)
