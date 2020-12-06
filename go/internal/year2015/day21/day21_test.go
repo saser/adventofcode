@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
-	"github.com/stretchr/testify/require"
 )
 
 const inputFile = "../testdata/21"
@@ -25,7 +24,9 @@ func Test_playerWins(t *testing.T) {
 		damage:    7,
 		armor:     2,
 	}
-	require.True(t, playerWins(player, boss))
+	if got, want := playerWins(player, boss), true; got != want {
+		t.Errorf("playerWins(%v, %v) = %v; want %v", player, boss, got, want)
+	}
 }
 
 func TestPart1(t *testing.T) {

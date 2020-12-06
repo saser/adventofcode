@@ -1,11 +1,9 @@
 package day10
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
-	"github.com/stretchr/testify/require"
 )
 
 const inputFile = "../testdata/10"
@@ -17,18 +15,18 @@ var (
 
 func Test_lookAndSay(t *testing.T) {
 	for _, tt := range []struct {
-		in  string
-		out string
+		in   string
+		want string
 	}{
-		{in: "1", out: "11"},
-		{in: "11", out: "21"},
-		{in: "21", out: "1211"},
-		{in: "1211", out: "111221"},
-		{in: "111221", out: "312211"},
+		{in: "1", want: "11"},
+		{in: "11", want: "21"},
+		{in: "21", want: "1211"},
+		{in: "1211", want: "111221"},
+		{in: "111221", want: "312211"},
 	} {
-		t.Run(fmt.Sprintf("in=%v", tt.in), func(t *testing.T) {
-			require.Equal(t, tt.out, lookAndSay(tt.in))
-		})
+		if got := lookAndSay(tt.in); got != tt.want {
+			t.Errorf("lookAndSay(%q) = %q; want %q", tt.in, got, tt.want)
+		}
 	}
 }
 
