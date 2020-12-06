@@ -3,7 +3,6 @@ package day03
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 )
 
 type slope struct {
@@ -34,10 +33,7 @@ func solve(input string, part int) (string, error) {
 			{Right: 1, Down: 2},
 		}
 	}
-	grid, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", fmt.Errorf("part %v: %w", part, err)
-	}
+	grid := []byte(input)
 	colCount := bytes.IndexByte(grid, '\n')
 	treeCounts := make([]int, len(slopes))
 	for i, s := range slopes {
