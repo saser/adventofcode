@@ -86,28 +86,26 @@ func Test_score(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, exampleFile, "330"),
-		testcase.FromFile(t, inputFile, "618"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(exampleFile, exampleFile, "330"),
+		testcase.NewFile(inputFile, inputFile, "618"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, "601"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(inputFile, inputFile, "601"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

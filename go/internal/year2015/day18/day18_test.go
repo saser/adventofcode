@@ -16,36 +16,34 @@ const (
 
 func TestPart1(t *testing.T) {
 	for _, tt := range []struct {
-		tc         testcase.TestCase
+		tc         testcase.TestCase2
 		iterations int
 		gridSize   int
 	}{
-		{tc: testcase.FromFile(t, exampleFile, "4"), iterations: exampleIterationsPart1, gridSize: exampleGridSize},
-		{tc: testcase.FromFile(t, inputFile, "1061"), iterations: Iterations, gridSize: GridSize},
+		{tc: testcase.NewFile(exampleFile, exampleFile, "4"), iterations: exampleIterationsPart1, gridSize: exampleGridSize},
+		{tc: testcase.NewFile(inputFile, inputFile, "1061"), iterations: Iterations, gridSize: GridSize},
 	} {
-		testcase.Run(t, tt.tc, Part1(tt.iterations, tt.gridSize))
+		tt.tc.Test(t, Part1(tt.iterations, tt.gridSize))
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
 	testcase.Bench(b, tc, Part1(Iterations, GridSize))
 }
 
 func TestPart2(t *testing.T) {
 	for _, tt := range []struct {
-		tc         testcase.TestCase
+		tc         testcase.TestCase2
 		iterations int
 		gridSize   int
 	}{
-		{tc: testcase.FromFile(t, exampleFile, "17"), iterations: exampleIterationsPart2, gridSize: exampleGridSize},
-		{tc: testcase.FromFile(t, inputFile, "1006"), iterations: Iterations, gridSize: GridSize},
+		{tc: testcase.NewFile(exampleFile, exampleFile, "17"), iterations: exampleIterationsPart2, gridSize: exampleGridSize},
+		{tc: testcase.NewFile(inputFile, inputFile, "1006"), iterations: Iterations, gridSize: GridSize},
 	} {
-		testcase.Run(t, tt.tc, Part2(tt.iterations, tt.gridSize))
+		tt.tc.Test(t, Part2(tt.iterations, tt.gridSize))
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
 	testcase.Bench(b, tc, Part2(Iterations, GridSize))
 }

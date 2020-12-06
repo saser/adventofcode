@@ -8,6 +8,11 @@ import (
 
 const inputFile = "../testdata/05"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "")
+)
+
 func Test_parse(t *testing.T) {
 	for _, tt := range []struct {
 		s    string
@@ -25,31 +30,29 @@ func Test_parse(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", "FBFBBFFRLR", "357"),
-		testcase.FromString("example2", "BFFFBBFRRR", "567"),
-		testcase.FromString("example3", "FFFBBBFRRR", "119"),
-		testcase.FromString("example4", "BBFFBBFRLL", "820"),
-		testcase.FromFile(t, inputFile, "832"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.New("example1", "FBFBBFFRLR", "357"),
+		testcase.New("example2", "BFFFBBFRRR", "567"),
+		testcase.New("example3", "FFFBBBFRRR", "119"),
+		testcase.New("example4", "BBFFBBFRLL", "820"),
+		testcase.NewFile(inputFile, inputFile, "832"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, "517"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(inputFile, inputFile, "517"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

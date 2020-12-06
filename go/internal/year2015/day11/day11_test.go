@@ -10,6 +10,11 @@ import (
 
 const inputFile = "../testdata/11"
 
+var (
+	tcPart1 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "")
+)
+
 func Test_digitsToInts(t *testing.T) {
 	for _, tt := range []struct {
 		s  string
@@ -111,29 +116,27 @@ func Test_hasTwoPairs(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromString("example1", "abcdefgh", "abcdffaa"),
-		testcase.FromString("example2", "ghijklmn", "ghjaabcc"),
-		testcase.FromFile(t, inputFile, "cqjxxyzz"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.New("example1", "abcdefgh", "abcdffaa"),
+		testcase.New("example2", "ghijklmn", "ghjaabcc"),
+		testcase.NewFile(inputFile, inputFile, "cqjxxyzz"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, inputFile, "cqkaabcc"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(inputFile, inputFile, "cqkaabcc"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

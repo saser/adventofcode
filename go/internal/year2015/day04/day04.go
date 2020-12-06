@@ -5,18 +5,17 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"fmt"
-	"io"
 )
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 0x00000fff)
+func Part1(input string) (string, error) {
+	return solve(input, 0x00000fff)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 0x000000ff)
+func Part2(input string) (string, error) {
+	return solve(input, 0x000000ff)
 }
 
-func solve(r io.Reader, limit uint32) (string, error) {
+func solve(input string, limit uint32) (string, error) {
 	br := bufio.NewReader(r)
 	prefix, _, err := br.ReadLine()
 	if err != nil {

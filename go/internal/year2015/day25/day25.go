@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func Part1(r io.Reader) (string, error) {
+func Part1(input string) (string, error) {
 	row, col, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 25, part 1: %w", err)

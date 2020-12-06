@@ -3,7 +3,6 @@ package day03
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 )
 
@@ -11,14 +10,15 @@ type slope struct {
 	Right, Down int
 }
 
-func Part1(r io.Reader) (string, error) {
-	return solve(r, 1)
+func Part1(input string) (string, error) {
+	return solve(input, 1)
 }
 
-func Part2(r io.Reader) (string, error) {
-	return solve(r, 2)
+func Part2(input string) (string, error) {
+	return solve(input, 2)
 }
-func solve(r io.Reader, part int) (string, error) {
+
+func solve(input string, part int) (string, error) {
 	var slopes []slope
 	switch part {
 	case 1:

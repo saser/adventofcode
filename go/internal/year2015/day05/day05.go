@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func Part1(r io.Reader) (string, error) {
+func Part1(input string) (string, error) {
 	lines, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 1: %w", err)
@@ -20,7 +20,7 @@ func Part1(r io.Reader) (string, error) {
 	return solve(lines, conditions), nil
 }
 
-func Part2(r io.Reader) (string, error) {
+func Part2(input string) (string, error) {
 	lines, err := parse(r)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 05, part 2: %w", err)

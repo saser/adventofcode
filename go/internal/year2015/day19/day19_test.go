@@ -15,34 +15,32 @@ const (
 )
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, part1Example1File, "4"),
-		testcase.FromFile(t, part1Example2File, "7"),
-		testcase.FromFile(t, inputFile, "518"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(part1Example1File, part1Example1File, "4"),
+		testcase.NewFile(part1Example2File, part1Example2File, "7"),
+		testcase.NewFile(inputFile, inputFile, "518"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
 	// The example test cases are off by one. This is due to a discrepancy between the example input and the actual
 	// input: in the actual input, all productions from "e" are to two other tokens, while in the example input the
 	// productions from "e" are to one other token.
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, part2Example1File, "2"),
-		testcase.FromFile(t, part2Example2File, "5"),
-		testcase.FromFile(t, inputFile, "200"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(part2Example1File, part2Example1File, "2"),
+		testcase.NewFile(part2Example2File, part2Example2File, "5"),
+		testcase.NewFile(inputFile, inputFile, "200"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

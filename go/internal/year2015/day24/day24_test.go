@@ -12,29 +12,27 @@ const (
 )
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, exampleFile, "99"),
-		testcase.FromFile(t, inputFile, "11266889531"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(exampleFile, exampleFile, "99"),
+		testcase.NewFile(inputFile, inputFile, "11266889531"),
 	} {
-		testcase.Run(t, tc, Part1)
+		tc.Test(t, Part1)
 	}
 }
 
 func BenchmarkPart1(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part1)
+	tcPart1.Benchmark(b, Part1)
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		testcase.FromFile(t, exampleFile, "44"),
-		testcase.FromFile(t, inputFile, "77387711"),
+	for _, tc := range []testcase.TestCase2{
+		testcase.NewFile(exampleFile, exampleFile, "44"),
+		testcase.NewFile(inputFile, inputFile, "77387711"),
 	} {
-		testcase.Run(t, tc, Part2)
+		tc.Test(t, Part2)
 	}
 }
 
 func BenchmarkPart2(b *testing.B) {
-	tc := testcase.FromFile(b, inputFile, "")
-	testcase.Bench(b, tc, Part2)
+	tcPart2.Benchmark(b, Part2)
 }

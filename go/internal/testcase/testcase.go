@@ -80,8 +80,10 @@ func NewFile(name, filename, want string) TestCase2 {
 	}
 }
 
-var resultString string
-var resultErr error
+var (
+	resultString string
+	resultErr    error
+)
 
 type TestCase interface {
 	Name() string
