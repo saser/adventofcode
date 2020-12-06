@@ -3,7 +3,6 @@ package day04
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"strings"
 )
@@ -167,11 +166,6 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", fmt.Errorf("part %v: %w", part, err)
-	}
-	input := string(data)
 	rawPassports := strings.Split(input, "\n\n")
 	validCount := 0
 	for _, raw := range rawPassports {
