@@ -1,33 +1,28 @@
 package day06
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"math"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/Saser/adventofcode/internal/geo"
 )
 
 func Part1(input string) (string, error) {
-	instructions, err := parse(r, 1)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
-	}
-	return solve(instructions)
+	return solve(input, 1)
 }
 
 func Part2(input string) (string, error) {
-	instructions, err := parse(r, 2)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 06, part 1: %w", err)
-	}
-	return solve(instructions)
+	return solve(input, 2)
 }
 
-func solve(instructions []instruction) (string, error) {
+func solve(input string, part int) (string, error) {
+	instructions, err := parse(input, part)
+	if err != nil {
+		return "", fmt.Errorf("part %v: %w", part, err)
+	}
 	grid := make([][]int, 0, 1000)
 	for x := 0; x < 1000; x++ {
 		grid = append(grid, make([]int, 1000))
@@ -52,16 +47,17 @@ type instruction struct {
 	op    operation
 }
 
-func parse(r io.Reader, part int) ([]instruction, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
+func parse(input string, part int) ([]instruction, error) {
 	re, err := regexp.Compile(`(turn on|turn off|toggle) (\d{1,3}),(\d{1,3}) through (\d{1,3}),(\d{1,3})`)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	instructions := make([]instruction, 0)
-	for sc.Scan() {
-		line := sc.Text()
+	lines := strings.Split(input, "\n")
+	instructions := make([]instruction, 0, len(lines))
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
 		matches := re.FindStringSubmatch(line)
 		var op operation
 		switch matches[1] {
