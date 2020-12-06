@@ -11,8 +11,8 @@ import (
 const inputFile = "../testdata/10"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "492982")
+	tcPart2 = testcase.NewFile("input", inputFile, "6989950")
 )
 
 func Test_lookAndSay(t *testing.T) {
@@ -34,7 +34,7 @@ func Test_lookAndSay(t *testing.T) {
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(inputFile, inputFile, "492982"),
+		tcPart1,
 	} {
 		tc.Test(t, Part1)
 	}
@@ -46,7 +46,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase2{
-		testcase.NewFile(inputFile, inputFile, "6989950"),
+		tcPart2,
 	} {
 		tc.Test(t, Part2)
 	}

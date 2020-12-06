@@ -1,7 +1,6 @@
 package day10
 
 import (
-	"bufio"
 	"fmt"
 	"strings"
 )
@@ -15,12 +14,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	br := bufio.NewReader(r)
-	line, err := br.ReadString('\n')
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 10, part 1: %w", err)
-	}
-	answer := strings.TrimSpace(line)
+	answer := strings.TrimSpace(input)
 	var times int
 	switch part {
 	case 1:
