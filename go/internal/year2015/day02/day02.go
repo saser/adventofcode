@@ -1,15 +1,13 @@
 package day02
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 )
 
 func Part1(input string) (string, error) {
-	boxes, err := parse(r)
+	boxes, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 02, part 1: %w", err)
 	}
@@ -32,7 +30,7 @@ func Part1(input string) (string, error) {
 }
 
 func Part2(input string) (string, error) {
-	boxes, err := parse(r)
+	boxes, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 02, part 2: %w", err)
 	}
@@ -58,12 +56,13 @@ type box struct {
 	l, w, h int
 }
 
-func parse(r io.Reader) ([]box, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	boxes := make([]box, 0)
-	for sc.Scan() {
-		line := sc.Text()
+func parse(input string) ([]box, error) {
+	lines := strings.Split(input, "\n")
+	boxes := make([]box, len(lines))
+	for i, line := range lines {
+		if line == "" {
+			continue
+		}
 		parts := strings.Split(line, "x")
 		l, err := strconv.Atoi(parts[0])
 		if err != nil {
@@ -77,7 +76,7 @@ func parse(r io.Reader) ([]box, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}
-		boxes = append(boxes, box{l: l, w: w, h: h})
+		boxes[i] = box{l: l, w: w, h: h}
 	}
 	return boxes, nil
 }
