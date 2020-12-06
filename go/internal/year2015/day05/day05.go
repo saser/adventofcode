@@ -2,49 +2,35 @@ package day05
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"strings"
 )
 
 func Part1(input string) (string, error) {
-	lines, err := parse(r)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 05, part 1: %w", err)
-	}
-	conditions := []condition{
-		threeVowels,
-		letterTwice,
-		noBadPairs,
-	}
-	return solve(lines, conditions), nil
+	return solve(input, 1), nil
 }
 
 func Part2(input string) (string, error) {
-	lines, err := parse(r)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 05, part 2: %w", err)
-	}
-	conditions := []condition{
-		twicePair,
-		letterTwiceSpaced,
-	}
-	return solve(lines, conditions), nil
+	return solve(input, 2), nil
 }
 
-func parse(r io.Reader) ([]string, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
+func solve(input string, part int) string {
+	var conditions []condition
+	switch part {
+	case 1:
+		conditions = []condition{
+			threeVowels,
+			letterTwice,
+			noBadPairs,
+		}
+	case 2:
+		conditions = []condition{
+			twicePair,
+			letterTwiceSpaced,
+		}
 	}
-	lines := strings.Split(string(bytes), "\n")
-	return lines, nil
-}
-
-func solve(lines []string, conditions []condition) string {
 	count := 0
 outer:
-	for _, line := range lines {
+	for _, line := range strings.Split(input, "\n") {
 		for _, cond := range conditions {
 			if !cond(line) {
 				continue outer
