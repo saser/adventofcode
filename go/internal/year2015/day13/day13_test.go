@@ -2,10 +2,10 @@ package day13
 
 import (
 	"io/ioutil"
+	"reflect"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -20,74 +20,85 @@ var (
 
 func Test_parsePreference(t *testing.T) {
 	for _, tt := range []struct {
-		name string
 		s    string
-		p    preference
+		want preference
 	}{
 		{
-			name: "AliceBobGain54",
-			s:    "Alice would gain 54 happiness units by sitting next to Bob.",
-			p: preference{
+			s: "Alice would gain 54 happiness units by sitting next to Bob.",
+			want: preference{
 				from:   "Alice",
 				to:     "Bob",
 				change: 54,
 			},
 		},
 		{
-			name: "AliceCarolLose79",
-			s:    "Alice would gain 79 happiness units by sitting next to Carol.",
-			p: preference{
+			s: "Alice would gain 79 happiness units by sitting next to Carol.",
+			want: preference{
 				from:   "Alice",
 				to:     "Carol",
 				change: 79,
 			},
 		},
 	} {
-		t.Run(tt.name, func(t *testing.T) {
-			p, err := parsePreference(tt.s)
-			require.NoError(t, err)
-			require.Equal(t, tt.p, p)
-		})
+		got, err := parsePreference(tt.s)
+		if err != nil {
+			t.Errorf("parsePreference(%q) err = %v", tt.s, err)
+		}
+		if got != tt.want {
+			t.Errorf("parsePreference(%q) preference = %v; want %v", tt.s, got, tt.want)
+		}
 	}
 }
 
 func Test_parse(t *testing.T) {
 	data, err := ioutil.ReadFile(exampleFile)
-	require.NoError(t, err)
-	m, err := parse(string(data))
-	require.NoError(t, err)
-	expected := map[string]map[string]int{
-		"Alice": map[string]int{
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := parse(string(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]map[string]int{
+		"Alice": {
 			"Bob":   54,
 			"Carol": -79,
 			"David": -2,
 		},
-		"Bob": map[string]int{
+		"Bob": {
 			"Alice": 83,
 			"Carol": -7,
 			"David": -63,
 		},
-		"Carol": map[string]int{
+		"Carol": {
 			"Alice": -62,
 			"Bob":   60,
 			"David": 55,
 		},
-		"David": map[string]int{
+		"David": {
 			"Alice": 46,
 			"Bob":   -7,
 			"Carol": 41,
 		},
 	}
-	require.Equal(t, expected, m)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("parse(...) got = %v; want %v", got, want)
+	}
 }
 
 func Test_score(t *testing.T) {
 	data, err := ioutil.ReadFile(exampleFile)
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	m, err := parse(string(data))
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	names := []string{"Alice", "Bob", "Carol", "David"}
-	require.Equal(t, 330, score(names, m, 1))
+	if got, want := score(names, m, 1), 330; got != want {
+		t.Errorf("scores(%v, %v, %v) = %v; want %v", names, m, 1, got, want)
+	}
 }
 
 func TestPart1(t *testing.T) {

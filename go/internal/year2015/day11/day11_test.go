@@ -1,11 +1,9 @@
 package day11
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
-	"github.com/stretchr/testify/require"
 )
 
 const inputFile = "../testdata/11"
@@ -15,103 +13,115 @@ var (
 	tcPart2 = testcase.NewFile("input", inputFile, "cqkaabcc")
 )
 
+func intsEqual(x, y []int) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	for i, xn := range x {
+		if y[i] != xn {
+			return false
+		}
+	}
+	return true
+}
+
 func Test_digitsToInts(t *testing.T) {
 	for _, tt := range []struct {
-		s  string
-		is []int
+		s    string
+		want []int
 	}{
-		{s: "a", is: []int{0}},
-		{s: "z", is: []int{25}},
-		{s: "aa", is: []int{0, 0}},
-		{s: "abc", is: []int{0, 1, 2}},
+		{s: "a", want: []int{0}},
+		{s: "z", want: []int{25}},
+		{s: "aa", want: []int{0, 0}},
+		{s: "abc", want: []int{0, 1, 2}},
 	} {
-		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
-			require.Equal(t, tt.is, digitsToInts(tt.s))
-		})
+		if got := digitsToInts(tt.s); !intsEqual(got, tt.want) {
+			t.Errorf("digitsToInts(%q) = %v; want %v", tt.s, got, tt.want)
+		}
 	}
 }
 
 func Test_intsToDigits(t *testing.T) {
 	for _, tt := range []struct {
-		is []int
-		s  string
+		is   []int
+		want string
 	}{
-		{is: []int{0}, s: "a"},
-		{is: []int{25}, s: "z"},
-		{is: []int{0, 0}, s: "aa"},
-		{is: []int{0, 1, 2}, s: "abc"},
+		{is: []int{0}, want: "a"},
+		{is: []int{25}, want: "z"},
+		{is: []int{0, 0}, want: "aa"},
+		{is: []int{0, 1, 2}, want: "abc"},
 	} {
-		t.Run(fmt.Sprintf("is=%v", tt.is), func(t *testing.T) {
-			require.Equal(t, tt.s, intsToDigits(tt.is))
-		})
+		if got := intsToDigits(tt.is); got != tt.want {
+			t.Errorf("intsToDigits(%v) = %q; want %q", tt.is, got, tt.want)
+		}
 	}
 }
 
 func Test_next(t *testing.T) {
 	for _, tt := range []struct {
 		s    string
-		next string
+		want string
 	}{
-		{s: "a", next: "b"},
-		{s: "z", next: "aa"},
-		{s: "aa", next: "ab"},
-		{s: "zy", next: "zz"},
-		{s: "zz", next: "aaa"},
+		{s: "a", want: "b"},
+		{s: "z", want: "aa"},
+		{s: "aa", want: "ab"},
+		{s: "zy", want: "zz"},
+		{s: "zz", want: "aaa"},
 	} {
-		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
-			require.Equal(t, tt.next, next(tt.s))
-		})
+		if got := next(tt.s); got != tt.want {
+			t.Errorf("next(%q) = %q; want %q", tt.s, got, tt.want)
+		}
 	}
 }
 
 func Test_hasIncreasing(t *testing.T) {
 	for _, tt := range []struct {
-		s string
-		b bool
+		s    string
+		want bool
 	}{
-		{s: "hijklmmn", b: true},
-		{s: "abbceffg", b: false},
-		{s: "abbcegjk", b: false},
-		{s: "abcdffaa", b: true},
-		{s: "ghjaabcc", b: true},
+		{s: "hijklmmn", want: true},
+		{s: "abbceffg", want: false},
+		{s: "abbcegjk", want: false},
+		{s: "abcdffaa", want: true},
+		{s: "ghjaabcc", want: true},
 	} {
-		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
-			require.Equal(t, tt.b, hasIncreasing(tt.s))
-		})
+		if got := hasIncreasing(tt.s); got != tt.want {
+			t.Errorf("hasIncreasing(%q) = %v; want %v", tt.s, got, tt.want)
+		}
 	}
 }
 
 func Test_hasNoIOL(t *testing.T) {
 	for _, tt := range []struct {
-		s string
-		b bool
+		s    string
+		want bool
 	}{
-		{s: "hijklmmn", b: false},
-		{s: "abbceffg", b: true},
-		{s: "abbcegjk", b: true},
-		{s: "abcdffaa", b: true},
-		{s: "ghjaabcc", b: true},
+		{s: "hijklmmn", want: false},
+		{s: "abbceffg", want: true},
+		{s: "abbcegjk", want: true},
+		{s: "abcdffaa", want: true},
+		{s: "ghjaabcc", want: true},
 	} {
-		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
-			require.Equal(t, tt.b, hasNoIOL(tt.s))
-		})
+		if got := hasNoIOL(tt.s); got != tt.want {
+			t.Errorf("hasNoIOL(%q) = %v; want %v", tt.s, got, tt.want)
+		}
 	}
 }
 
 func Test_hasTwoPairs(t *testing.T) {
 	for _, tt := range []struct {
-		s string
-		b bool
+		s    string
+		want bool
 	}{
-		{s: "hijklmmn", b: false},
-		{s: "abbceffg", b: true},
-		{s: "abbcegjk", b: false},
-		{s: "abcdffaa", b: true},
-		{s: "ghjaabcc", b: true},
+		{s: "hijklmmn", want: false},
+		{s: "abbceffg", want: true},
+		{s: "abbcegjk", want: false},
+		{s: "abcdffaa", want: true},
+		{s: "ghjaabcc", want: true},
 	} {
-		t.Run(fmt.Sprintf("s=%v", tt.s), func(t *testing.T) {
-			require.Equal(t, tt.b, hasTwoPairs(tt.s))
-		})
+		if got := hasTwoPairs(tt.s); got != tt.want {
+			t.Errorf("hasTwoPairs(%q) = %v; want %v", tt.s, got, tt.want)
+		}
 	}
 }
 
