@@ -2,15 +2,13 @@ package day25
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"math/big"
 	"regexp"
 	"strconv"
 )
 
 func Part1(input string) (string, error) {
-	row, col, err := parse(r)
+	row, col, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 25, part 1: %w", err)
 	}
@@ -25,16 +23,12 @@ func Part1(input string) (string, error) {
 	return b.String(), nil
 }
 
-func parse(r io.Reader) (int, int, error) {
+func parse(input string) (int, int, error) {
 	re, err := regexp.Compile(`\d+`)
 	if err != nil {
 		return 0, 0, fmt.Errorf("parse: %w", err)
 	}
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return 0, 0, fmt.Errorf("parse: %w", err)
-	}
-	matches := re.FindAllString(string(bytes), -1)
+	matches := re.FindAllString(input, -1)
 	row, err := strconv.Atoi(matches[0])
 	if err != nil {
 		return 0, 0, fmt.Errorf("parse: %w", err)
