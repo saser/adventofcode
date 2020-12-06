@@ -1,7 +1,6 @@
 package day02
 
 import (
-	"bufio"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -115,11 +114,9 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
 	validCount := 0
-	for sc.Scan() {
-		e, err := parseManual(sc.Text())
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		e, err := parseManual(line)
 		if err != nil {
 			return "", fmt.Errorf("part %v: %w", part, err)
 		}
