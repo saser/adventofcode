@@ -9,8 +9,8 @@ import (
 const inputFile = "../testdata/12"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "111754")
+	tcPart2 = testcase.NewFile("input", inputFile, "65402")
 )
 
 func TestPart1(t *testing.T) {
@@ -23,7 +23,7 @@ func TestPart1(t *testing.T) {
 		testcase.New("example3_2", `[-1,{"a":1}]`, "0"),
 		testcase.New("example4_1", `[]`, "0"),
 		testcase.New("example4_2", `{}`, "0"),
-		testcase.NewFile(inputFile, inputFile, "111754"),
+		tcPart1,
 	} {
 		tc.Test(t, Part1)
 	}
@@ -39,7 +39,7 @@ func TestPart2(t *testing.T) {
 		testcase.New("example2", `[1,{"c":"red","b":2},3]`, "4"),
 		testcase.New("example3", `{"d":"red","e":[1,2,3,4],"f":5}`, "0"),
 		testcase.New("example4", `[1,"red",5]`, "6"),
-		testcase.NewFile(inputFile, inputFile, "65402"),
+		tcPart2,
 	} {
 		tc.Test(t, Part2)
 	}

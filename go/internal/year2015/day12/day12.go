@@ -3,7 +3,6 @@ package day12
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 )
 
 func Part1(input string) (string, error) {
@@ -16,11 +15,7 @@ func Part2(input string) (string, error) {
 
 func solve(input string, part int) (string, error) {
 	var j interface{}
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", fmt.Errorf("year 2015, day 12, part 2: %w", err)
-	}
-	if err := json.Unmarshal(bytes, &j); err != nil {
+	if err := json.Unmarshal([]byte(input), &j); err != nil {
 		return "", fmt.Errorf("year 2015, day 12, part 2: %w", err)
 	}
 	return fmt.Sprint(sumJSON(j, part)), nil
