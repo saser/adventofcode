@@ -116,7 +116,7 @@ func Test_hasTwoPairs(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example1", "abcdefgh", "abcdffaa"),
 		testcase.New("example2", "ghijklmn", "ghjaabcc"),
 		tcPart1,
@@ -130,7 +130,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		tcPart2,
 	} {
 		tc.Test(t, Part2)

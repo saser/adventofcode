@@ -30,7 +30,7 @@ func Test_parse(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example1", "FBFBBFFRLR", "357"),
 		testcase.New("example2", "BFFFBBFRRR", "567"),
 		testcase.New("example3", "FFFBBBFRRR", "119"),
@@ -46,7 +46,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		tcPart2,
 	} {
 		tc.Test(t, Part2)

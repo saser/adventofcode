@@ -14,7 +14,7 @@ var (
 )
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.NewFile("example1", "testdata/part1example1", "4"),
 		testcase.NewFile("example2", "testdata/part1example2", "7"),
 		tcPart1,
@@ -31,7 +31,7 @@ func TestPart2(t *testing.T) {
 	// The example test cases are off by one. This is due to a discrepancy between the example input and the actual
 	// input: in the actual input, all productions from "e" are to two other tokens, while in the example input the
 	// productions from "e" are to one other token.
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.NewFile("example1", "testdata/part2example1", "2"),
 		testcase.NewFile("example2", "testdata/part2example2", "5"),
 		tcPart2,

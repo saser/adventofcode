@@ -21,7 +21,7 @@ var (
 
 func TestPart1(t *testing.T) {
 	for _, tt := range []struct {
-		tc         testcase.TestCase2
+		tc         testcase.TestCase
 		iterations int
 		gridSize   int
 	}{
@@ -46,7 +46,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tt := range []struct {
-		tc         testcase.TestCase2
+		tc         testcase.TestCase
 		iterations int
 		gridSize   int
 	}{

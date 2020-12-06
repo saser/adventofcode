@@ -17,7 +17,7 @@ func TestPart1(t *testing.T) {
 	example := `London to Dublin = 464
 London to Belfast = 518
 Dublin to Belfast = 141`
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example", example, "605"),
 		testcase.NewFile(inputFile, inputFile, "251"),
 	} {
@@ -33,7 +33,7 @@ func TestPart2(t *testing.T) {
 	example := `London to Dublin = 464
 London to Belfast = 518
 Dublin to Belfast = 141`
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example", example, "982"),
 		testcase.NewFile(inputFile, inputFile, "898"),
 	} {

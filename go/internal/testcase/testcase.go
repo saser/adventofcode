@@ -12,13 +12,13 @@ var (
 
 type Solution func(string) (string, error)
 
-type TestCase2 struct {
+type TestCase struct {
 	name  string
 	input string
 	want  string
 }
 
-func (tc TestCase2) Test(t *testing.T, sln Solution) {
+func (tc TestCase) Test(t *testing.T, sln Solution) {
 	t.Helper()
 	t.Run(tc.name, func(t *testing.T) {
 		got, err := sln(tc.input)
@@ -31,7 +31,7 @@ func (tc TestCase2) Test(t *testing.T, sln Solution) {
 	})
 }
 
-func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
+func (tc TestCase) Benchmark(b *testing.B, sln Solution) {
 	b.Helper()
 	b.Run(tc.name, func(b *testing.B) {
 		var (
@@ -52,21 +52,21 @@ func (tc TestCase2) Benchmark(b *testing.B, sln Solution) {
 	})
 }
 
-func New(name, input, want string) TestCase2 {
-	return TestCase2{
+func New(name, input, want string) TestCase {
+	return TestCase{
 		name:  name,
 		input: input,
 		want:  want,
 	}
 }
 
-func NewFile(name, filename, want string) TestCase2 {
+func NewFile(name, filename, want string) TestCase {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	input := string(data)
-	return TestCase2{
+	return TestCase{
 		name:  name,
 		input: input,
 		want:  want,

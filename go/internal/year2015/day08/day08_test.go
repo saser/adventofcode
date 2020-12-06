@@ -14,7 +14,7 @@ var (
 )
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example1", `""`, "2"),
 		testcase.New("example2", `"abc"`, "2"),
 		testcase.New("example3", `"aaa\"aaa"`, "3"),
@@ -30,7 +30,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.New("example1", `""`, "4"),
 		testcase.New("example2", `"abc"`, "4"),
 		testcase.New("example3", `"aaa\"aaa"`, "6"),

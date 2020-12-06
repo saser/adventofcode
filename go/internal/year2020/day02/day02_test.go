@@ -68,7 +68,7 @@ func Test_parsers(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		tcPart1,
 	} {
 		tc.Test(t, Part1)
@@ -80,7 +80,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		tcPart2,
 	} {
 		tc.Test(t, Part2)

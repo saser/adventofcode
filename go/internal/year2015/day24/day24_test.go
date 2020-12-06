@@ -17,7 +17,7 @@ var (
 )
 
 func TestPart1(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.NewFile(exampleFile, exampleFile, "99"),
 		tcPart1,
 	} {
@@ -30,7 +30,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase2{
+	for _, tc := range []testcase.TestCase{
 		testcase.NewFile(exampleFile, exampleFile, "44"),
 		tcPart2,
 	} {

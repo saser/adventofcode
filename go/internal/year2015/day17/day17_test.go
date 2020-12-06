@@ -19,7 +19,7 @@ var (
 
 func TestPart1(t *testing.T) {
 	for _, tt := range []struct {
-		tc     testcase.TestCase2
+		tc     testcase.TestCase
 		target int
 	}{
 		{tc: testcase.NewFile("example", exampleFile, "4"), target: exampleTarget},
@@ -38,7 +38,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tt := range []struct {
-		tc     testcase.TestCase2
+		tc     testcase.TestCase
 		target int
 	}{
 		{tc: testcase.NewFile("example", exampleFile, "3"), target: exampleTarget},
