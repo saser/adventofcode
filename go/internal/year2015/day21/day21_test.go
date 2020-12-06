@@ -10,8 +10,8 @@ import (
 const inputFile = "../testdata/21"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "111")
+	tcPart2 = testcase.NewFile("input", inputFile, "188")
 )
 
 func Test_playerWins(t *testing.T) {
