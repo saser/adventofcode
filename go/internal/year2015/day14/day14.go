@@ -1,11 +1,10 @@
 package day14
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func Part1(input string) (string, error) {
@@ -17,7 +16,7 @@ func Part2(input string) (string, error) {
 }
 
 func solve(input string, part int) (string, error) {
-	deers, err := parse(r)
+	deers, err := parse(input)
 	if err != nil {
 		return "", fmt.Errorf("year 2015, day 14, part 1: %w", err)
 	}
@@ -75,16 +74,14 @@ type deer struct {
 	restingPeriod int
 }
 
-func parse(r io.Reader) ([]deer, error) {
+func parse(input string) ([]deer, error) {
 	re, err := regexp.Compile(`^(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.$`)
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanLines)
-	deers := make([]deer, 0)
-	for sc.Scan() {
-		line := sc.Text()
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	deers := make([]deer, len(lines))
+	for i, line := range lines {
 		matches := re.FindStringSubmatch(line)
 		if matches == nil {
 			return nil, fmt.Errorf("parse: invalid line: %s", line)
@@ -101,12 +98,12 @@ func parse(r io.Reader) ([]deer, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parse: %w", err)
 		}
-		deers = append(deers, deer{
+		deers[i] = deer{
 			name:          matches[1],
 			speed:         speed,
 			flyingPeriod:  flyingPeriod,
 			restingPeriod: restingPeriod,
-		})
+		}
 	}
 	return deers, nil
 }
