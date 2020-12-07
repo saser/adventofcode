@@ -15,6 +15,7 @@ var (
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
+		testcase.NewFile("example", "testdata/example", "4"),
 		tcPart1,
 	} {
 		tc.Test(t, Part1)
