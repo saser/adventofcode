@@ -68,7 +68,10 @@ func parseLine(line string) (string, map[string]int) {
 	return key, contents
 }
 
-func parse(input string) map[string]map[string]int {
+// parse returns a mapping from a bag to its contents. containedBy has its name
+// given by the fact that, for example, containedBy["shiny gold"] gives the list
+// of bags that are contained in a shiny gold bag.
+func parse(input string) (containedBy map[string]map[string]int) {
 	m := make(map[string]map[string]int)
 	for _, line := range strings.Split(input, "\n") {
 		if line == "" {
@@ -80,6 +83,39 @@ func parse(input string) map[string]map[string]int {
 	return m
 }
 
+// reverse reverses the mapping in containedBy, such that for each bag inner in
+// containedBy[outer], it holds that outer appears in contains[inner].
+func reverse(containedBy map[string]map[string]int) (contains map[string][]string) {
+	m := make(map[string][]string)
+	for outer, contents := range containedBy {
+		for inner := range contents {
+			m[inner] = append(m[inner], outer)
+		}
+	}
+	return m
+}
+
+func countReachable(contains map[string][]string) int {
+	visited := make(map[string]bool)
+	var visit func(bag string)
+	visit = func(bag string) {
+		if visited[bag] {
+			return
+		}
+		visited[bag] = true
+		for _, outer := range contains[bag] {
+			visit(outer)
+		}
+	}
+	visit("shiny gold")
+	return len(visited) - 1 // -1 due since "shiny gold" itself shouldn't be counted
+}
+
 func solve(input string, part int) (string, error) {
-	return "", fmt.Errorf("solution not implemented for part %v", part)
+	if part == 2 {
+		return "", fmt.Errorf("solution not implemented for part %v", part)
+	}
+	containedBy := parse(input)
+	contains := reverse(containedBy)
+	return fmt.Sprint(countReachable(contains)), nil
 }
