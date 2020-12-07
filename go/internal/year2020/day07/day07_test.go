@@ -9,13 +9,14 @@ import (
 )
 
 const (
-	inputFile   = "../testdata/07"
-	exampleFile = "testdata/example"
+	inputFile    = "../testdata/07"
+	example1File = "testdata/example1"
+	example2File = "testdata/example2"
 )
 
 var (
 	tcPart1 = testcase.NewFile("input", inputFile, "112")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "6260")
 )
 
 func Test_parseLine(t *testing.T) {
@@ -101,7 +102,7 @@ func Test_parseLine(t *testing.T) {
 }
 
 func Test_parse(t *testing.T) {
-	data, err := ioutil.ReadFile(exampleFile)
+	data, err := ioutil.ReadFile(example1File)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +146,7 @@ func Test_parse(t *testing.T) {
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.NewFile("example", exampleFile, "4"),
+		testcase.NewFile("example", example1File, "4"),
 		tcPart1,
 	} {
 		tc.Test(t, Part1)
@@ -158,6 +159,8 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
+		testcase.NewFile("example1", example1File, "32"),
+		testcase.NewFile("example2", example2File, "126"),
 		tcPart2,
 	} {
 		tc.Test(t, Part2)

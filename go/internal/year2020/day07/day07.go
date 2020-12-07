@@ -108,14 +108,32 @@ func countReachable(contains map[string][]string) int {
 		}
 	}
 	visit("shiny gold")
-	return len(visited) - 1 // -1 due since "shiny gold" itself shouldn't be counted
+	return len(visited) - 1 // -1 since "shiny gold" itself shouldn't be counted
+}
+
+func sumReachable(containedBy map[string]map[string]int) int {
+	sums := make(map[string]int)
+	var visit func(bag string) int
+	visit = func(bag string) int {
+		sum, ok := sums[bag]
+		if ok {
+			return sum
+		}
+		sum = 1
+		for inner, count := range containedBy[bag] {
+			sum += count * visit(inner)
+		}
+		sums[bag] = sum
+		return sum
+	}
+	return visit("shiny gold") - 1 // -1 since "shiny gold" itself shouldn't be counted
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	containedBy := parse(input)
-	contains := reverse(containedBy)
-	return fmt.Sprint(countReachable(contains)), nil
+	if part == 1 {
+		return fmt.Sprint(countReachable(reverse(containedBy))), nil
+	} else {
+		return fmt.Sprint(sumReachable(containedBy)), nil
+	}
 }
