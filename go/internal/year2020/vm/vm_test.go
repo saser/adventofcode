@@ -112,3 +112,60 @@ acc +6`
 		t.Errorf("ParseProgram() prog = %v; want %v", got, want)
 	}
 }
+
+func TestVM_Step(t *testing.T) {
+	for _, tt := range []struct {
+		instr   Instruction
+		wantPC  int
+		wantAcc int
+	}{
+		{
+			instr:   Instruction{Op: Nop, Arg: 0},
+			wantPC:  1,
+			wantAcc: 0,
+		},
+		{
+			instr:   Instruction{Op: Acc, Arg: 10},
+			wantPC:  1,
+			wantAcc: 10,
+		},
+		{
+			instr:   Instruction{Op: Acc, Arg: -10},
+			wantPC:  1,
+			wantAcc: -10,
+		},
+		{
+			instr:   Instruction{Op: Jmp, Arg: 1},
+			wantPC:  1,
+			wantAcc: 0,
+		},
+		{
+			instr:   Instruction{Op: Jmp, Arg: 2},
+			wantPC:  2,
+			wantAcc: 0,
+		},
+		{
+			instr:   Instruction{Op: Jmp, Arg: 0},
+			wantPC:  0,
+			wantAcc: 0,
+		},
+		{
+			instr:   Instruction{Op: Jmp, Arg: -1},
+			wantPC:  -1,
+			wantAcc: 0,
+		},
+	} {
+		vm := VM{
+			Program: Program{tt.instr},
+			PC:      0,
+			Acc:     0,
+		}
+		vm.Step()
+		if vm.PC != tt.wantPC {
+			t.Errorf("vm.PC = %v; want %v", vm.PC, tt.wantPC)
+		}
+		if vm.Acc != tt.wantAcc {
+			t.Errorf("vm.Acc = %v; want %v", vm.Acc, tt.wantAcc)
+		}
+	}
+}

@@ -81,3 +81,22 @@ func ParseProgram(s string) (Program, error) {
 	}
 	return instrs, nil
 }
+
+type VM struct {
+	Program Program
+	Acc     int
+	PC      int
+}
+
+func (vm *VM) Step() {
+	switch instr := vm.Program[vm.PC]; instr.Op {
+	case Nop:
+		// do nothing
+	case Acc:
+		vm.Acc += int(instr.Arg)
+	case Jmp:
+		vm.PC += int(instr.Arg)
+		return // pc should not be incremented
+	}
+	vm.PC++
+}
