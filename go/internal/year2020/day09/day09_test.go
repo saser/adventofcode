@@ -16,7 +16,7 @@ const (
 
 var (
 	tcPart1 = testcase.NewFile("input", inputFile, "27911108")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "4023754")
 )
 
 func TestPart1(t *testing.T) {
@@ -39,10 +39,17 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	for _, tc := range []testcase.TestCase{
-		tcPart2,
+	for _, tt := range []struct {
+		tc       testcase.TestCase
+		lookback int
+	}{
+		{tc: testcase.NewFile("example", exampleFile, "62"), lookback: exampleLookback},
+		{tc: tcPart2, lookback: defaultLookback},
 	} {
-		tc.Test(t, Part2)
+		reset := Lookback
+		Lookback = tt.lookback
+		tt.tc.Test(t, Part2)
+		Lookback = reset
 	}
 }
 

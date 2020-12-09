@@ -30,23 +30,46 @@ func parse(input string) []int64 {
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	numbers := parse(input)
 	c := make(counts, Lookback)
 	for _, n := range numbers[:Lookback] {
 		c.Push(n)
 	}
+	var invalid int64
 	for i := Lookback; i < len(numbers); i++ {
 		target := numbers[i]
 		if !c.TwoSum(target) {
-			return fmt.Sprint(target), nil
+			invalid = target
+			break
 		}
 		c.Push(target)
 		c.Pop(numbers[i-Lookback])
 	}
-	panic("unreachable")
+	if part == 1 {
+		return fmt.Sprint(invalid), nil
+	}
+	start, end := 0, 1
+	sum := numbers[0]
+	for sum != invalid {
+		if sum < invalid {
+			sum += numbers[end]
+			end++
+		} else {
+			sum -= numbers[start]
+			start++
+		}
+	}
+	max := int64(0)
+	min := invalid + 1
+	for _, n := range numbers[start:end] {
+		if n < min {
+			min = n
+		}
+		if n > max {
+			max = n
+		}
+	}
+	return fmt.Sprint(min + max), nil
 }
 
 type counts map[int64]int
