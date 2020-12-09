@@ -31,19 +31,21 @@ func parse(input string) []int64 {
 
 func solve(input string, part int) (string, error) {
 	numbers := parse(input)
-	c := make(counts, Lookback)
-	for _, n := range numbers[:Lookback] {
-		c.Push(n)
-	}
 	var invalid int64
 	for i := Lookback; i < len(numbers); i++ {
 		target := numbers[i]
-		if !c.TwoSum(target) {
+		start := i - Lookback
+		end := i - 1
+		for numbers[start] >= target {
+			start++
+		}
+		for numbers[end] >= target {
+			end--
+		}
+		if !twoSum(target, numbers[start:end+1]) {
 			invalid = target
 			break
 		}
-		c.Push(target)
-		c.Pop(numbers[i-Lookback])
 	}
 	if part == 1 {
 		return fmt.Sprint(invalid), nil
@@ -72,27 +74,12 @@ func solve(input string, part int) (string, error) {
 	return fmt.Sprint(min + max), nil
 }
 
-type counts map[int64]int
-
-func (c counts) Push(n int64) {
-	c[n] = c[n] + 1
-}
-
-func (c counts) Pop(n int64) {
-	c[n] = c[n] - 1
-	if c[n] <= 0 {
-		delete(c, n)
-	}
-}
-
-func (c counts) TwoSum(target int64) bool {
-	for base := range c {
-		other := target - base
-		if other == base {
-			continue
-		}
-		if c[other] > 0 {
-			return true
+func twoSum(target int64, numbers []int64) bool {
+	for i, n1 := range numbers {
+		for _, n2 := range numbers[i+1:] {
+			if n1+n2 == target {
+				return true
+			}
 		}
 	}
 	return false
