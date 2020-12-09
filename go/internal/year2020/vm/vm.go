@@ -82,6 +82,12 @@ func ParseProgram(s string) (Program, error) {
 	return instrs, nil
 }
 
+func (p Program) Copy() Program {
+	p2 := make(Program, len(p))
+	copy(p2, p)
+	return p2
+}
+
 type VM struct {
 	Program Program
 	Acc     int
