@@ -27,15 +27,36 @@ func parse(input string) []int {
 
 func solve(input string, part int) (string, error) {
 	adapters := parse(input)
+	max := 0
+	for _, adapter := range adapters {
+		if adapter > max {
+			max = adapter
+		}
+	}
+	adapters = append(adapters, 0, max+3)
 	sort.Ints(adapters)
 	if part == 1 {
 		var diffs [4]int
-		diffs[adapters[0]]++ // between outlet and first adapter
-		diffs[3]++           // between last adapter and device
 		for i := 0; i < len(adapters)-1; i++ {
 			diffs[adapters[i+1]-adapters[i]]++
 		}
 		return fmt.Sprint(diffs[1] * diffs[3]), nil
 	}
-	return "", fmt.Errorf("solution for part %v not implemented", part)
+	// arrs[i] will contain the number of possible arrangements
+	// that includes adapter i.
+	// arrs[0] will contain all possible arrangements.
+	arrs := make([]int, len(adapters))
+	arrs[len(arrs)-1] = 1 // base case
+	for i := len(arrs) - 2; i >= 0; i-- {
+		sum := 0
+		for j := i + 1; j < len(adapters); j++ {
+			diff := adapters[j] - adapters[i]
+			if diff > 3 {
+				break
+			}
+			sum += arrs[j]
+		}
+		arrs[i] = sum
+	}
+	return fmt.Sprint(arrs[0]), nil
 }
