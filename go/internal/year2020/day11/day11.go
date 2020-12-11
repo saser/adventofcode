@@ -15,7 +15,7 @@ func Part2(input string) (string, error) {
 
 func solve(input string, part int) (string, error) {
 	g := newGameOfSeats(input)
-	for g.Step() {
+	for g.Step(part) {
 		// Nothing needs to be done other than stepping.
 	}
 	return fmt.Sprint(g.CountOccupied()), nil
@@ -47,12 +47,9 @@ func (g *gameOfSeats) index(row, col int) (int, bool) {
 	return row*g.cols + col, true
 }
 
-func (g *gameOfSeats) occupied(row, col int) bool {
+func (g *gameOfSeats) occupied(row, col int) (bool, bool) {
 	i, ok := g.index(row, col)
-	if !ok {
-		return false
-	}
-	return (*g.current)[i] == '#'
+	return ok && (*g.current)[i] == '#', ok
 }
 
 func (g *gameOfSeats) occupiedAdjacent(row, col int) int {
@@ -63,7 +60,7 @@ func (g *gameOfSeats) occupiedAdjacent(row, col int) int {
 			if drow == 0 && dcol == 0 {
 				continue
 			}
-			if g.occupied(row+drow, col+dcol) {
+			if occ, ok := g.occupied(row+drow, col+dcol); occ && ok {
 				n++
 			}
 		}
@@ -71,19 +68,59 @@ func (g *gameOfSeats) occupiedAdjacent(row, col int) int {
 	return n
 }
 
-func (g *gameOfSeats) Step() bool {
+func (g *gameOfSeats) occupiedVisible(row, col int) int {
+	d := []int{-1, 0, 1}
+	n := 0
+	for _, drow := range d {
+		for _, dcol := range d {
+			if drow == 0 && dcol == 0 {
+				continue
+			}
+			steps := 1
+			for {
+				i, ok := g.index(row+steps*drow, col+steps*dcol)
+				if !ok {
+					// outside grid
+					break
+				}
+				c := (*g.current)[i]
+				if c == '.' {
+					// inside grid, but empty space
+					steps++
+					continue
+				}
+				// inside grid, non-empty space
+				if c == '#' {
+					n++
+				}
+				break
+			}
+		}
+	}
+	return n
+}
+
+func (g *gameOfSeats) Step(part int) bool {
 	changed := false
 	copy(*g.next, *g.current)
 	for row := 0; row < g.rows; row++ {
 		for col := 0; col < g.cols; col++ {
 			i, _ := g.index(row, col)
-			adj := g.occupiedAdjacent(row, col)
+			var adj, threshold int
+			switch part {
+			case 1:
+				adj = g.occupiedAdjacent(row, col)
+				threshold = 4
+			case 2:
+				adj = g.occupiedVisible(row, col)
+				threshold = 5
+			}
 			c := (*g.current)[i]
 			switch {
 			case c == 'L' && adj == 0:
 				(*g.next)[i] = '#'
 				changed = true
-			case c == '#' && adj >= 4:
+			case c == '#' && adj >= threshold:
 				(*g.next)[i] = 'L'
 				changed = true
 			}
