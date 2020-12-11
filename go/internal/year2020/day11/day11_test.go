@@ -16,7 +16,7 @@ var (
 	tcPart2 = testcase.NewFile("input", inputFile, "2002")
 )
 
-func Test_gameOfSeats_occupiedVisible(t *testing.T) {
+func Test_visibleCounter_count(t *testing.T) {
 	for _, tt := range []struct {
 		input    string
 		row, col int
@@ -54,9 +54,10 @@ func Test_gameOfSeats_occupiedVisible(t *testing.T) {
 			want: 0,
 		},
 	} {
-		g := newGameOfSeats(tt.input)
-		if got := g.occupiedVisible(tt.row, tt.col); got != tt.want {
-			t.Errorf("g.occupiedVisible(%v, %v) = %v; want %v\n%s", tt.row, tt.col, got, tt.want, tt.input)
+		g := newGrid(tt.input)
+		c := visibleCounter{}
+		if got := c.count(g, tt.row, tt.col); got != tt.want {
+			t.Errorf("c.count(%v, %v) = %v; want %v\n%s", tt.row, tt.col, got, tt.want, tt.input)
 		}
 	}
 }
