@@ -4,22 +4,13 @@ type Point struct {
 	X, Y int
 }
 
-const (
-	North = iota
-	East
-	South
-	West
-)
-
-func (p *Point) Step(direction int) {
-	switch direction {
-	case North:
-		p.Y++
-	case East:
-		p.X++
-	case South:
-		p.Y--
-	case West:
-		p.X--
+func abs(x int) int {
+	if x < 0 {
+		return -x
 	}
+	return x
+}
+
+func (p Point) ManhattanDistance() int {
+	return abs(p.X) + abs(p.Y)
 }
