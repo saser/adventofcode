@@ -1,7 +1,6 @@
 package day13
 
 import (
-	"math/big"
 	"testing"
 
 	"github.com/Saser/adventofcode/internal/testcase"
@@ -33,18 +32,18 @@ func BenchmarkPart1(b *testing.B) {
 func Test_crt(t *testing.T) {
 	for _, tt := range []struct {
 		eqs  []eq
-		want *big.Int
+		want int
 	}{
 		{
 			eqs: []eq{
-				{rem: big.NewInt(0), mod: big.NewInt(3)},
-				{rem: big.NewInt(3), mod: big.NewInt(4)},
-				{rem: big.NewInt(4), mod: big.NewInt(5)},
+				{rem: 0, mod: 3},
+				{rem: 3, mod: 4},
+				{rem: 4, mod: 5},
 			},
-			want: big.NewInt(39),
+			want: 39,
 		},
 	} {
-		if got := crt(tt.eqs); got.Cmp(tt.want) != 0 {
+		if got := crt(tt.eqs); got != tt.want {
 			t.Errorf("crt(%+v) = %v; want %v", tt.eqs, got, tt.want)
 		}
 	}

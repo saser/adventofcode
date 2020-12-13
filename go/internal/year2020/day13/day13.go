@@ -2,7 +2,7 @@ package day13
 
 import (
 	"fmt"
-	"math/big"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -55,38 +55,26 @@ func findBestBus(ts int, buses []int) (int, int) {
 }
 
 type eq struct {
-	rem, mod *big.Int
+	rem, mod int
 }
 
-// crt uses the Chinese remainder theorem to find a solution to the
-// set of equations given b eqs.
-func crt(eqs []eq) *big.Int {
-	var (
-		gcd            big.Int
-		m1, m2         big.Int
-		a2m1n1, a1m2n2 big.Int
-		n1n2           big.Int
-		x              big.Int
-	)
+func crt(eqs []eq) int {
+	// Sieve method from:
+	// https://en.wikipedia.org/wiki/Chinese_remainder_theorem#Search_by_sieving.
+	sort.Slice(eqs, func(i, j int) bool {
+		return eqs[i].mod > eqs[j].mod
+	})
 	acc := eqs[0]
 	for _, eq := range eqs[1:] {
-		a1, n1 := acc.rem, acc.mod
-		a2, n2 := eq.rem, eq.mod
-		// GCD runs the extended Euclidean algorithm. We know
-		// the result is 1, and we are only interested in
-		// obtaining the values of m1 and m2.
-		gcd.GCD(&m1, &m2, n1, n2)
-		a2m1n1.Mul(a2, &m1).Mul(&a2m1n1, n1)
-		a1m2n2.Mul(a1, &m2).Mul(&a1m2n2, n2)
-		x.Add(&a2m1n1, &a1m2n2)
-		n1n2.Mul(n1, n2)
-		acc.rem.Mod(&x, &n1n2)
-		acc.mod = &n1n2
+		for acc.rem%eq.mod != eq.rem {
+			acc.rem += acc.mod
+		}
+		acc.mod *= eq.mod
 	}
 	return acc.rem
 }
 
-func earliestTimestamp(buses []int) *big.Int {
+func earliest(buses []int) int {
 	var eqs []eq
 	for i, bus := range buses {
 		if bus == -1 {
@@ -97,8 +85,8 @@ func earliestTimestamp(buses []int) *big.Int {
 			rem += bus
 		}
 		eqs = append(eqs, eq{
-			rem: big.NewInt(int64(rem)),
-			mod: big.NewInt(int64(bus)),
+			rem: rem,
+			mod: bus,
 		})
 	}
 	return crt(eqs)
@@ -111,8 +99,7 @@ func solve(input string, part int) (string, error) {
 		bestBus, minWait := findBestBus(ts, buses)
 		return fmt.Sprint(bestBus * minWait), nil
 	case 2:
-		ts := earliestTimestamp(buses)
-		return ts.String(), nil
+		return fmt.Sprint(earliest(buses)), nil
 	}
 	return "", fmt.Errorf("invalid part: %v", part)
 }
