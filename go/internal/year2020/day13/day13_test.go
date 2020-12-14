@@ -29,22 +29,46 @@ func BenchmarkPart1(b *testing.B) {
 	tcPart1.Benchmark(b, Part1)
 }
 
-func Test_crt(t *testing.T) {
+func Test_earliest(t *testing.T) {
 	for _, tt := range []struct {
-		eqs  []eq
-		want int
+		buses []bus
+		want  int
 	}{
 		{
-			eqs: []eq{
-				{rem: 0, mod: 3},
-				{rem: 3, mod: 4},
-				{rem: 4, mod: 5},
+			buses: []bus{
+				{idx: 0, id: 7},
+				{idx: 1, id: 13},
 			},
-			want: 39,
+			want: 77,
+		},
+		{
+			buses: []bus{
+				{idx: 0, id: 7},
+				{idx: 1, id: 13},
+				{idx: 4, id: 59},
+			},
+			want: 350,
+		},
+		{
+			buses: []bus{
+				{idx: 0, id: 7},
+				{idx: 1, id: 13},
+				{idx: 4, id: 59},
+				{idx: 6, id: 31},
+			},
+			want: 70147,
+		},
+		{
+			buses: []bus{
+				{idx: 0, id: 17},
+				{idx: 2, id: 13},
+				{idx: 3, id: 19},
+			},
+			want: 3417,
 		},
 	} {
-		if got := crt(tt.eqs); got != tt.want {
-			t.Errorf("crt(%+v) = %v; want %v", tt.eqs, got, tt.want)
+		if got := earliest(tt.buses); got != tt.want {
+			t.Errorf("earliest(%+v) = %v; want %v", tt.buses, got, tt.want)
 		}
 	}
 }
