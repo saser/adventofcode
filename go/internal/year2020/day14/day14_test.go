@@ -14,7 +14,7 @@ const (
 
 var (
 	tcPart1 = testcase.NewFile("input", inputFile, "11884151942312")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "2625449018811")
 )
 
 func Test_mask_ApplyTo(t *testing.T) {

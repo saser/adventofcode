@@ -15,24 +15,25 @@ func Part2(input string) (string, error) {
 }
 
 type mask struct {
-	clear, set int64
+	clear, set, floating int64
 }
 
 func parseMask(line string) mask {
 	n := len(line)
-	var clear, set int64
+	var m mask
 	for bit := 0; bit < 36; bit++ {
+		var i *int64
 		switch line[n-bit-1] {
 		case '0':
-			clear |= 1 << bit
+			i = &m.clear
 		case '1':
-			set |= 1 << bit
+			i = &m.set
+		case 'X':
+			i = &m.floating
 		}
+		*i |= 1 << bit
 	}
-	return mask{
-		clear: clear,
-		set:   set,
-	}
+	return m
 }
 
 func parseMem(line string) (int64, int64) {
@@ -52,10 +53,29 @@ func (m mask) ApplyTo(n int64) int64 {
 	return (n &^ m.clear) | m.set
 }
 
-func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
+func (m mask) ApplyToAddr(addr int64, f func(maskedAddr int64)) {
+	var rec func(bit int, acc mask)
+	rec = func(bit int, acc mask) {
+		if bit < 0 {
+			f(acc.ApplyTo(addr))
+			return
+		}
+		// bit is not a floating bit.
+		if m.floating&(1<<bit) == 0 {
+			rec(bit-1, acc)
+			return
+		}
+		accCleared := acc
+		accCleared.clear |= 1 << bit
+		rec(bit-1, accCleared)
+		accSet := acc
+		accSet.set |= 1 << bit
+		rec(bit-1, accSet)
 	}
+	rec(35, mask{set: m.set})
+}
+
+func solve(input string, part int) (string, error) {
 	var m mask
 	mem := make(map[int64]int64)
 	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
@@ -64,7 +84,14 @@ func solve(input string, part int) (string, error) {
 			m = parseMask(line)
 		case strings.HasPrefix(line, "mem"):
 			addr, val := parseMem(line)
-			mem[addr] = m.ApplyTo(val)
+			switch part {
+			case 1:
+				mem[addr] = m.ApplyTo(val)
+			case 2:
+				m.ApplyToAddr(addr, func(maskedAddr int64) {
+					mem[maskedAddr] = val
+				})
+			}
 		}
 	}
 	var sum int64 = 0
