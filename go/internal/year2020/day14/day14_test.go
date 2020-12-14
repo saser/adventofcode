@@ -12,9 +12,25 @@ const (
 )
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "11884151942312")
 	tcPart2 = testcase.NewFile("input", inputFile, "")
 )
+
+func Test_mask_ApplyTo(t *testing.T) {
+	maskStr := "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+	for _, tt := range []struct {
+		n    int64
+		want int64
+	}{
+		{n: 11, want: 73},
+		{n: 101, want: 101},
+		{n: 0, want: 64},
+	} {
+		if got := parseMask(maskStr).ApplyTo(tt.n); got != tt.want {
+			t.Errorf("parseMask(%q).ApplyTo(%v) = %v; want %v", maskStr, tt.n, got, tt.want)
+		}
+	}
+}
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
