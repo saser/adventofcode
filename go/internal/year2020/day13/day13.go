@@ -15,40 +15,40 @@ func Part2(input string) (string, error) {
 	return solve(input, 2)
 }
 
-func parse(input string) (int, []int) {
+type bus struct {
+	idx int
+	id  int
+}
+
+func parse(input string) (int, []bus) {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
 	ts, err := strconv.Atoi(lines[0])
 	if err != nil {
 		panic(err)
 	}
 	parts := strings.Split(lines[1], ",")
-	buses := make([]int, len(parts))
+	var buses []bus
 	for i, part := range parts {
-		var bus int
 		if part == "x" {
-			bus = -1
-		} else {
-			bus, err = strconv.Atoi(part)
-			if err != nil {
-				panic(err)
-			}
+			continue
 		}
-		buses[i] = bus
+		id, err := strconv.Atoi(part)
+		if err != nil {
+			panic(err)
+		}
+		buses = append(buses, bus{idx: i, id: id})
 	}
 	return ts, buses
 }
 
-func findBestBus(ts int, buses []int) (int, int) {
+func findBestBus(ts int, buses []bus) (int, int) {
 	minWait := 60
 	var bestBus int
 	for _, bus := range buses {
-		if bus == -1 {
-			continue
-		}
-		next := ((ts / bus) + 1) * bus
+		next := ((ts / bus.id) + 1) * bus.id
 		if wait := next - ts; wait < minWait {
 			minWait = wait
-			bestBus = bus
+			bestBus = bus.id
 		}
 	}
 	return bestBus, minWait
@@ -74,19 +74,16 @@ func crt(eqs []eq) int {
 	return acc.rem
 }
 
-func earliest(buses []int) int {
+func earliest(buses []bus) int {
 	var eqs []eq
-	for i, bus := range buses {
-		if bus == -1 {
-			continue
-		}
-		rem := (bus - i) % bus
+	for _, bus := range buses {
+		rem := (bus.id - bus.idx) % bus.id
 		if rem < 0 {
-			rem += bus
+			rem += bus.id
 		}
 		eqs = append(eqs, eq{
 			rem: rem,
-			mod: bus,
+			mod: bus.id,
 		})
 	}
 	return crt(eqs)
