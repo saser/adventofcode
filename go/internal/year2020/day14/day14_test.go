@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	inputFile   = "../testdata/14"
-	exampleFile = "testdata/example"
+	inputFile        = "../testdata/14"
+	part1ExampleFile = "testdata/p1example"
+	part2ExampleFile = "testdata/p2example"
 )
 
 var (
@@ -34,7 +35,7 @@ func Test_mask_ApplyTo(t *testing.T) {
 
 func TestPart1(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
-		testcase.NewFile("example", exampleFile, "165"),
+		testcase.NewFile("example", part1ExampleFile, "165"),
 		tcPart1,
 	} {
 		tc.Test(t, Part1)
@@ -47,6 +48,7 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
+		testcase.NewFile("example", part2ExampleFile, "208"),
 		tcPart2,
 	} {
 		tc.Test(t, Part2)
