@@ -10,7 +10,7 @@ const inputFile = "../testdata/15"
 
 var (
 	tcPart1 = testcase.NewFile("input", inputFile, "870")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "9136")
 )
 
 func TestPart1(t *testing.T) {
@@ -34,6 +34,13 @@ func BenchmarkPart1(b *testing.B) {
 
 func TestPart2(t *testing.T) {
 	for _, tc := range []testcase.TestCase{
+		testcase.New("example1", "0,3,6", "175594"),
+		testcase.New("example2", "1,3,2", "2578"),
+		testcase.New("example3", "2,1,3", "3544142"),
+		testcase.New("example4", "1,2,3", "261214"),
+		testcase.New("example5", "2,3,1", "6895259"),
+		testcase.New("example6", "3,2,1", "18"),
+		testcase.New("example7", "3,1,2", "362"),
 		tcPart2,
 	} {
 		tc.Test(t, Part2)

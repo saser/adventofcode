@@ -53,16 +53,20 @@ func (s spoken) Next(previous int) int {
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	numbers := parse(input)
 	s := make(spoken)
 	for i, number := range numbers {
 		s.Add(number, i)
 	}
 	previous := numbers[len(numbers)-1]
-	for i := len(numbers) + 1; i <= 2020; i++ {
+	var target int
+	switch part {
+	case 1:
+		target = 2020
+	case 2:
+		target = 30000000
+	}
+	for i := len(numbers) + 1; i <= target; i++ {
 		next := s.Next(previous)
 		s.Add(next, i-1)
 		previous = next
