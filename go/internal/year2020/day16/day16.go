@@ -2,6 +2,7 @@ package day16
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -88,18 +89,72 @@ func parseTickets(paragraph string) []ticket {
 	return tickets
 }
 
-func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
+func isCandidate(tickets []ticket, col int, r rule) bool {
+	for _, t := range tickets {
+		if !r.Matches(t[col]) {
+			return false
+		}
 	}
+	return true
+}
+
+func findCandidates(tickets []ticket, col int, rs ruleSet) []string {
+	var candidates []string
+	for _, r := range rs {
+		if isCandidate(tickets, col, r) {
+			candidates = append(candidates, r.name)
+		}
+	}
+	return candidates
+}
+
+func mapRules(valid []ticket, rs ruleSet) map[string]int { // rule name -> column
+	cols := len(valid[0])
+	candidates := make([][]string, cols) // column -> candidate rules
+	columns := make([]int, cols)
+	for col := 0; col < cols; col++ {
+		columns[col] = col
+		candidates[col] = findCandidates(valid, col, rs)
+	}
+	sort.Slice(columns, func(i, j int) bool {
+		return len(candidates[columns[i]]) < len(candidates[columns[j]])
+	})
+	seen := make(map[string]int)
+	for _, col := range columns {
+		for _, name := range candidates[col] {
+			if _, ok := seen[name]; !ok {
+				seen[name] = col
+			}
+		}
+	}
+	return seen
+}
+
+func solve(input string, part int) (string, error) {
 	paragraphs := strings.Split(input, "\n\n")
 	rs := parseRules(paragraphs[0])
 	nearby := parseTickets(paragraphs[2])
-	sum := 0
+	if part == 1 {
+		sum := 0
+		for _, t := range nearby {
+			for _, n := range t.Invalid(rs) {
+				sum += n
+			}
+		}
+		return fmt.Sprint(sum), nil
+	}
+	t := parseTickets(paragraphs[1])[0]
+	var valid []ticket
 	for _, t := range nearby {
-		for _, n := range t.Invalid(rs) {
-			sum += n
+		if len(t.Invalid(rs)) == 0 {
+			valid = append(valid, t)
 		}
 	}
-	return fmt.Sprint(sum), nil
+	product := 1
+	for name, col := range mapRules(valid, rs) {
+		if strings.HasPrefix(name, "departure") {
+			product *= t[col]
+		}
+	}
+	return fmt.Sprint(product), nil
 }
