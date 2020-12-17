@@ -15,7 +15,7 @@ func Part2(input string) (string, error) {
 }
 
 type point struct {
-	x, y, z int
+	x, y, z, w int
 }
 
 type grid map[point]bool
@@ -31,7 +31,7 @@ func parse(input string) *conwayCubes {
 	for y := 0; y < len(lines); y++ {
 		for x := 0; x < len(lines[0]); x++ {
 			if lines[y][x] == '#' {
-				g1[point{x, y, 0}] = true
+				g1[point{x, y, 0, 0}] = true
 			}
 		}
 	}
@@ -44,22 +44,32 @@ func parse(input string) *conwayCubes {
 	}
 }
 
-func (cc conwayCubes) countNeighbors(p point) int {
+func (cc conwayCubes) countNeighbors(p point, part int) int {
 	deltas := []int{-1, 0, 1}
+	var wDeltas []int
+	switch part {
+	case 1:
+		wDeltas = []int{0}
+	case 2:
+		wDeltas = []int{-1, 0, 1}
+	}
 	n := 0
 	for _, dx := range deltas {
 		for _, dy := range deltas {
 			for _, dz := range deltas {
-				if dx == 0 && dy == 0 && dz == 0 {
-					continue
-				}
-				dp := point{
-					x: p.x + dx,
-					y: p.y + dy,
-					z: p.z + dz,
-				}
-				if (*cc.curr)[dp] {
-					n++
+				for _, dw := range wDeltas {
+					if dx == 0 && dy == 0 && dz == 0 && dw == 0 {
+						continue
+					}
+					dp := point{
+						x: p.x + dx,
+						y: p.y + dy,
+						z: p.z + dz,
+						w: p.w + dw,
+					}
+					if (*cc.curr)[dp] {
+						n++
+					}
 				}
 			}
 		}
@@ -67,11 +77,12 @@ func (cc conwayCubes) countNeighbors(p point) int {
 	return n
 }
 
-func (cc conwayCubes) bounds() (int, int, int, int, int, int) {
+func (cc conwayCubes) bounds() (int, int, int, int, int, int, int, int) {
 	var (
 		xMin, xMax,
 		yMin, yMax,
-		zMin, zMax *int
+		zMin, zMax,
+		wMin, wMax *int
 	)
 	for p := range *cc.curr {
 		p := p
@@ -95,31 +106,40 @@ func (cc conwayCubes) bounds() (int, int, int, int, int, int) {
 		if zMax == nil || p.z > *zMax {
 			zMax = &p.z
 		}
+
+		if wMin == nil || p.w < *wMin {
+			wMin = &p.w
+		}
+		if wMax == nil || p.w > *wMax {
+			wMax = &p.w
+		}
 	}
-	return *xMin, *xMax, *yMin, *yMax, *zMin, *zMax
+	return *xMin, *xMax, *yMin, *yMax, *zMin, *zMax, *wMin, *wMax
 }
 
-func (cc *conwayCubes) Cycle() {
+func (cc *conwayCubes) Cycle(part int) {
 	// The below loop might seem slow, but it is of a special form
 	// that is optimized by the compiler.
 	for k := range *cc.next {
 		delete(*cc.next, k)
 	}
-	xMin, xMax, yMin, yMax, zMin, zMax := cc.bounds()
+	xMin, xMax, yMin, yMax, zMin, zMax, wMin, wMax := cc.bounds()
 	for x := xMin - 1; x <= xMax+1; x++ {
 		for y := yMin - 1; y <= yMax+1; y++ {
 			for z := zMin - 1; z <= zMax+1; z++ {
-				p := point{x, y, z}
-				neighbors := cc.countNeighbors(p)
-				var next bool
-				switch (*cc.curr)[p] {
-				case true:
-					next = neighbors == 2 || neighbors == 3
-				case false:
-					next = neighbors == 3
-				}
-				if next {
-					(*cc.next)[p] = true
+				for w := wMin - 1; w <= wMax+1; w++ {
+					p := point{x, y, z, w}
+					neighbors := cc.countNeighbors(p, part)
+					var next bool
+					switch (*cc.curr)[p] {
+					case true:
+						next = neighbors == 2 || neighbors == 3
+					case false:
+						next = neighbors == 3
+					}
+					if next {
+						(*cc.next)[p] = true
+					}
 				}
 			}
 		}
@@ -128,22 +148,24 @@ func (cc *conwayCubes) Cycle() {
 }
 
 func (cc conwayCubes) Log() {
-	xMin, xMax, yMin, yMax, zMin, zMax := cc.bounds()
-	for z := zMin; z <= zMax; z++ {
-		log.Printf("z=%v", z)
-		for y := yMin; y <= yMax; y++ {
-			var sb strings.Builder
-			for x := xMin; x <= xMax; x++ {
-				p := point{x, y, z}
-				b := '.'
-				if (*cc.curr)[p] {
-					b = '#'
+	xMin, xMax, yMin, yMax, zMin, zMax, wMin, wMax := cc.bounds()
+	for w := wMin; w <= wMax; w++ {
+		for z := zMin; z <= zMax; z++ {
+			log.Printf("z=%v, w=%v", z, w)
+			for y := yMin; y <= yMax; y++ {
+				var sb strings.Builder
+				for x := xMin; x <= xMax; x++ {
+					p := point{x, y, z, w}
+					b := '.'
+					if (*cc.curr)[p] {
+						b = '#'
+					}
+					sb.WriteRune(b)
 				}
-				sb.WriteRune(b)
+				log.Println(sb.String())
 			}
-			log.Println(sb.String())
+			log.Println()
 		}
-		log.Println()
 	}
 }
 
@@ -152,12 +174,9 @@ func (cc conwayCubes) CountActive() int {
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	cc := parse(input)
 	for i := 0; i < 6; i++ {
-		cc.Cycle()
+		cc.Cycle(part)
 	}
 	return fmt.Sprint(cc.CountActive()), nil
 }
