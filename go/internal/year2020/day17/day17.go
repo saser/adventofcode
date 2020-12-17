@@ -18,6 +18,36 @@ type point struct {
 	x, y, z, w int
 }
 
+func (p point) Neighbors(part int) []point {
+	deltas := []int{-1, 0, 1}
+	var wDeltas []int
+	switch part {
+	case 1:
+		wDeltas = []int{0}
+	case 2:
+		wDeltas = []int{-1, 0, 1}
+	}
+	var points []point
+	for _, dx := range deltas {
+		for _, dy := range deltas {
+			for _, dz := range deltas {
+				for _, dw := range wDeltas {
+					if dx == 0 && dy == 0 && dz == 0 && dw == 0 {
+						continue
+					}
+					points = append(points, point{
+						x: p.x + dx,
+						y: p.y + dy,
+						z: p.z + dz,
+						w: p.w + dw,
+					})
+				}
+			}
+		}
+	}
+	return points
+}
+
 type grid map[point]bool
 
 type conwayCubes struct {
@@ -42,39 +72,6 @@ func parse(input string) *conwayCubes {
 		curr: &g1,
 		next: &g2,
 	}
-}
-
-func (cc conwayCubes) countNeighbors(p point, part int) int {
-	deltas := []int{-1, 0, 1}
-	var wDeltas []int
-	switch part {
-	case 1:
-		wDeltas = []int{0}
-	case 2:
-		wDeltas = []int{-1, 0, 1}
-	}
-	n := 0
-	for _, dx := range deltas {
-		for _, dy := range deltas {
-			for _, dz := range deltas {
-				for _, dw := range wDeltas {
-					if dx == 0 && dy == 0 && dz == 0 && dw == 0 {
-						continue
-					}
-					dp := point{
-						x: p.x + dx,
-						y: p.y + dy,
-						z: p.z + dz,
-						w: p.w + dw,
-					}
-					if (*cc.curr)[dp] {
-						n++
-					}
-				}
-			}
-		}
-	}
-	return n
 }
 
 func (cc conwayCubes) bounds() (int, int, int, int, int, int, int, int) {
@@ -123,25 +120,18 @@ func (cc *conwayCubes) Cycle(part int) {
 	for k := range *cc.next {
 		delete(*cc.next, k)
 	}
-	xMin, xMax, yMin, yMax, zMin, zMax, wMin, wMax := cc.bounds()
-	for x := xMin - 1; x <= xMax+1; x++ {
-		for y := yMin - 1; y <= yMax+1; y++ {
-			for z := zMin - 1; z <= zMax+1; z++ {
-				for w := wMin - 1; w <= wMax+1; w++ {
-					p := point{x, y, z, w}
-					neighbors := cc.countNeighbors(p, part)
-					var next bool
-					switch (*cc.curr)[p] {
-					case true:
-						next = neighbors == 2 || neighbors == 3
-					case false:
-						next = neighbors == 3
-					}
-					if next {
-						(*cc.next)[p] = true
-					}
-				}
-			}
+	neighborCounts := make(map[point]int)
+	for p := range *cc.curr {
+		for _, neighbor := range p.Neighbors(part) {
+			neighborCounts[neighbor]++
+		}
+	}
+	for p, count := range neighborCounts {
+		switch active := (*cc.curr)[p]; {
+		case active && (count == 2 || count == 3):
+			(*cc.next)[p] = true
+		case !active && count == 3:
+			(*cc.next)[p] = true
 		}
 	}
 	cc.curr, cc.next = cc.next, cc.curr
