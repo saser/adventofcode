@@ -15,44 +15,37 @@ func Part2(input string) (string, error) {
 	return solve(input, 2)
 }
 
-type tokenKind int
+type term int
 
 const (
-	number tokenKind = iota
-	open
-	close
-	plus
-	mult
+	termNumber term = iota
+	termLPar
+	termRPar
+	termPlus
+	termMult
 )
 
 type token struct {
-	kind  tokenKind
+	term  term
 	value int // only set if kind == number
 }
 
 func (t token) String() string {
-	switch t.kind {
-	case number:
+	switch t.term {
+	case termNumber:
 		return fmt.Sprintf("number(%v)", t.value)
-	case open:
-		return "open"
-	case close:
-		return "close"
-	case plus:
+	case termLPar:
+		return "("
+	case termRPar:
+		return ")"
+	case termPlus:
 		return "plus"
-	case mult:
+	case termMult:
 		return "mult"
 	default:
 		return "<invalid token>"
 	}
 }
-
-var (
-	openToken  = token{kind: open}
-	closeToken = token{kind: close}
-	plusToken  = token{kind: plus}
-	multToken  = token{kind: mult}
-)
 
 func tokenize(line string) []token {
 	var tokens []token
@@ -70,18 +63,18 @@ func tokenize(line string) []token {
 				panic(err)
 			}
 			tokens = append(tokens, token{
-				kind:  number,
+				term:  termNumber,
 				value: n,
 			})
 			i += end - i - 1
 		case r == '(':
-			tokens = append(tokens, openToken)
+			tokens = append(tokens, token{term: termLPar})
 		case r == ')':
-			tokens = append(tokens, closeToken)
+			tokens = append(tokens, token{term: termRPar})
 		case r == '+':
-			tokens = append(tokens, plusToken)
+			tokens = append(tokens, token{term: termPlus})
 		case r == '*':
-			tokens = append(tokens, multToken)
+			tokens = append(tokens, token{term: termMult})
 		case r == ' ':
 			// do nothing
 		}
@@ -115,27 +108,27 @@ func (s *tokenStack) pop() (token, bool) {
 // a new list of tokens in reverse Polish notation. Operator
 // precedences are given using the precedences map, where a higher
 // number means higher precedence.
-func parse(tokens []token, precedences map[tokenKind]int) []token {
+func parse(tokens []token, precedences map[term]int) []token {
 	var out, ops tokenStack
 	for _, t := range tokens {
-		switch t.kind {
-		case number:
+		switch t.term {
+		case termNumber:
 			out.push(t)
-		case plus, mult:
-			prec := precedences[t.kind]
-			for op, ok := ops.peek(); ok && precedences[op.kind] >= prec && op.kind != open; op, ok = ops.peek() {
+		case termPlus, termMult:
+			prec := precedences[t.term]
+			for op, ok := ops.peek(); ok && precedences[op.term] >= prec && op.term != termLPar; op, ok = ops.peek() {
 				out.push(op)
 				ops.pop()
 			}
 			ops.push(t)
-		case open:
+		case termLPar:
 			ops.push(t)
-		case close:
-			for op, ok := ops.peek(); ok && op.kind != open; op, ok = ops.peek() {
+		case termRPar:
+			for op, ok := ops.peek(); ok && op.term != termLPar; op, ok = ops.peek() {
 				out.push(op)
 				ops.pop()
 			}
-			ops.pop() // discard the open parenthesis
+			ops.pop() // discard the left parenthesis
 		}
 	}
 	for op, ok := ops.pop(); ok; op, ok = ops.pop() {
@@ -161,10 +154,10 @@ func (s *valStack) fold(op token) {
 	v1 := s.pop()
 	v2 := s.pop()
 	var v3 int
-	switch op.kind {
-	case plus:
+	switch op.term {
+	case termPlus:
 		v3 = v1 + v2
-	case mult:
+	case termMult:
 		v3 = v1 * v2
 	}
 	s.push(v3)
@@ -174,10 +167,10 @@ func (s *valStack) fold(op token) {
 func eval(rpn []token) int {
 	var vals valStack
 	for _, t := range rpn {
-		switch t.kind {
-		case number:
+		switch t.term {
+		case termNumber:
 			vals.push(t.value)
-		case plus, mult:
+		case termPlus, termMult:
 			vals.fold(t)
 		}
 	}
@@ -185,31 +178,25 @@ func eval(rpn []token) int {
 }
 
 func solve(input string, part int) (string, error) {
-	var precedences map[tokenKind]int
+	var precedences map[term]int
 	switch part {
 	case 1:
-		precedences = map[tokenKind]int{
-			plus: 0,
-			mult: 0,
+		precedences = map[term]int{
+			termPlus: 0,
+			termMult: 0,
 		}
 	case 2:
-		precedences = map[tokenKind]int{
-			plus: 1,
-			mult: 0,
+		precedences = map[term]int{
+			termPlus: 1,
+			termMult: 0,
 		}
 	}
 	lines := strings.Split(strings.TrimSpace(input), "\n")
-	c := make(chan int, len(lines))
-	for _, line := range lines {
-		go func(line string) {
-			tokens := tokenize(line)
-			rpn := parse(tokens, precedences)
-			c <- eval(rpn)
-		}(line)
-	}
 	sum := 0
-	for i := 0; i < len(lines); i++ {
-		sum += <-c
+	for _, line := range lines {
+		tokens := tokenize(line)
+		rpn := parse(tokens, precedences)
+		sum += eval(rpn)
 	}
 	return fmt.Sprint(sum), nil
 }
