@@ -89,88 +89,121 @@ func tokenize(line string) []token {
 	return tokens
 }
 
-type op int
+type tokenStack []token
 
-const (
-	opPlus op = iota
-	opMult
-)
-
-type evaluator struct {
-	valStack []int
-	opStack  []op
-}
-
-func newEvaluator() *evaluator {
-	return &evaluator{
-		valStack: []int{0},
-		opStack:  []op{opPlus},
+func (s *tokenStack) peek() (token, bool) {
+	n := len(*s)
+	if n == 0 {
+		return token{}, false
 	}
+	return (*s)[n-1], true
 }
 
-func (e *evaluator) pushVal(v int) {
-	e.valStack = append(e.valStack, v)
+func (s *tokenStack) push(t token) {
+	*s = append(*s, t)
 }
 
-func (e *evaluator) popVal() int {
-	v := e.valStack[len(e.valStack)-1]
-	e.valStack = e.valStack[:len(e.valStack)-1]
-	return v
-}
-
-func (e *evaluator) pushOp(o op) {
-	e.opStack = append(e.opStack, o)
-}
-
-func (e *evaluator) popOp() op {
-	o := e.opStack[len(e.opStack)-1]
-	e.opStack = e.opStack[:len(e.opStack)-1]
-	return o
-}
-
-func (e *evaluator) fold() {
-	v1 := e.popVal()
-	v2 := e.popVal()
-	topOp := e.popOp()
-	var v3 int
-	switch topOp {
-	case opPlus:
-		v3 = v1 + v2
-	case opMult:
-		v3 = v1 * v2
+func (s *tokenStack) pop() (token, bool) {
+	t, ok := s.peek()
+	if ok {
+		*s = (*s)[:len(*s)-1]
 	}
-	e.pushVal(v3)
+	return t, ok
 }
 
-func eval(tokens []token) int {
-	e := newEvaluator()
+// parse uses the shunting-yard algorithm to parse the given tokens to
+// a new list of tokens in reverse Polish notation. Operator
+// precedences are given using the precedences map, where a higher
+// number means higher precedence.
+func parse(tokens []token, precedences map[tokenKind]int) []token {
+	var out, ops tokenStack
 	for _, t := range tokens {
 		switch t.kind {
 		case number:
-			e.pushVal(t.value)
-			e.fold()
+			out.push(t)
+		case plus, mult:
+			prec := precedences[t.kind]
+			for op, ok := ops.peek(); ok && precedences[op.kind] >= prec && op.kind != open; op, ok = ops.peek() {
+				out.push(op)
+				ops.pop()
+			}
+			ops.push(t)
 		case open:
-			e.pushVal(0)
-			e.pushOp(opPlus)
+			ops.push(t)
 		case close:
-			e.fold()
-		case plus:
-			e.pushOp(opPlus)
-		case mult:
-			e.pushOp(opMult)
+			for op, ok := ops.peek(); ok && op.kind != open; op, ok = ops.peek() {
+				out.push(op)
+				ops.pop()
+			}
+			ops.pop() // discard the open parenthesis
 		}
 	}
-	return e.popVal()
+	for op, ok := ops.pop(); ok; op, ok = ops.pop() {
+		out.push(op)
+	}
+	return out
+}
+
+type valStack []int
+
+func (s *valStack) push(v int) {
+	*s = append(*s, v)
+}
+
+func (s *valStack) pop() int {
+	last := len(*s) - 1
+	v := (*s)[last]
+	*s = (*s)[:last]
+	return v
+}
+
+func (s *valStack) fold(op token) {
+	v1 := s.pop()
+	v2 := s.pop()
+	var v3 int
+	switch op.kind {
+	case plus:
+		v3 = v1 + v2
+	case mult:
+		v3 = v1 * v2
+	}
+	s.push(v3)
+}
+
+// eval evaluates the given expression in reverse Polish notation.
+func eval(rpn []token) int {
+	var vals valStack
+	for _, t := range rpn {
+		switch t.kind {
+		case number:
+			vals.push(t.value)
+		case plus, mult:
+			vals.fold(t)
+		}
+	}
+	return vals[0]
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
+	var precedences map[tokenKind]int
+	switch part {
+	case 1:
+		precedences = map[tokenKind]int{
+			plus: 0,
+			mult: 0,
+		}
+	case 2:
+		precedences = map[tokenKind]int{
+			plus: 1,
+			mult: 0,
+		}
 	}
 	lines := strings.Split(strings.TrimSpace(input), "\n")
 	sum := 0
 	for _, line := range lines {
-		sum += eval(tokenize(line))
+		tokens := tokenize(line)
+		rpn := parse(tokens, precedences)
+		sum += eval(rpn)
 	}
 	return fmt.Sprint(sum), nil
 }
