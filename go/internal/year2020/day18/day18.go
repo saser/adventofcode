@@ -199,11 +199,17 @@ func solve(input string, part int) (string, error) {
 		}
 	}
 	lines := strings.Split(strings.TrimSpace(input), "\n")
-	sum := 0
+	c := make(chan int, len(lines))
 	for _, line := range lines {
-		tokens := tokenize(line)
-		rpn := parse(tokens, precedences)
-		sum += eval(rpn)
+		go func(line string) {
+			tokens := tokenize(line)
+			rpn := parse(tokens, precedences)
+			c <- eval(rpn)
+		}(line)
+	}
+	sum := 0
+	for i := 0; i < len(lines); i++ {
+		sum += <-c
 	}
 	return fmt.Sprint(sum), nil
 }
