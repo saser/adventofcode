@@ -12,7 +12,7 @@ const (
 )
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "45079100979683")
 	tcPart2 = testcase.NewFile("input", inputFile, "")
 )
 

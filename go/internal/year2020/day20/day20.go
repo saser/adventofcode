@@ -209,6 +209,63 @@ func (t *tile) flipVertically() {
 	t.top, t.right, t.bottom, t.left = t.bottom.Reverse(), t.right.Reverse(), t.top.Reverse(), t.left.Reverse()
 }
 
+type puzzle struct {
+	matches map[border][]tile // border -> tile IDs
+}
+
+func newPuzzle(tiles []tile) puzzle {
+	p := puzzle{
+		matches: make(map[border][]tile),
+	}
+	for _, t := range tiles {
+		for _, b := range []border{
+			t.top,
+			t.right,
+			t.bottom,
+			t.left,
+			t.top.Reverse(),
+			t.right.Reverse(),
+			t.bottom.Reverse(),
+			t.left.Reverse(),
+		} {
+			p.matches[b] = append(p.matches[b], t)
+		}
+	}
+	return p
+}
+
+// UnmatchedSides returns the number of tile borders for which there is no other
+// tile in the puzzle that matches.
+func (p puzzle) UnmatchedSides(t tile) int {
+	count := 0
+	for _, b := range []border{
+		t.top,
+		t.right,
+		t.bottom,
+		t.left,
+	} {
+		if len(p.matches[b]) > 1 {
+			count++
+		}
+	}
+	return count
+}
+
 func solve(input string, part int) (string, error) {
-	return "", fmt.Errorf("solution not implemented for part %v", part)
+	if part == 2 {
+		return "", fmt.Errorf("solution not implemented for part %v", part)
+	}
+	paragraphs := strings.Split(strings.TrimSpace(input), "\n\n")
+	tiles := make([]tile, len(paragraphs))
+	for i, p := range paragraphs {
+		tiles[i] = parseTile(p)
+	}
+	p := newPuzzle(tiles)
+	var prod int64 = 1
+	for _, t := range tiles {
+		if p.UnmatchedSides(t) == 2 {
+			prod *= t.id
+		}
+	}
+	return fmt.Sprint(prod), nil
 }
