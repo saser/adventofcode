@@ -14,7 +14,7 @@ const (
 
 var (
 	tcPart1 = testcase.NewFile("input", inputFile, "111")
-	tcPart2 = testcase.NewFile("input", inputFile, "")
+	tcPart2 = testcase.NewFile("input", inputFile, "343")
 )
 
 func TestPart1(t *testing.T) {

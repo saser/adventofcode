@@ -124,12 +124,37 @@ func (r ruleMatcher) Match(s string) (bool, string) {
 	return r.get(0).Match(s)
 }
 
-func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
+// part2Matcher is a hacky solution for part 2. It rests on the assumption that
+// rule 0 will always be rule 8 followed by rule 11. Rule 8 means "rule 42 k
+// times, k > 0" and rule 11 means "rule 42 m times followed by rule 31 m times,
+// m > 0". Combined it becomes "rule 42 (k + m) times followed by rule 31 m
+// times, k > 0, m > 0".
+type part2Matcher struct {
+	rule42, rule31 matcher
+}
+
+func (m part2Matcher) Match(s string) (bool, string) {
+	n42 := 0
+	ok := true
+	rest := s
+	for ok, rest = m.rule42.Match(rest); ok; ok, rest = m.rule42.Match(rest) {
+		n42++
 	}
+	n31 := 0
+	for ok, rest = m.rule31.Match(rest); ok; ok, rest = m.rule31.Match(rest) {
+		n31++
+	}
+	return n42 > 0 && n31 > 0 && n42 > n31, rest
+}
+
+func solve(input string, part int) (string, error) {
 	paragraphs := strings.Split(strings.TrimSpace(input), "\n\n")
 	r := parse(paragraphs[0])
+	if part == 2 {
+		rule42 := r.get(42)
+		rule31 := r.get(31)
+		r.cache[0] = part2Matcher{rule42: rule42, rule31: rule31}
+	}
 	n := 0
 	for _, line := range strings.Split(paragraphs[1], "\n") {
 		if ok, rest := r.Match(line); ok && rest == "" {
