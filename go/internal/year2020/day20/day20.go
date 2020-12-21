@@ -24,7 +24,7 @@ const (
 
 type border int64
 
-func newBorder(bits [10]bool) border {
+func newBorder(bits []bool) border {
 	b := 0
 	for _, bit := range bits {
 		b <<= 1
@@ -58,11 +58,14 @@ func (b border) BitString() string {
 	return sb.String()
 }
 
-type grid [10][10]bool
+type grid [][]bool
 
 func parseGrid(lines []string) grid {
-	var g grid
+	rowCount := len(lines)
+	colCount := len(lines[0])
+	g := make([][]bool, rowCount)
 	for row, line := range lines {
+		g[row] = make([]bool, colCount)
 		for col, r := range line {
 			g[row][col] = r == '#'
 		}
@@ -70,13 +73,21 @@ func parseGrid(lines []string) grid {
 	return g
 }
 
-func (g grid) Row(i int) [10]bool {
+func (g grid) rowCount() int {
+	return len(g)
+}
+
+func (g grid) colCount() int {
+	return len(g[0])
+}
+
+func (g grid) Row(i int) []bool {
 	return g[i]
 }
 
-func (g grid) Col(i int) [10]bool {
-	var col [10]bool
-	for row := 0; row < 10; row++ {
+func (g grid) Col(i int) []bool {
+	col := make([]bool, g.rowCount())
+	for row := 0; row < g.rowCount(); row++ {
 		col[row] = g[row][i]
 	}
 	return col
@@ -87,11 +98,11 @@ func (g grid) Top() border {
 }
 
 func (g grid) Right() border {
-	return newBorder(g.Col(9))
+	return newBorder(g.Col(g.colCount() - 1))
 }
 
 func (g grid) Bottom() border {
-	return newBorder(g.Row(9)).Reverse()
+	return newBorder(g.Row(g.rowCount() - 1)).Reverse()
 }
 
 func (g grid) Left() border {
