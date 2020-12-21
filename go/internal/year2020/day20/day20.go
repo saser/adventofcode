@@ -109,9 +109,24 @@ func (g grid) Left() border {
 	return newBorder(g.Col(0)).Reverse()
 }
 
+func (g *grid) RotateRight() {
+	g2 := make([][]bool, g.colCount())
+	for col := 0; col < g.colCount(); col++ {
+		g2[col] = g.Col(col)
+	}
+	*g = g2
+}
+
+func (g *grid) FlipVertically() {
+	for row := 0; row < g.rowCount()/2; row++ {
+		opposite := g.rowCount() - row - 1
+		(*g)[row], (*g)[opposite] = (*g)[opposite], (*g)[row]
+	}
+}
+
 type tile struct {
-	id                       int64
-	top, right, bottom, left border
+	id int64
+	g  grid
 }
 
 func parseTile(paragraph string) tile {
@@ -123,17 +138,30 @@ func parseTile(paragraph string) tile {
 	}
 	g := parseGrid(lines[1:])
 	return tile{
-		id:     id,
-		top:    g.Top(),
-		right:  g.Right(),
-		bottom: g.Bottom(),
-		left:   g.Left(),
+		id: id,
+		g:  g,
 	}
+}
+
+func (t tile) top() border {
+	return t.g.Top()
+}
+
+func (t tile) right() border {
+	return t.g.Right()
+}
+
+func (t tile) bottom() border {
+	return t.g.Bottom()
+}
+
+func (t tile) left() border {
+	return t.g.Left()
 }
 
 func (t tile) contains(b border) bool {
 	switch b {
-	case t.top, t.right, t.bottom, t.right:
+	case t.top(), t.right(), t.bottom(), t.left():
 		return true
 	default:
 		return false
@@ -143,13 +171,13 @@ func (t tile) contains(b border) bool {
 func (t tile) border(dir direction) border {
 	switch dir {
 	case top:
-		return t.top
+		return t.top()
 	case right:
-		return t.right
+		return t.right()
 	case bottom:
-		return t.bottom
+		return t.bottom()
 	case left:
-		return t.left
+		return t.left()
 	}
 	panic("unreachable")
 }
@@ -161,63 +189,11 @@ func (t *tile) Orient(b border, dir direction) {
 		// are one of the reverses. Flipping (either horizontally or
 		// vertically) will result in all current borders being reversed
 		// (but not necessarily in their original position).
-		t.flipHorizontally()
+		t.g.FlipVertically()
 	}
 	for t.border(dir) != b {
-		t.rotateRight()
+		t.g.RotateRight()
 	}
-}
-
-func (t *tile) rotateRight() {
-	//       t                     l
-	//      -->                   -->
-	//     +---+                 +---+
-	//   ^ |   | |             ^ |   | |
-	// l | |   | | r   -->   b | |   | | t
-	//   | |   | v             | |   | v
-	//     +---+                 +---+
-	//      <--                   <--
-	//       b                     r
-	t.top, t.right, t.bottom, t.left = t.left, t.top, t.right, t.bottom
-}
-
-func (t *tile) rotateLeft() {
-	//       t                     r
-	//      -->                   -->
-	//     +---+                 +---+
-	//   ^ |   | |             ^ |   | |
-	// l | |   | | r   -->   t | |   | | b
-	//   | |   | v             | |   | v
-	//     +---+                 +---+
-	//      <--                   <--
-	//       b                     l
-	t.top, t.right, t.bottom, t.left = t.right, t.bottom, t.left, t.top
-}
-
-func (t *tile) flipHorizontally() {
-	//       t                     t                      t'
-	//      -->                   <--                    -->
-	//     +---+                 +---+                  +---+
-	//   ^ |   | |             | |   | ^              ^ |   | |
-	// l | |   | | r   -->   r | |   | | l   ===   r' | |   | | l'
-	//   | |   | v             v |   | |              | |   | v
-	//     +---+                 +---+                  +---+
-	//      <--                   -->                    <--
-	//       b                     b                      b'
-	t.top, t.right, t.bottom, t.left = t.top.Reverse(), t.left.Reverse(), t.bottom.Reverse(), t.right.Reverse()
-}
-
-func (t *tile) flipVertically() {
-	//       t                     b                      b'
-	//      -->                   <--                    -->
-	//     +---+                 +---+                  +---+
-	//   ^ |   | |             | |   | ^              ^ |   | |
-	// l | |   | | r   -->   l | |   | | r   ===   l' | |   | | r'
-	//   | |   | v             v |   | |              | |   | v
-	//     +---+                 +---+                  +---+
-	//      <--                   -->                    <--
-	//       b                     t                      t'
-	t.top, t.right, t.bottom, t.left = t.bottom.Reverse(), t.right.Reverse(), t.top.Reverse(), t.left.Reverse()
 }
 
 type puzzle struct {
@@ -230,14 +206,14 @@ func newPuzzle(tiles []tile) puzzle {
 	}
 	for _, t := range tiles {
 		for _, b := range []border{
-			t.top,
-			t.right,
-			t.bottom,
-			t.left,
-			t.top.Reverse(),
-			t.right.Reverse(),
-			t.bottom.Reverse(),
-			t.left.Reverse(),
+			t.top(),
+			t.right(),
+			t.bottom(),
+			t.left(),
+			t.top().Reverse(),
+			t.right().Reverse(),
+			t.bottom().Reverse(),
+			t.left().Reverse(),
 		} {
 			p.matches[b] = append(p.matches[b], t)
 		}
@@ -250,10 +226,10 @@ func newPuzzle(tiles []tile) puzzle {
 func (p puzzle) UnmatchedSides(t tile) int {
 	count := 0
 	for _, b := range []border{
-		t.top,
-		t.right,
-		t.bottom,
-		t.left,
+		t.top(),
+		t.right(),
+		t.bottom(),
+		t.left(),
 	} {
 		if len(p.matches[b]) > 1 {
 			count++
