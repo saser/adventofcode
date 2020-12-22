@@ -1,7 +1,6 @@
 package day22
 
 import (
-	"container/list"
 	"fmt"
 	"strconv"
 	"strings"
@@ -13,6 +12,28 @@ func Part1(input string) (string, error) {
 
 func Part2(input string) (string, error) {
 	return solve(input, 2)
+}
+
+type deck []int
+
+func newDeck(cards []int) *deck {
+	d := make(deck, len(cards))
+	copy(d, cards)
+	return &d
+}
+
+func (d *deck) Empty() bool {
+	return len(*d) == 0
+}
+
+func (d *deck) PopFront() int {
+	v := (*d)[0]
+	*d = (*d)[1:]
+	return v
+}
+
+func (d *deck) PushBack(v int) {
+	*d = append(*d, v)
 }
 
 func parsePlayer(paragraph string) []int {
@@ -28,47 +49,48 @@ func parsePlayer(paragraph string) []int {
 	return cards
 }
 
+func combat(deck1, deck2 *deck) *deck {
+	for !deck1.Empty() && !deck2.Empty() {
+		card1 := deck1.PopFront()
+		card2 := deck2.PopFront()
+		var (
+			high, low int
+			winner    *deck
+		)
+		if card1 > card2 {
+			high = card1
+			low = card2
+			winner = deck1
+		} else {
+			high = card2
+			low = card1
+			winner = deck2
+		}
+		winner.PushBack(high)
+		winner.PushBack(low)
+	}
+	var winner *deck
+	if !deck1.Empty() {
+		winner = deck1
+	} else {
+		winner = deck2
+	}
+	return winner
+}
+
 func solve(input string, part int) (string, error) {
 	if part == 2 {
 		return "", fmt.Errorf("solution not implemented for part %v", part)
 	}
 	paragraphs := strings.Split(strings.TrimSpace(input), "\n\n")
-	player1 := list.New()
-	for _, card := range parsePlayer(paragraphs[0]) {
-		player1.PushBack(card)
-	}
-	player2 := list.New()
-	for _, card := range parsePlayer(paragraphs[1]) {
-		player2.PushBack(card)
-	}
-	for player1.Front() != nil && player2.Front() != nil {
-		card1 := player1.Remove(player1.Front()).(int)
-		card2 := player2.Remove(player2.Front()).(int)
-		var (
-			high, low int
-			winner    *list.List
-		)
-		if card1 > card2 {
-			high = card1
-			low = card2
-			winner = player1
-		} else {
-			high = card2
-			low = card1
-			winner = player2
-		}
-		winner.PushBack(high)
-		winner.PushBack(low)
-	}
-	var winner *list.List
-	if player1.Front() != nil {
-		winner = player1
-	} else {
-		winner = player2
-	}
+	deck1 := newDeck(parsePlayer(paragraphs[0]))
+	deck2 := newDeck(parsePlayer(paragraphs[1]))
+	winner := combat(deck1, deck2)
 	score := 0
-	for f, elem := 1, winner.Back(); elem != nil; f, elem = f+1, elem.Prev() {
-		score += elem.Value.(int) * f
+	f := len(*winner)
+	for _, card := range *winner {
+		score += card * f
+		f--
 	}
 	return fmt.Sprint(score), nil
 }
