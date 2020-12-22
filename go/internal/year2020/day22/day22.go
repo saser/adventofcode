@@ -36,6 +36,14 @@ func (d *deck) PushBack(v int) {
 	*d = append(*d, v)
 }
 
+func (d *deck) String() string {
+	ss := make([]string, len(*d))
+	for i, card := range *d {
+		ss[i] = fmt.Sprint(card)
+	}
+	return strings.Join(ss, ",")
+}
+
 func parsePlayer(paragraph string) []int {
 	lines := strings.Split(paragraph, "\n")[1:] // skip the first line
 	cards := make([]int, len(lines))
@@ -53,21 +61,67 @@ func combat(deck1, deck2 *deck) *deck {
 	for !deck1.Empty() && !deck2.Empty() {
 		card1 := deck1.PopFront()
 		card2 := deck2.PopFront()
-		var (
-			high, low int
-			winner    *deck
-		)
 		if card1 > card2 {
-			high = card1
-			low = card2
-			winner = deck1
+			deck1.PushBack(card1)
+			deck1.PushBack(card2)
 		} else {
-			high = card2
-			low = card1
-			winner = deck2
+			deck2.PushBack(card2)
+			deck2.PushBack(card1)
 		}
-		winner.PushBack(high)
-		winner.PushBack(low)
+	}
+	if !deck1.Empty() {
+		return deck1
+	}
+	return deck2
+}
+
+func recursiveCombat(deck1, deck2 *deck) *deck {
+	// memo holds the set of previously seen configurations in this
+	// game. Its elements are computed using the memoKey function.
+	memo := make(map[string]bool)
+	memoKey := func(deck1, deck2 *deck) string {
+		return deck1.String() + "/" + deck2.String()
+	}
+	for !deck1.Empty() && !deck2.Empty() {
+		if memo[memoKey(deck1, deck2)] {
+			return deck1
+		}
+		memo[memoKey(deck1, deck2)] = true
+		card1 := deck1.PopFront()
+		card2 := deck2.PopFront()
+		var (
+			winner        *deck
+			first, second int
+		)
+		if len(*deck1) >= card1 && len(*deck2) >= card2 {
+			subDeck1 := make(deck, card1)
+			copy(subDeck1, (*deck1)[:card1])
+			subDeck2 := make(deck, card2)
+			copy(subDeck2, (*deck2)[:card2])
+			subWinner := recursiveCombat(&subDeck1, &subDeck2)
+			switch subWinner {
+			case &subDeck1:
+				winner = deck1
+				first = card1
+				second = card2
+			case &subDeck2:
+				winner = deck2
+				first = card2
+				second = card1
+			}
+		} else {
+			if card1 > card2 {
+				winner = deck1
+				first = card1
+				second = card2
+			} else {
+				winner = deck2
+				first = card2
+				second = card1
+			}
+		}
+		winner.PushBack(first)
+		winner.PushBack(second)
 	}
 	var winner *deck
 	if !deck1.Empty() {
@@ -79,13 +133,16 @@ func combat(deck1, deck2 *deck) *deck {
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	paragraphs := strings.Split(strings.TrimSpace(input), "\n\n")
 	deck1 := newDeck(parsePlayer(paragraphs[0]))
 	deck2 := newDeck(parsePlayer(paragraphs[1]))
-	winner := combat(deck1, deck2)
+	var winner *deck
+	switch part {
+	case 1:
+		winner = combat(deck1, deck2)
+	case 2:
+		winner = recursiveCombat(deck1, deck2)
+	}
 	score := 0
 	f := len(*winner)
 	for _, card := range *winner {
