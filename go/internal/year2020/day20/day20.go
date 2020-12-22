@@ -60,7 +60,7 @@ func (b border) BitString() string {
 
 type grid [][]bool
 
-func parseGrid(lines []string) grid {
+func parseGrid(lines []string) *grid {
 	rowCount := len(lines)
 	colCount := len(lines[0])
 	g := make([][]bool, rowCount)
@@ -70,42 +70,51 @@ func parseGrid(lines []string) grid {
 			g[row][col] = r == '#'
 		}
 	}
-	return g
+	return (*grid)(&g)
 }
 
-func (g grid) rowCount() int {
-	return len(g)
+func (g *grid) Clone() *grid {
+	g2 := make([][]bool, len(*g))
+	for row := 0; row < g.rowCount(); row++ {
+		g2[row] = make([]bool, g.colCount())
+		copy(g2[row], g.Row(row))
+	}
+	return (*grid)(&g2)
 }
 
-func (g grid) colCount() int {
-	return len(g[0])
+func (g *grid) rowCount() int {
+	return len(*g)
 }
 
-func (g grid) Row(i int) []bool {
-	return g[i]
+func (g *grid) colCount() int {
+	return len((*g)[0])
 }
 
-func (g grid) Col(i int) []bool {
+func (g *grid) Row(i int) []bool {
+	return (*g)[i]
+}
+
+func (g *grid) Col(i int) []bool {
 	col := make([]bool, g.rowCount())
 	for row := 0; row < g.rowCount(); row++ {
-		col[row] = g[row][i]
+		col[row] = (*g)[row][i]
 	}
 	return col
 }
 
-func (g grid) Top() border {
+func (g *grid) Top() border {
 	return newBorder(g.Row(0))
 }
 
-func (g grid) Right() border {
+func (g *grid) Right() border {
 	return newBorder(g.Col(g.colCount() - 1))
 }
 
-func (g grid) Bottom() border {
+func (g *grid) Bottom() border {
 	return newBorder(g.Row(g.rowCount() - 1)).Reverse()
 }
 
-func (g grid) Left() border {
+func (g *grid) Left() border {
 	return newBorder(g.Col(0)).Reverse()
 }
 
@@ -126,10 +135,10 @@ func (g *grid) FlipVertically() {
 
 type tile struct {
 	id int64
-	g  grid
+	g  *grid
 }
 
-func parseTile(paragraph string) tile {
+func parseTile(paragraph string) *tile {
 	lines := strings.Split(paragraph, "\n")
 	idLine := lines[0]
 	var id int64
@@ -137,29 +146,45 @@ func parseTile(paragraph string) tile {
 		panic(err)
 	}
 	g := parseGrid(lines[1:])
-	return tile{
+	return &tile{
 		id: id,
 		g:  g,
 	}
 }
 
-func (t tile) top() border {
+func (t *tile) Clone() *tile {
+	return &tile{
+		id: t.id,
+		g:  t.g.Clone(),
+	}
+}
+
+func (t *tile) top() border {
 	return t.g.Top()
 }
 
-func (t tile) right() border {
+func (t *tile) right() border {
 	return t.g.Right()
 }
 
-func (t tile) bottom() border {
+func (t *tile) bottom() border {
 	return t.g.Bottom()
 }
 
-func (t tile) left() border {
+func (t *tile) left() border {
 	return t.g.Left()
 }
 
-func (t tile) contains(b border) bool {
+func (t *tile) Borders() []border {
+	return []border{
+		t.top(),
+		t.right(),
+		t.bottom(),
+		t.left(),
+	}
+}
+
+func (t *tile) contains(b border) bool {
 	switch b {
 	case t.top(), t.right(), t.bottom(), t.left():
 		return true
@@ -168,7 +193,7 @@ func (t tile) contains(b border) bool {
 	}
 }
 
-func (t tile) border(dir direction) border {
+func (t *tile) border(dir direction) border {
 	switch dir {
 	case top:
 		return t.top()
@@ -182,6 +207,14 @@ func (t tile) border(dir direction) border {
 	panic("unreachable")
 }
 
+func (t *tile) RotateRight() {
+	t.g.RotateRight()
+}
+
+func (t *tile) FlipVertically() {
+	t.g.FlipVertically()
+}
+
 func (t *tile) Orient(b border, dir direction) {
 	if !t.contains(b) {
 		// In its current configuration, the tile does not contain the
@@ -189,41 +222,37 @@ func (t *tile) Orient(b border, dir direction) {
 		// are one of the reverses. Flipping (either horizontally or
 		// vertically) will result in all current borders being reversed
 		// (but not necessarily in their original position).
-		t.g.FlipVertically()
+		t.FlipVertically()
 	}
 	for t.border(dir) != b {
-		t.g.RotateRight()
+		t.RotateRight()
 	}
 }
 
 type puzzle struct {
-	matches map[border][]tile // border -> tile IDs
+	matches map[border][]*tile // border -> tile IDs
 }
 
-func newPuzzle(tiles []tile) puzzle {
-	p := puzzle{
-		matches: make(map[border][]tile),
-	}
+func newPuzzle(tiles []*tile) *puzzle {
+	matches := make(map[border][]*tile)
 	for _, t := range tiles {
-		for _, b := range []border{
-			t.top(),
-			t.right(),
-			t.bottom(),
-			t.left(),
-			t.top().Reverse(),
-			t.right().Reverse(),
-			t.bottom().Reverse(),
-			t.left().Reverse(),
-		} {
-			p.matches[b] = append(p.matches[b], t)
+		for _, b := range t.Borders() {
+			matches[b] = append(matches[b], t)
+		}
+		flipped := t.Clone()
+		flipped.FlipVertically()
+		for _, b := range flipped.Borders() {
+			matches[b] = append(matches[b], flipped)
 		}
 	}
-	return p
+	return &puzzle{
+		matches: matches,
+	}
 }
 
 // UnmatchedSides returns the number of tile borders for which there is no other
 // tile in the puzzle that matches.
-func (p puzzle) UnmatchedSides(t tile) int {
+func (p *puzzle) UnmatchedSides(t *tile) int {
 	count := 0
 	for _, b := range []border{
 		t.top(),
@@ -243,7 +272,7 @@ func solve(input string, part int) (string, error) {
 		return "", fmt.Errorf("solution not implemented for part %v", part)
 	}
 	paragraphs := strings.Split(strings.TrimSpace(input), "\n\n")
-	tiles := make([]tile, len(paragraphs))
+	tiles := make([]*tile, len(paragraphs))
 	for i, p := range paragraphs {
 		tiles[i] = parseTile(p)
 	}
