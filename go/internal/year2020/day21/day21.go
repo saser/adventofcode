@@ -2,6 +2,7 @@ package day21
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -72,9 +73,6 @@ func parseLine(line string) (ingredients stringSet, allergens stringSet) {
 }
 
 func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
-	}
 	occurrences := make(map[string]int)                // ingredient -> number of lines it occurs on
 	candidateIngredients := make(map[string]stringSet) // allergen -> possible corresponding ingredients
 	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
@@ -106,11 +104,21 @@ func solve(input string, part int) (string, error) {
 			is.Delete(ingr)
 		}
 	}
-	count := 0
-	for ingr, n := range occurrences {
-		if _, ok := translation[ingr]; !ok {
-			count += n
+	if part == 1 {
+		count := 0
+		for ingr, n := range occurrences {
+			if _, ok := translation[ingr]; !ok {
+				count += n
+			}
 		}
+		return fmt.Sprint(count), nil
 	}
-	return fmt.Sprint(count), nil
+	canonical := make([]string, 0, len(translation))
+	for ingr := range translation {
+		canonical = append(canonical, ingr)
+	}
+	sort.Slice(canonical, func(i, j int) bool {
+		return translation[canonical[i]] < translation[canonical[j]]
+	})
+	return strings.Join(canonical, ","), nil
 }
