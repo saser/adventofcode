@@ -9,7 +9,7 @@ import (
 const inputFile = "../testdata/23"
 
 var (
-	tcPart1 = testcase.NewFile("input", inputFile, "")
+	tcPart1 = testcase.NewFile("input", inputFile, "82635947")
 	tcPart2 = testcase.NewFile("input", inputFile, "")
 )
 
