@@ -15,9 +15,9 @@ func Part2(input string) (string, error) {
 }
 
 type cups struct {
-	r   *ring.Ring
-	m   map[int]*ring.Ring // number -> node in ring
-	max int
+	start *ring.Ring
+	nodes []*ring.Ring // number -> node in ring
+	max   int
 }
 
 func parse(input string) *ring.Ring {
@@ -33,23 +33,23 @@ func parse(input string) *ring.Ring {
 
 func newCups(r *ring.Ring) *cups {
 	n := r.Len()
-	m := make(map[int]*ring.Ring, n)
+	m2 := make([]*ring.Ring, n)
 	node := r
 	for i := 0; i < n; i++ {
 		v := node.Value.(int)
-		m[v] = node
+		m2[v-1] = node
 		node = node.Next()
 	}
 	return &cups{
-		r:   r,
-		m:   m,
-		max: n,
+		start: r,
+		nodes: m2,
+		max:   n,
 	}
 }
 
 func (c *cups) String() string {
 	var sb strings.Builder
-	c.m[1].Do(func(v interface{}) {
+	c.nodes[0].Do(func(v interface{}) {
 		n := v.(int)
 		if n == 1 {
 			return
@@ -61,7 +61,7 @@ func (c *cups) String() string {
 
 func (c *cups) DebugString() string {
 	var ss []string
-	c.r.Do(func(v interface{}) {
+	c.start.Do(func(v interface{}) {
 		n := v.(int)
 		if len(ss) == 0 {
 			ss = append(ss, fmt.Sprintf("(%s)", fmt.Sprint(n)))
@@ -74,19 +74,22 @@ func (c *cups) DebugString() string {
 
 func (c *cups) Part2Product() int64 {
 	var prod int64 = 1
-	node := c.m[1].Next()
+	node := c.nodes[0].Next()
 	prod *= int64(node.Value.(int))
 	prod *= int64(node.Next().Value.(int))
 	return prod
 }
 
 func (c *cups) Move() {
-	curr := c.r.Value.(int)
-	held := c.r.Unlink(3)
+	curr := c.start.Value.(int)
+	held := c.start.Unlink(3)
+	h1 := held
+	h2 := h1.Next()
+	h3 := h2.Next()
 	forbidden := [...]int{
-		held.Value.(int),
-		held.Next().Value.(int),
-		held.Next().Next().Value.(int),
+		h1.Value.(int),
+		h2.Value.(int),
+		h3.Value.(int),
 	}
 	dest := curr - 1
 	for {
@@ -98,8 +101,8 @@ func (c *cups) Move() {
 		}
 		dest--
 	}
-	c.m[dest].Link(held)
-	c.r = c.r.Next()
+	c.nodes[dest-1].Link(held)
+	c.start = c.start.Next()
 }
 
 func solve(input string, part int) (string, error) {
