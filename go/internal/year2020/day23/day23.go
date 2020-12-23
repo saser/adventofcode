@@ -83,16 +83,17 @@ func (c *cups) Part2Product() int64 {
 func (c *cups) Move() {
 	curr := c.r.Value.(int)
 	held := c.r.Unlink(3)
-	forbidden := make(map[int]bool, 3)
-	held.Do(func(v interface{}) {
-		forbidden[v.(int)] = true
-	})
+	forbidden := [...]int{
+		held.Value.(int),
+		held.Next().Value.(int),
+		held.Next().Next().Value.(int),
+	}
 	dest := curr - 1
 	for {
 		if dest < 1 {
 			dest = c.max
 		}
-		if !forbidden[dest] {
+		if !(dest == forbidden[0] || dest == forbidden[1] || dest == forbidden[2]) {
 			break
 		}
 		dest--
