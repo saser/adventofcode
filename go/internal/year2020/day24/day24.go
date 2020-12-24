@@ -110,12 +110,67 @@ func (p *point3) Move(dir direction) {
 	}
 }
 
-func solve(input string, part int) (string, error) {
-	if part == 2 {
-		return "", fmt.Errorf("solution not implemented for part %v", part)
+func (p point3) Adjacent() [6]point3 {
+	var adj [6]point3
+	for i, dir := range []direction{
+		dirEast,
+		dirSouthEast,
+		dirSouthWest,
+		dirWest,
+		dirNorthWest,
+		dirNorthEast,
+	} {
+		n := p
+		n.Move(dir)
+		adj[i] = n
 	}
+	return adj
+}
+
+type tileSet map[point3]bool
+
+func (t tileSet) Flip(p point3) {
+	if t[p] {
+		delete(t, p)
+	} else {
+		t[p] = true
+	}
+}
+
+type gameOfTiles struct {
+	blackTiles tileSet
+}
+
+func newGameOfTiles(blackTiles tileSet) *gameOfTiles {
+	return &gameOfTiles{
+		blackTiles: blackTiles,
+	}
+}
+
+func (g *gameOfTiles) Step() {
+	adjCount := make(map[point3]int)
+	for p := range g.blackTiles {
+		if _, ok := adjCount[p]; !ok {
+			adjCount[p] = 0
+		}
+		for _, n := range p.Adjacent() {
+			adjCount[n] = adjCount[n] + 1
+		}
+	}
+	for p, count := range adjCount {
+		if (g.blackTiles[p] && (count == 0 || count > 2)) || (!g.blackTiles[p] && count == 2) {
+			g.blackTiles.Flip(p)
+		}
+	}
+}
+
+func (g *gameOfTiles) BlackTileCount() int {
+	return len(g.blackTiles)
+}
+
+func solve(input string, part int) (string, error) {
 	d := parse(input)
-	flipped := make(map[point3]bool)
+	blackTiles := make(tileSet)
 	for _, dirs := range d {
 		p := point3{
 			X: 0,
@@ -125,11 +180,14 @@ func solve(input string, part int) (string, error) {
 		for _, dir := range dirs {
 			p.Move(dir)
 		}
-		if !flipped[p] {
-			flipped[p] = true
-		} else {
-			delete(flipped, p)
-		}
+		blackTiles.Flip(p)
 	}
-	return fmt.Sprint(len(flipped)), nil
+	if part == 1 {
+		return fmt.Sprint(len(blackTiles)), nil
+	}
+	g := newGameOfTiles(blackTiles)
+	for i := 0; i < 100; i++ {
+		g.Step()
+	}
+	return fmt.Sprint(g.BlackTileCount()), nil
 }
